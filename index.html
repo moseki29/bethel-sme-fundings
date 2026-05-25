@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BETHEL SME FUNDINGS</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    body{
+      background: linear-gradient(135deg,#041C32,#06283D,#0B2447);
+      min-height:100vh;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      padding:30px;
+    }
+
+    .container{
+      width:100%;
+      max-width:850px;
+      background:white;
+      border-radius:22px;
+      padding:35px;
+      box-shadow:0 15px 40px rgba(0,0,0,0.4);
+    }
+
+    .title{
+      text-align:center;
+      margin-bottom:25px;
+    }
+
+    .title h1{
+      color:#0B2447;
+      font-size:2.6rem;
+      margin-bottom:5px;
+    }
+
+    .title p{
+      color:#666;
+      font-size:15px;
+    }
+
+    .loan-box{
+      background:#0B2447;
+      color:white;
+      padding:22px;
+      border-radius:16px;
+      text-align:center;
+      margin-bottom:25px;
+    }
+
+    .loan-box h2{
+      color:#FFD700;
+      margin-bottom:8px;
+    }
+
+    .loan-box p{
+      margin:6px 0;
+    }
+
+    .section-title{
+      margin-top:25px;
+      margin-bottom:15px;
+      color:#0B2447;
+      font-size:22px;
+      font-weight:bold;
+    }
+
+    .form-group{
+      margin-bottom:20px;
+    }
+
+    label{
+      display:block;
+      margin-bottom:8px;
+      font-weight:bold;
+      color:#0B2447;
+    }
+
+    input,
+    select,
+    textarea{
+      width:100%;
+      padding:14px;
+      border:2px solid #ddd;
+      border-radius:12px;
+      font-size:16px;
+      transition:0.3s;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus{
+      border-color:#FFD700;
+      outline:none;
+    }
+
+    textarea{
+      resize:none;
+      height:120px;
+    }
+
+    .checklist{
+      background:#f8f8f8;
+      padding:22px;
+      border-radius:16px;
+      margin-top:10px;
+    }
+
+    .check-item{
+      display:flex;
+      align-items:flex-start;
+      gap:12px;
+      margin-bottom:18px;
+    }
+
+    .check-item input{
+      width:auto;
+      transform:scale(1.2);
+      margin-top:4px;
+    }
+
+    .btn{
+      width:100%;
+      padding:18px;
+      border:none;
+      border-radius:14px;
+      background:linear-gradient(135deg,#FFD700,#D4AF37);
+      color:#111;
+      font-size:18px;
+      font-weight:bold;
+      cursor:pointer;
+      transition:0.3s;
+      margin-top:25px;
+    }
+
+    .btn:hover{
+      transform:scale(1.02);
+    }
+
+    .result{
+      margin-top:25px;
+      padding:22px;
+      border-radius:15px;
+      display:none;
+    }
+
+    .success{
+      background:#d4edda;
+      border:2px solid #28a745;
+      color:#155724;
+    }
+
+    .error{
+      background:#f8d7da;
+      border:2px solid #dc3545;
+      color:#721c24;
+    }
+
+    .missing-list{
+      margin-top:10px;
+      padding-left:20px;
+    }
+
+    .nav-tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 25px;
+      border-bottom: 2px solid #ddd;
+    }
+
+    .nav-btn {
+      padding: 12px 20px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: bold;
+      color: #666;
+      border-bottom: 3px solid transparent;
+      transition: 0.3s;
+    }
+
+    .nav-btn.active {
+      color: #0B2447;
+      border-bottom-color: #FFD700;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+
+    .stat-card {
+      background: linear-gradient(135deg, #0B2447, #06283D);
+      color: white;
+      padding: 20px;
+      border-radius: 12px;
+      text-align: center;
+    }
+
+    .stat-card h3 {
+      font-size: 14px;
+      margin-bottom: 10px;
+      opacity: 0.9;
+    }
+
+    .stat-card .number {
+      font-size: 2.5rem;
+      font-weight: bold;
+      color: #FFD700;
+    }
+
+    .loans-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      overflow-x: auto;
+    }
+
+    .loans-table th,
+    .loans-table td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .loans-table th {
+      background: #0B2447;
+      color: white;
+      font-weight: bold;
+    }
+
+    .loans-table tr:hover {
+      background: #f9f9f9;
+    }
+
+    .status-badge {
+      padding: 5px 10px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .status-pending {
+      background: #fff3cd;
+      color: #856404;
+    }
+
+    .status-approved {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .status-rejected {
+      background: #f8d7da;
+      color: #721c24;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 20px;
+      color: #666;
+    }
+
+    .spinner {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #FFD700;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+  <div class="nav-tabs">
+    <button class="nav-btn active" onclick="switchTab('application')">Application Form</button>
+    <button class="nav-btn" onclick="switchTab('dashboard')">Dashboard</button>
+  </div>
+
+  <!-- APPLICATION TAB -->
+  <div id="application" class="tab-content active">
+
+  <!-- HEADER -->
+
+  <div class="title">
+    <h1>BETHEL SME FUNDINGS</h1>
+    <p>(Bethel Youth Capital Initiative)</p>
+  </div>
+
+
+  <!-- LOAN INFO -->
+
+  <div class="loan-box">
+
+    <h2>MICRO LOANS</h2>
+
+    <p>P500 - P2000</p>
+
+    <p>Interest Rate: 10% - 20%</p>
+
+    <small>
+      Maximum Repayment Period:
+      8 Months
+    </small>
+
+  </div>
+
+
+  <!-- FORM -->
+
+  <form id="loanForm">
+
+
+    <!-- APPLICANT INFO -->
+
+    <div class="section-title">
+      Applicant Information
+    </div>
+
+
+    <div class="form-group">
+
+      <label>
+        Full Name
+      </label>
+
+      <input type="text"
+             id="name"
+             placeholder="Enter full name"
+             required>
+
+    </div>
+
+
+    <div class="form-group">
+
+      <label>
+        Age
+      </label>
+
+      <input type="number"
+             id="age"
+             placeholder="Enter age"
+             required>
+
+    </div>
+
+
+    <div class="form-group">
+
+      <label>
+        Are You Schooling?
+      </label>
+
+      <select id="studentStatus"
+              onchange="toggleStudentID()">
+
+        <option value="">
+          Select
+        </option>
+
+        <option value="Student">
+          YES
+        </option>
+
+        <option value="Non-Student">
+          NO
+        </option>
+
+      </select>
+
+    </div>
+
+
+    <!-- BUSINESS FUNDING -->
+
+    <div class="section-title">
+      Business Funding Purpose
+    </div>
+
+
+    <div class="form-group">
+
+      <label>
+        What do you need the loan for?
+      </label>
+
+      <select id="businessPurpose"
+              onchange="updateLoanPurpose()">
+
+        <option value="">
+          Select Purpose
+        </option>
+
+        <option value="Establishing">
+          Establishing a New Business
+        </option>
+
+        <option value="Scaling">
+          Scaling / Expanding Existing Business
+        </option>
+
+      </select>
+
+    </div>
+
+
+    <div class="form-group">
+
+      <label>
+        Explain the Purpose of Funding
+      </label>
+
+      <textarea id="purposeText"
+                placeholder="Explain how the loan will help your business..."></textarea>
+
+    </div>
+
+
+    <div class="form-group">
+
+      <label>
+        Estimated Loan Amount Required (Pula)
+      </label>
+
+      <input type="number"
+             id="loanAmount"
+             placeholder="Enter amount required">
+
+    </div>
+
+
+    <div class="form-group">
+
+      <label>
+        Estimated Monthly Revenue Generation (Pula)
+      </label>
+
+      <input type="number"
+             id="monthlyRevenue"
+             placeholder="Expected monthly business revenue">
+
+    </div>
+
+
+    <!-- REQUIREMENTS -->
+
+    <div class="section-title">
+      Loan Requirements Checklist
+    </div>
+
+
+    <div class="checklist">
+
+
+      <!-- OMANG -->
+
+      <div class="check-item">
+
+        <input type="checkbox"
+               id="omang">
+
+        <label for="omang">
+          Valid National ID / Omang
+        </label>
+
+      </div>
+
+
+      <!-- STUDENT ID -->
+
+      <div class="check-item"
+           id="studentIdSection"
+           style="display:none;">
+
+        <input type="checkbox"
+               id="studentId">
+
+        <label for="studentId">
+          Student ID
+        </label>
+
+      </div>
+
+
+      <!-- APPLICATION FORM -->
+
+      <div class="check-item">
+
+        <input type="checkbox"
+               id="applicationForm">
+
+        <label for="applicationForm">
+          Completed Loan Application Form
+        </label>
+
+      </div>
+
+
+      <!-- AGREEMENT -->
+
+      <div class="check-item">
+
+        <input type="checkbox"
+               id="agreement">
+
+        <label for="agreement">
+          Signed Loan Agreement Document
+        </label>
+
+      </div>
+
+
+      <!-- PROPOSAL -->
+
+      <div class="check-item">
+
+        <input type="checkbox"
+               id="proposal">
+
+        <label for="proposal">
+
+          Business Proposal MUST include:
+
+          <br><br>
+
+          • Loan Requirement Amount
+          <br>
+
+          • Purpose of Funding
+          <br>
+
+          • Business Growth Strategy
+          <br>
+
+          • Estimated Monthly Revenue Generation
+          <br>
+
+          • Minimum 2-Year Vision
+
+        </label>
+
+      </div>
+
+
+      <!-- COLLATERAL -->
+
+      <div class="check-item">
+
+        <input type="checkbox"
+               id="collateral">
+
+        <label for="collateral">
+          Optional Physical Collateral / Reference
+        </label>
+
+      </div>
+
+    </div>
+
+
+    <!-- BUTTON -->
+
+    <button type="button"
+            class="btn"
+            onclick="checkEligibility()">
+
+      CHECK LOAN ELIGIBILITY
+
+    </button>
+
+  </form>
+
+
+  <!-- RESULTS -->
+
+  <div id="result"
+       class="result"></div>
+
+  </div>
+
+  <!-- DASHBOARD TAB -->
+  <div id="dashboard" class="tab-content">
+    <div class="title">
+      <h1>Loan Dashboard</h1>
+      <p>Real-time tracking of all loan applications</p>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <h3>Total Applications</h3>
+        <div class="number" id="totalLoans">0</div>
+      </div>
+      <div class="stat-card">
+        <h3>Pending Review</h3>
+        <div class="number" id="pendingLoans">0</div>
+      </div>
+      <div class="stat-card">
+        <h3>Approved</h3>
+        <div class="number" id="approvedLoans">0</div>
+      </div>
+      <div class="stat-card">
+        <h3>Total Funded</h3>
+        <div class="number" id="totalFunded">P0</div>
+      </div>
+    </div>
+
+    <h3 style="margin-top: 30px; color: #0B2447;">Recent Applications</h3>
+    <div id="loansContainer" class="loading">
+      <div class="spinner"></div>
+      <p>Loading data...</p>
+    </div>
+  </div>
+
+</div>
+
+
+<script>
+
+// Initialize Supabase
+const SUPABASE_URL = 'https://rcgyzkevzqwxpfhwmfrq.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_secret_TQu6LV5e3td4OlkFsUHWhA_fBRgmcAi';
+
+let supabase;
+
+// Try to initialize Supabase
+if (SUPABASE_URL && SUPABASE_ANON_KEY && SUPABASE_URL !== 'YOUR_SUPABASE_URL') {
+  supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+}
+
+// Tab switching
+function switchTab(tab) {
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+  document.getElementById(tab).classList.add('active');
+  event.target.classList.add('active');
+  
+  if (tab === 'dashboard') {
+    loadDashboard();
+  }
+}
+
+// SHOW/HIDE STUDENT ID
+
+function toggleStudentID(){
+
+  const studentStatus =
+    document.getElementById("studentStatus").value;
+
+  const studentIdSection =
+    document.getElementById("studentIdSection");
+
+  if(studentStatus === "Student"){
+
+    studentIdSection.style.display = "flex";
+
+  }
+
+  else{
+
+    studentIdSection.style.display = "none";
+
+    document.getElementById("studentId").checked = false;
+
+  }
+
+}
+
+
+
+// UPDATE PURPOSE PLACEHOLDER
+
+function updateLoanPurpose(){
+
+  const purpose =
+    document.getElementById("businessPurpose").value;
+
+  const purposeText =
+    document.getElementById("purposeText");
+
+  if(purpose === "Establishing"){
+
+    purposeText.placeholder =
+      "Describe the business you want to establish and how the loan will help you start.";
+
+  }
+
+  else if(purpose === "Scaling"){
+
+    purposeText.placeholder =
+      "Describe your existing business and how the loan will help you expand.";
+
+  }
+
+}
+
+
+
+// CHECK ELIGIBILITY
+
+async function checkEligibility(){
+
+
+  const age =
+    document.getElementById("age").value;
+
+  const studentStatus =
+    document.getElementById("studentStatus").value;
+
+  const businessPurpose =
+    document.getElementById("businessPurpose").value;
+
+  const purposeText =
+    document.getElementById("purposeText").value;
+
+  const loanAmount =
+    document.getElementById("loanAmount").value;
+
+  const monthlyRevenue =
+    document.getElementById("monthlyRevenue").value;
+
+
+  const omang =
+    document.getElementById("omang").checked;
+
+  const studentId =
+    document.getElementById("studentId").checked;
+
+  const applicationForm =
+    document.getElementById("applicationForm").checked;
+
+  const agreement =
+    document.getElementById("agreement").checked;
+
+  const proposal =
+    document.getElementById("proposal").checked;
+
+
+  let missing = [];
+
+
+
+  // AGE VALIDATION
+
+  if(age < 18 || age > 25){
+
+    missing.push(
+      "Applicant must be between 18 - 25 years."
+    );
+
+  }
+
+
+
+  // PURPOSE VALIDATION
+
+  if(businessPurpose === ""){
+
+    missing.push(
+      "Select the business funding purpose."
+    );
+
+  }
+
+
+
+  // PURPOSE DESCRIPTION
+
+  if(purposeText.trim() === ""){
+
+    missing.push(
+      "Provide a business funding explanation."
+    );
+
+  }
+
+
+
+  // LOAN AMOUNT
+
+  if(loanAmount < 500 || loanAmount > 2000){
+
+    missing.push(
+      "Loan amount must be between P500 and P2000."
+    );
+
+  }
+
+
+
+  // MONTHLY REVENUE
+
+  if(monthlyRevenue === "" || monthlyRevenue <= 0){
+
+    missing.push(
+      "Provide estimated monthly revenue generation."
+    );
+
+  }
+
+
+
+  // OMANG
+
+  if(!omang){
+
+    missing.push(
+      "Valid National ID / Omang missing."
+    );
+
+  }
+
+
+
+  // STUDENT ID
+
+  if(studentStatus === "Student" && !studentId){
+
+    missing.push(
+      "Student ID missing."
+    );
+
+  }
+
+
+
+  // APPLICATION FORM
+
+  if(!applicationForm){
+
+    missing.push(
+      "Completed Loan Application Form missing."
+    );
+
+  }
+
+
+
+  // AGREEMENT
+
+  if(!agreement){
+
+    missing.push(
+      "Signed Loan Agreement missing."
+    );
+
+  }
+
+
+
+  // PROPOSAL
+
+  if(!proposal){
+
+    missing.push(
+      "Business proposal missing. Proposal must include loan requirement amount, funding purpose, business growth strategy, estimated monthly revenue generation, and minimum 2-year vision."
+    );
+
+  }
+
+
+
+  // RESULTS
+
+  const result =
+    document.getElementById("result");
+
+
+
+  // SUCCESS
+
+  if(missing.length === 0){
+
+    result.style.display = "block";
+
+    result.className =
+      "result success";
+
+    result.innerHTML = `
+
+      <h2>
+        ✅ APPLICATION QUALIFIED
+      </h2>
+
+      <br>
+
+      <p>
+        Congratulations! Your application
+        satisfies all BETHEL SME FUNDINGS
+        requirements and is eligible
+        for review.
+      </p>
+
+      <br>
+
+      <p>
+        <strong>Funding Purpose:</strong>
+        ${businessPurpose}
+      </p>
+
+      <p>
+        <strong>Requested Amount:</strong>
+        P${loanAmount}
+      </p>
+
+      <p>
+        <strong>Estimated Monthly Revenue:</strong>
+        P${monthlyRevenue}
+      </p>
+
+    `;
+
+    // Save to database if Supabase is configured
+    if (supabase) {
+      await saveToDatabase({
+        full_name: document.getElementById("name").value,
+        age: parseInt(age),
+        is_student: studentStatus === "Student",
+        business_purpose: businessPurpose,
+        purpose_description: purposeText,
+        loan_amount: parseFloat(loanAmount),
+        monthly_revenue: parseFloat(monthlyRevenue),
+        documents_submitted: {
+          omang, studentId, applicationForm, agreement, proposal, collateral: document.getElementById("collateral").checked
+        }
+      });
+    }
+
+  }
+
+
+
+  // ERROR
+
+  else{
+
+    let list = "";
+
+    missing.forEach(item => {
+
+      list += `<li>${item}</li>`;
+
+    });
+
+    result.style.display = "block";
+
+    result.className =
+      "result error";
+
+    result.innerHTML = `
+
+      <h2>
+        ❌ APPLICATION INCOMPLETE
+      </h2>
+
+      <br>
+
+      <p>
+        The following requirements
+        are not satisfied:
+      </p>
+
+      <ul class="missing-list">
+
+        ${list}
+
+      </ul>
+
+    `;
+
+  }
+
+}
+
+async function saveToDatabase(data) {
+  try {
+    const { error } = await supabase.from('loans').insert([data]);
+    if (error) throw error;
+    console.log('Application saved successfully');
+  } catch (error) {
+    console.error('Error saving to database:', error);
+  }
+}
+
+async function loadDashboard() {
+  if (!supabase) {
+    document.getElementById('loansContainer').innerHTML = '<p style="color: #dc3545;">Database not configured. Please set SUPABASE_URL and SUPABASE_ANON_KEY in the script.</p>';
+    return;
+  }
+
+  try {
+    const { data: loans, error } = await supabase
+      .from('loans')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+
+    // Calculate stats
+    const total = loans.length;
+    const pending = loans.filter(l => l.status === 'Pending Review').length;
+    const approved = loans.filter(l => l.status === 'Approved').length;
+    const totalFunded = loans
+      .filter(l => l.status === 'Approved')
+      .reduce((sum, l) => sum + (l.loan_amount || 0), 0);
+
+    document.getElementById('totalLoans').textContent = total;
+    document.getElementById('pendingLoans').textContent = pending;
+    document.getElementById('approvedLoans').textContent = approved;
+    document.getElementById('totalFunded').textContent = `P${totalFunded.toLocaleString()}`;
+
+    // Render table
+    if (loans.length === 0) {
+      document.getElementById('loansContainer').innerHTML = '<p style="text-align: center; padding: 20px; color: #666;">No applications yet.</p>';
+      return;
+    }
+
+    let html = '<table class="loans-table"><thead><tr><th>Name</th><th>Age</th><th>Business Purpose</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead><tbody>';
+    
+    loans.forEach(loan => {
+      const date = new Date(loan.created_at).toLocaleDateString();
+      const statusClass = `status-${loan.status.toLowerCase().replace(' ', '')}`;
+      html += `
+        <tr>
+          <td>${loan.full_name}</td>
+          <td>${loan.age}</td>
+          <td>${loan.business_purpose}</td>
+          <td>P${loan.loan_amount}</td>
+          <td><span class="status-badge ${statusClass}">${loan.status}</span></td>
+          <td>${date}</td>
+        </tr>
+      `;
+    });
+
+    html += '</tbody></table>';
+    document.getElementById('loansContainer').innerHTML = html;
+  } catch (error) {
+    console.error('Error loading dashboard:', error);
+    document.getElementById('loansContainer').innerHTML = `<p style="color: #dc3545;">Error loading data: ${error.message}</p>`;
+  }
+}
+
+</script>
+
+</body>
+</html>
