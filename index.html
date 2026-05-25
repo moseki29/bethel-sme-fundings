@@ -6,168 +6,64 @@
   <title>BETHEL SME FUNDINGS</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-
-    *{
-      margin:0;
-      padding:0;
-      box-sizing:border-box;
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
       font-family: Arial, Helvetica, sans-serif;
     }
 
-    body{
-      background: linear-gradient(135deg,#041C32,#06283D,#0B2447);
-      min-height:100vh;
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      padding:30px;
+    body {
+      background: linear-gradient(135deg, #041C32, #06283D, #0B2447);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 30px;
     }
 
-    .container{
-      width:100%;
-      max-width:850px;
-      background:white;
-      border-radius:22px;
-      padding:35px;
-      box-shadow:0 15px 40px rgba(0,0,0,0.4);
+    .container {
+      width: 100%;
+      max-width: 850px;
+      background: white;
+      border-radius: 22px;
+      padding: 35px;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+      position: relative;
     }
 
-    .title{
-      text-align:center;
-      margin-bottom:25px;
+    .title {
+      text-align: center;
+      margin-bottom: 25px;
     }
 
-    .title h1{
-      color:#0B2447;
-      font-size:2.6rem;
-      margin-bottom:5px;
+    .title h1 {
+      color: #0B2447;
+      font-size: 2.6rem;
+      margin-bottom: 5px;
     }
 
-    .title p{
-      color:#666;
-      font-size:15px;
+    .title p {
+      color: #666;
+      font-size: 15px;
     }
 
-    .loan-box{
-      background:#0B2447;
-      color:white;
-      padding:22px;
-      border-radius:16px;
-      text-align:center;
-      margin-bottom:25px;
+    .logout-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      padding: 10px 15px;
+      background: #dc3545;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      display: none;
     }
 
-    .loan-box h2{
-      color:#FFD700;
-      margin-bottom:8px;
-    }
-
-    .loan-box p{
-      margin:6px 0;
-    }
-
-    .section-title{
-      margin-top:25px;
-      margin-bottom:15px;
-      color:#0B2447;
-      font-size:22px;
-      font-weight:bold;
-    }
-
-    .form-group{
-      margin-bottom:20px;
-    }
-
-    label{
-      display:block;
-      margin-bottom:8px;
-      font-weight:bold;
-      color:#0B2447;
-    }
-
-    input,
-    select,
-    textarea{
-      width:100%;
-      padding:14px;
-      border:2px solid #ddd;
-      border-radius:12px;
-      font-size:16px;
-      transition:0.3s;
-    }
-
-    input:focus,
-    select:focus,
-    textarea:focus{
-      border-color:#FFD700;
-      outline:none;
-    }
-
-    textarea{
-      resize:none;
-      height:120px;
-    }
-
-    .checklist{
-      background:#f8f8f8;
-      padding:22px;
-      border-radius:16px;
-      margin-top:10px;
-    }
-
-    .check-item{
-      display:flex;
-      align-items:flex-start;
-      gap:12px;
-      margin-bottom:18px;
-    }
-
-    .check-item input{
-      width:auto;
-      transform:scale(1.2);
-      margin-top:4px;
-    }
-
-    .btn{
-      width:100%;
-      padding:18px;
-      border:none;
-      border-radius:14px;
-      background:linear-gradient(135deg,#FFD700,#D4AF37);
-      color:#111;
-      font-size:18px;
-      font-weight:bold;
-      cursor:pointer;
-      transition:0.3s;
-      margin-top:25px;
-    }
-
-    .btn:hover{
-      transform:scale(1.02);
-    }
-
-    .result{
-      margin-top:25px;
-      padding:22px;
-      border-radius:15px;
-      display:none;
-    }
-
-    .success{
-      background:#d4edda;
-      border:2px solid #28a745;
-      color:#155724;
-    }
-
-    .error{
-      background:#f8d7da;
-      border:2px solid #dc3545;
-      color:#721c24;
-    }
-
-    .missing-list{
-      margin-top:10px;
-      padding-left:20px;
+    .logout-btn.show {
+      display: block;
     }
 
     .nav-tabs {
@@ -175,6 +71,11 @@
       gap: 10px;
       margin-bottom: 25px;
       border-bottom: 2px solid #ddd;
+      display: none;
+    }
+
+    .nav-tabs.show {
+      display: flex;
     }
 
     .nav-btn {
@@ -200,6 +101,183 @@
 
     .tab-content.active {
       display: block;
+    }
+
+    .loan-box {
+      background: #0B2447;
+      color: white;
+      padding: 22px;
+      border-radius: 16px;
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    .loan-box h2 {
+      color: #FFD700;
+      margin-bottom: 8px;
+    }
+
+    .loan-box p {
+      margin: 6px 0;
+    }
+
+    .section-title {
+      margin-top: 25px;
+      margin-bottom: 15px;
+      color: #0B2447;
+      font-size: 22px;
+      font-weight: bold;
+    }
+
+    .auth-title {
+      text-align: center;
+      margin-top: 0;
+      margin-bottom: 25px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+      color: #0B2447;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      padding: 14px;
+      border: 2px solid #ddd;
+      border-radius: 12px;
+      font-size: 16px;
+      transition: 0.3s;
+    }
+
+    input[type="file"] {
+      padding: 8px;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: #FFD700;
+      outline: none;
+    }
+
+    textarea {
+      resize: none;
+      height: 120px;
+    }
+
+    small {
+      display: block;
+      margin-top: 5px;
+      color: #999;
+      font-size: 12px;
+    }
+
+    .checklist {
+      background: #f8f8f8;
+      padding: 22px;
+      border-radius: 16px;
+      margin-top: 10px;
+    }
+
+    .check-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .check-item input[type="checkbox"] {
+      width: auto;
+      transform: scale(1.2);
+      margin-top: 4px;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 18px;
+      border: none;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #FFD700, #D4AF37);
+      color: #111;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+      margin-top: 25px;
+    }
+
+    .btn:hover {
+      transform: scale(1.02);
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .result {
+      margin-top: 25px;
+      padding: 22px;
+      border-radius: 15px;
+      display: none;
+    }
+
+    .success {
+      background: #d4edda;
+      border: 2px solid #28a745;
+      color: #155724;
+    }
+
+    .error {
+      background: #f8d7da;
+      border: 2px solid #dc3545;
+      color: #721c24;
+    }
+
+    .missing-list {
+      margin-top: 10px;
+      padding-left: 20px;
+    }
+
+    .auth-link {
+      text-align: center;
+      margin-top: 15px;
+      color: #666;
+    }
+
+    .auth-link a {
+      color: #0B2447;
+      font-weight: bold;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .auth-link a:hover {
+      text-decoration: underline;
+    }
+
+    .error-message {
+      display: none;
+      margin-top: 15px;
+      padding: 12px;
+      background: #f8d7da;
+      border: 2px solid #dc3545;
+      color: #721c24;
+      border-radius: 8px;
+    }
+
+    .success-message {
+      background: #d4edda;
+      border-color: #28a745;
+      color: #155724;
     }
 
     .stats-grid {
@@ -233,7 +311,6 @@
       width: 100%;
       border-collapse: collapse;
       margin-top: 20px;
-      overflow-x: auto;
     }
 
     .loans-table th,
@@ -295,323 +372,202 @@
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
-
   </style>
-
 </head>
-
 <body>
 
 <div class="container">
-
+  <button class="logout-btn" onclick="handleLogout()">Logout</button>
+  
   <div class="nav-tabs">
     <button class="nav-btn active" onclick="switchTab('application')">Application Form</button>
     <button class="nav-btn" onclick="switchTab('dashboard')">Dashboard</button>
   </div>
 
-  <!-- APPLICATION TAB -->
-  <div id="application" class="tab-content active">
+  <div id="auth" class="tab-content active">
+    <div class="title">
+      <h1>BETHEL SME FUNDINGS</h1>
+      <p>(Bethel Youth Capital Initiative)</p>
+    </div>
 
-  <!-- HEADER -->
+    <div id="loginForm" style="display: block;">
+      <div class="section-title auth-title">Login to Your Account</div>
+      
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="loginEmail" placeholder="Enter your email" required>
+      </div>
 
-  <div class="title">
-    <h1>BETHEL SME FUNDINGS</h1>
-    <p>(Bethel Youth Capital Initiative)</p>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="loginPassword" placeholder="Enter your password" required>
+      </div>
+
+      <button type="button" class="btn" onclick="handleLogin()" style="margin-top: 15px;">Login</button>
+
+      <div class="auth-link">
+        Don't have an account? <a onclick="toggleAuthForm()">Sign Up</a>
+      </div>
+
+      <div id="loginError" class="error-message"></div>
+    </div>
+
+    <div id="signupForm" style="display: none;">
+      <div class="section-title auth-title">Create New Account</div>
+      
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="signupEmail" placeholder="Enter your email" required>
+      </div>
+
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="signupPassword" placeholder="Create a password (min 6 characters)" required>
+      </div>
+
+      <div class="form-group">
+        <label>Confirm Password</label>
+        <input type="password" id="signupConfirm" placeholder="Confirm your password" required>
+      </div>
+
+      <button type="button" class="btn" onclick="handleSignup()" style="margin-top: 15px;">Create Account</button>
+
+      <div class="auth-link">
+        Already have an account? <a onclick="toggleAuthForm()">Login</a>
+      </div>
+
+      <div id="signupError" class="error-message"></div>
+    </div>
   </div>
 
+  <div id="application" class="tab-content">
+    <div class="title">
+      <h1>BETHEL SME FUNDINGS</h1>
+      <p>(Bethel Youth Capital Initiative)</p>
+    </div>
 
-  <!-- LOAN INFO -->
+    <div class="loan-box">
+      <h2>MICRO LOANS</h2>
+      <p>P500 - P2000</p>
+      <p>Interest Rate: 10% - 20%</p>
+      <small>Maximum Repayment Period: 8 Months</small>
+    </div>
 
-  <div class="loan-box">
+    <form id="loanForm">
+      <div class="section-title">Applicant Information</div>
 
-    <h2>MICRO LOANS</h2>
+      <div class="form-group">
+        <label>Full Name</label>
+        <input type="text" id="name" placeholder="Enter full name" required>
+      </div>
 
-    <p>P500 - P2000</p>
+      <div class="form-group">
+        <label>Age</label>
+        <input type="number" id="age" placeholder="Enter age" required>
+      </div>
 
-    <p>Interest Rate: 15% - 30%</p>
+      <div class="form-group">
+        <label>Are You Schooling?</label>
+        <select id="studentStatus" onchange="toggleStudentID()" required>
+          <option value="">Select</option>
+          <option value="Student">YES</option>
+          <option value="Non-Student">NO</option>
+        </select>
+      </div>
 
-    <small>
-      Maximum Repayment Period:
-      8 Months
-    </small>
+      <div class="section-title">Business Funding Purpose</div>
 
+      <div class="form-group">
+        <label>What do you need the loan for?</label>
+        <select id="businessPurpose" onchange="updateLoanPurpose()" required>
+          <option value="">Select Purpose</option>
+          <option value="Establishing">Establishing a New Business</option>
+          <option value="Scaling">Scaling / Expanding Existing Business</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Explain the Purpose of Funding</label>
+        <textarea id="purposeText" placeholder="Explain how the loan will help your business..."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Estimated Loan Amount Required (Pula)</label>
+        <input type="number" id="loanAmount" placeholder="Enter amount required">
+      </div>
+
+      <div class="form-group">
+        <label>Estimated Monthly Revenue Generation (Pula)</label>
+        <input type="number" id="monthlyRevenue" placeholder="Expected monthly business revenue">
+      </div>
+
+      <div class="section-title">Document Uploads (Required)</div>
+
+      <div class="form-group">
+        <label>National ID / Omang (PDF or Image)</label>
+        <input type="file" id="nationalId" accept=".pdf,.jpg,.jpeg,.png" required>
+        <small>Max 10MB</small>
+      </div>
+
+      <div class="form-group">
+        <label>Student ID (PDF or Image) - If applicable</label>
+        <input type="file" id="studentIdFile" accept=".pdf,.jpg,.jpeg,.png">
+        <small>Optional - Only required if you selected "YES" for schooling</small>
+      </div>
+
+      <div class="form-group">
+        <label>Business Plan/Proposal (PDF)</label>
+        <input type="file" id="businessPlanFile" accept=".pdf" required>
+        <small>Max 10MB. Must include: Loan amount, Purpose, Growth strategy, Monthly revenue, 2-year vision</small>
+      </div>
+
+      <div class="section-title">Loan Requirements Checklist</div>
+
+      <div class="checklist">
+        <div class="check-item">
+          <input type="checkbox" id="omang">
+          <label for="omang">Valid National ID / Omang</label>
+        </div>
+
+        <div class="check-item" id="studentIdSection" style="display:none;">
+          <input type="checkbox" id="studentId">
+          <label for="studentId">Student ID</label>
+        </div>
+
+        <div class="check-item">
+          <input type="checkbox" id="applicationForm">
+          <label for="applicationForm">Completed Loan Application Form</label>
+        </div>
+
+        <div class="check-item">
+          <input type="checkbox" id="agreement">
+          <label for="agreement">Signed Loan Agreement Document</label>
+        </div>
+
+        <div class="check-item">
+          <input type="checkbox" id="proposal">
+          <label for="proposal">
+            Business Proposal MUST include:<br><br>
+            • Loan Requirement Amount<br>
+            • Purpose of Funding<br>
+            • Business Growth Strategy<br>
+            • Estimated Monthly Revenue Generation<br>
+            • Minimum 2-Year Vision
+          </label>
+        </div>
+
+        <div class="check-item">
+          <input type="checkbox" id="collateral">
+          <label for="collateral">Optional Physical Collateral / Reference</label>
+        </div>
+      </div>
+
+      <button type="button" class="btn" onclick="checkEligibility()">CHECK LOAN ELIGIBILITY</button>
+    </form>
+
+    <div id="result" class="result"></div>
   </div>
 
-
-  <!-- FORM -->
-
-  <form id="loanForm">
-
-
-    <!-- APPLICANT INFO -->
-
-    <div class="section-title">
-      Applicant Information
-    </div>
-
-
-    <div class="form-group">
-
-      <label>
-        Full Name
-      </label>
-
-      <input type="text"
-             id="name"
-             placeholder="Enter full name"
-             required>
-
-    </div>
-
-
-    <div class="form-group">
-
-      <label>
-        Age
-      </label>
-
-      <input type="number"
-             id="age"
-             placeholder="Enter age"
-             required>
-
-    </div>
-
-
-    <div class="form-group">
-
-      <label>
-        Are You Schooling?
-      </label>
-
-      <select id="studentStatus"
-              onchange="toggleStudentID()">
-
-        <option value="">
-          Select
-        </option>
-
-        <option value="Student">
-          YES
-        </option>
-
-        <option value="Non-Student">
-          NO
-        </option>
-
-      </select>
-
-    </div>
-
-
-    <!-- BUSINESS FUNDING -->
-
-    <div class="section-title">
-      Business Funding Purpose
-    </div>
-
-
-    <div class="form-group">
-
-      <label>
-        What do you need the loan for?
-      </label>
-
-      <select id="businessPurpose"
-              onchange="updateLoanPurpose()">
-
-        <option value="">
-          Select Purpose
-        </option>
-
-        <option value="Establishing">
-          Establishing a New Business
-        </option>
-
-        <option value="Scaling">
-          Scaling / Expanding Existing Business
-        </option>
-
-      </select>
-
-    </div>
-
-
-    <div class="form-group">
-
-      <label>
-        Explain the Purpose of Funding
-      </label>
-
-      <textarea id="purposeText"
-                placeholder="Explain how the loan will help your business..."></textarea>
-
-    </div>
-
-
-    <div class="form-group">
-
-      <label>
-        Estimated Loan Amount Required (Pula)
-      </label>
-
-      <input type="number"
-             id="loanAmount"
-             placeholder="Enter amount required">
-
-    </div>
-
-
-    <div class="form-group">
-
-      <label>
-        Estimated Monthly Revenue Generation (Pula)
-      </label>
-
-      <input type="number"
-             id="monthlyRevenue"
-             placeholder="Expected monthly business revenue">
-
-    </div>
-
-
-    <!-- REQUIREMENTS -->
-
-    <div class="section-title">
-      Loan Requirements Checklist
-    </div>
-
-
-    <div class="checklist">
-
-
-      <!-- OMANG -->
-
-      <div class="check-item">
-
-        <input type="checkbox"
-               id="omang">
-
-        <label for="omang">
-          Valid National ID / Omang
-        </label>
-
-      </div>
-
-
-      <!-- STUDENT ID -->
-
-      <div class="check-item"
-           id="studentIdSection"
-           style="display:none;">
-
-        <input type="checkbox"
-               id="studentId">
-
-        <label for="studentId">
-          Student ID
-        </label>
-
-      </div>
-
-
-      <!-- APPLICATION FORM -->
-
-      <div class="check-item">
-
-        <input type="checkbox"
-               id="applicationForm">
-
-        <label for="applicationForm">
-          Completed Loan Application Form
-        </label>
-
-      </div>
-
-
-      <!-- AGREEMENT -->
-
-      <div class="check-item">
-
-        <input type="checkbox"
-               id="agreement">
-
-        <label for="agreement">
-          Signed Loan Agreement Document
-        </label>
-
-      </div>
-
-
-      <!-- PROPOSAL -->
-
-      <div class="check-item">
-
-        <input type="checkbox"
-               id="proposal">
-
-        <label for="proposal">
-
-          Business Proposal MUST include:
-
-          <br><br>
-
-          • Loan Requirement Amount
-          <br>
-
-          • Purpose of Funding
-          <br>
-
-          • Business Growth Strategy
-          <br>
-
-          • Estimated Monthly Revenue Generation
-          <br>
-
-          • Minimum 2-Year Vision
-
-        </label>
-
-      </div>
-
-
-      <!-- COLLATERAL -->
-
-      <div class="check-item">
-
-        <input type="checkbox"
-               id="collateral">
-
-        <label for="collateral">
-          Optional Physical Collateral / Reference
-        </label>
-
-      </div>
-
-    </div>
-
-
-    <!-- BUTTON -->
-
-    <button type="button"
-            class="btn"
-            onclick="checkEligibility()">
-
-      CHECK LOAN ELIGIBILITY
-
-    </button>
-
-  </form>
-
-
-  <!-- RESULTS -->
-
-  <div id="result"
-       class="result"></div>
-
-  </div>
-
-  <!-- DASHBOARD TAB -->
   <div id="dashboard" class="tab-content">
     <div class="title">
       <h1>Loan Dashboard</h1>
@@ -643,435 +599,375 @@
       <p>Loading data...</p>
     </div>
   </div>
-
 </div>
 
-
 <script>
-
-// Initialize Supabase
-const SUPABASE_URL = 'https://rcgyzkevzqwxpfhwmfrq.supabase.co';
-const SUPABASE_ANON_KEY = 'sb_secret_TQu6LV5e3td4OlkFsUHWhA_fBRgmcAi';
-
-let supabase;
-
-// Try to initialize Supabase
-if (SUPABASE_URL && SUPABASE_ANON_KEY && SUPABASE_URL !== 'YOUR_SUPABASE_URL') {
-  supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-}
-
-// Tab switching
-function switchTab(tab) {
-  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
-  document.getElementById(tab).classList.add('active');
-  event.target.classList.add('active');
-  
-  if (tab === 'dashboard') {
-    loadDashboard();
-  }
-}
-
-// SHOW/HIDE STUDENT ID
-
-function toggleStudentID(){
-
-  const studentStatus =
-    document.getElementById("studentStatus").value;
-
-  const studentIdSection =
-    document.getElementById("studentIdSection");
-
-  if(studentStatus === "Student"){
-
-    studentIdSection.style.display = "flex";
-
-  }
-
-  else{
-
-    studentIdSection.style.display = "none";
-
-    document.getElementById("studentId").checked = false;
-
-  }
-
-}
-
-
-
-// UPDATE PURPOSE PLACEHOLDER
-
-function updateLoanPurpose(){
-
-  const purpose =
-    document.getElementById("businessPurpose").value;
-
-  const purposeText =
-    document.getElementById("purposeText");
-
-  if(purpose === "Establishing"){
-
-    purposeText.placeholder =
-      "Describe the business you want to establish and how the loan will help you start.";
-
-  }
-
-  else if(purpose === "Scaling"){
-
-    purposeText.placeholder =
-      "Describe your existing business and how the loan will help you expand.";
-
-  }
-
-}
-
-
-
-// CHECK ELIGIBILITY
-
-async function checkEligibility(){
-
-
-  const age =
-    document.getElementById("age").value;
-
-  const studentStatus =
-    document.getElementById("studentStatus").value;
-
-  const businessPurpose =
-    document.getElementById("businessPurpose").value;
-
-  const purposeText =
-    document.getElementById("purposeText").value;
-
-  const loanAmount =
-    document.getElementById("loanAmount").value;
-
-  const monthlyRevenue =
-    document.getElementById("monthlyRevenue").value;
-
-
-  const omang =
-    document.getElementById("omang").checked;
-
-  const studentId =
-    document.getElementById("studentId").checked;
-
-  const applicationForm =
-    document.getElementById("applicationForm").checked;
-
-  const agreement =
-    document.getElementById("agreement").checked;
-
-  const proposal =
-    document.getElementById("proposal").checked;
-
-
-  let missing = [];
-
-
-
-  // AGE VALIDATION
-
-  if(age < 18 || age > 25){
-
-    missing.push(
-      "Applicant must be between 18 - 25 years."
-    );
-
-  }
-
-
-
-  // PURPOSE VALIDATION
-
-  if(businessPurpose === ""){
-
-    missing.push(
-      "Select the business funding purpose."
-    );
-
-  }
-
-
-
-  // PURPOSE DESCRIPTION
-
-  if(purposeText.trim() === ""){
-
-    missing.push(
-      "Provide a business funding explanation."
-    );
-
-  }
-
-
-
-  // LOAN AMOUNT
-
-  if(loanAmount < 500 || loanAmount > 2000){
-
-    missing.push(
-      "Loan amount must be between P500 and P2000."
-    );
-
-  }
-
-
-
-  // MONTHLY REVENUE
-
-  if(monthlyRevenue === "" || monthlyRevenue <= 0){
-
-    missing.push(
-      "Provide estimated monthly revenue generation."
-    );
-
-  }
-
-
-
-  // OMANG
-
-  if(!omang){
-
-    missing.push(
-      "Valid National ID / Omang missing."
-    );
-
-  }
-
-
-
-  // STUDENT ID
-
-  if(studentStatus === "Student" && !studentId){
-
-    missing.push(
-      "Student ID missing."
-    );
-
-  }
-
-
-
-  // APPLICATION FORM
-
-  if(!applicationForm){
-
-    missing.push(
-      "Completed Loan Application Form missing."
-    );
-
-  }
-
-
-
-  // AGREEMENT
-
-  if(!agreement){
-
-    missing.push(
-      "Signed Loan Agreement missing."
-    );
-
-  }
-
-
-
-  // PROPOSAL
-
-  if(!proposal){
-
-    missing.push(
-      "Business proposal missing. Proposal must include loan requirement amount, funding purpose, business growth strategy, estimated monthly revenue generation, and minimum 2-year vision."
-    );
-
-  }
-
-
-
-  // RESULTS
-
-  const result =
-    document.getElementById("result");
-
-
-
-  // SUCCESS
-
-  if(missing.length === 0){
-
-    result.style.display = "block";
-
-    result.className =
-      "result success";
-
-    result.innerHTML = `
-
-      <h2>
-        ✅ APPLICATION QUALIFIED
-      </h2>
-
-      <br>
-
-      <p>
-        Congratulations! Your application
-        satisfies all BETHEL SME FUNDINGS
-        requirements and is eligible
-        for review.
-      </p>
-
-      <br>
-
-      <p>
-        <strong>Funding Purpose:</strong>
-        ${businessPurpose}
-      </p>
-
-      <p>
-        <strong>Requested Amount:</strong>
-        P${loanAmount}
-      </p>
-
-      <p>
-        <strong>Estimated Monthly Revenue:</strong>
-        P${monthlyRevenue}
-      </p>
-
-    `;
-
-    // Save to database if Supabase is configured
-    if (supabase) {
-      await saveToDatabase({
-        full_name: document.getElementById("name").value,
-        age: parseInt(age),
-        is_student: studentStatus === "Student",
-        business_purpose: businessPurpose,
-        purpose_description: purposeText,
-        loan_amount: parseFloat(loanAmount),
-        monthly_revenue: parseFloat(monthlyRevenue),
-        documents_submitted: {
-          omang, studentId, applicationForm, agreement, proposal, collateral: document.getElementById("collateral").checked
+  const SUPABASE_URL = 'https://rcgyzkevzqwxpfhwmfrq.supabase.co';
+  const SUPABASE_ANON_KEY = 'sb_secret_TQu6LV5e3td4OlkFsUHWhA_fBRgmcAi';
+
+  let supabase;
+  let currentUser = null;
+
+  if (SUPABASE_URL && SUPABASE_ANON_KEY) {
+    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    
+    window.addEventListener('load', () => {
+      supabase.auth.onAuthStateChange((event, session) => {
+        if (session) {
+          currentUser = session.user;
+          showApplicationForm();
+        } else {
+          currentUser = null;
+          showAuthForm();
         }
       });
-    }
-
-  }
-
-
-
-  // ERROR
-
-  else{
-
-    let list = "";
-
-    missing.forEach(item => {
-
-      list += `<li>${item}</li>`;
-
     });
-
-    result.style.display = "block";
-
-    result.className =
-      "result error";
-
-    result.innerHTML = `
-
-      <h2>
-        ❌ APPLICATION INCOMPLETE
-      </h2>
-
-      <br>
-
-      <p>
-        The following requirements
-        are not satisfied:
-      </p>
-
-      <ul class="missing-list">
-
-        ${list}
-
-      </ul>
-
-    `;
-
   }
 
-}
-
-async function saveToDatabase(data) {
-  try {
-    const { error } = await supabase.from('loans').insert([data]);
-    if (error) throw error;
-    console.log('Application saved successfully');
-  } catch (error) {
-    console.error('Error saving to database:', error);
-  }
-}
-
-async function loadDashboard() {
-  if (!supabase) {
-    document.getElementById('loansContainer').innerHTML = '<p style="color: #dc3545;">Database not configured. Please set SUPABASE_URL and SUPABASE_ANON_KEY in the script.</p>';
-    return;
+  function toggleAuthForm() {
+    const loginForm = document.getElementById('loginForm');
+    const signupForm = document.getElementById('signupForm');
+    
+    if (loginForm.style.display === 'none') {
+      loginForm.style.display = 'block';
+      signupForm.style.display = 'none';
+    } else {
+      loginForm.style.display = 'none';
+      signupForm.style.display = 'block';
+    }
   }
 
-  try {
-    const { data: loans, error } = await supabase
-      .from('loans')
-      .select('*')
-      .order('created_at', { ascending: false });
+  async function handleLogin() {
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
+    const errorDiv = document.getElementById('loginError');
 
-    if (error) throw error;
-
-    // Calculate stats
-    const total = loans.length;
-    const pending = loans.filter(l => l.status === 'Pending Review').length;
-    const approved = loans.filter(l => l.status === 'Approved').length;
-    const totalFunded = loans
-      .filter(l => l.status === 'Approved')
-      .reduce((sum, l) => sum + (l.loan_amount || 0), 0);
-
-    document.getElementById('totalLoans').textContent = total;
-    document.getElementById('pendingLoans').textContent = pending;
-    document.getElementById('approvedLoans').textContent = approved;
-    document.getElementById('totalFunded').textContent = `P${totalFunded.toLocaleString()}`;
-
-    // Render table
-    if (loans.length === 0) {
-      document.getElementById('loansContainer').innerHTML = '<p style="text-align: center; padding: 20px; color: #666;">No applications yet.</p>';
+    if (!email || !password) {
+      showError(errorDiv, 'Please fill in all fields');
       return;
     }
 
-    let html = '<table class="loans-table"><thead><tr><th>Name</th><th>Age</th><th>Business Purpose</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead><tbody>';
-    
-    loans.forEach(loan => {
-      const date = new Date(loan.created_at).toLocaleDateString();
-      const statusClass = `status-${loan.status.toLowerCase().replace(' ', '')}`;
-      html += `
-        <tr>
-          <td>${loan.full_name}</td>
-          <td>${loan.age}</td>
-          <td>${loan.business_purpose}</td>
-          <td>P${loan.loan_amount}</td>
-          <td><span class="status-badge ${statusClass}">${loan.status}</span></td>
-          <td>${date}</td>
-        </tr>
-      `;
-    });
-
-    html += '</tbody></table>';
-    document.getElementById('loansContainer').innerHTML = html;
-  } catch (error) {
-    console.error('Error loading dashboard:', error);
-    document.getElementById('loansContainer').innerHTML = `<p style="color: #dc3545;">Error loading data: ${error.message}</p>`;
+    try {
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      
+      if (error) throw error;
+      
+      errorDiv.style.display = 'none';
+    } catch (error) {
+      showError(errorDiv, error.message);
+    }
   }
-}
 
+  async function handleSignup() {
+    const email = document.getElementById('signupEmail').value;
+    const password = document.getElementById('signupPassword').value;
+    const confirm = document.getElementById('signupConfirm').value;
+    const errorDiv = document.getElementById('signupError');
+
+    if (!email || !password || !confirm) {
+      showError(errorDiv, 'Please fill in all fields');
+      return;
+    }
+
+    if (password !== confirm) {
+      showError(errorDiv, 'Passwords do not match');
+      return;
+    }
+
+    if (password.length < 6) {
+      showError(errorDiv, 'Password must be at least 6 characters');
+      return;
+    }
+
+    try {
+      const { error } = await supabase.auth.signUp({ email, password });
+      
+      if (error) throw error;
+      
+      errorDiv.textContent = 'Account created! Check your email to confirm, then login.';
+      errorDiv.classList.add('success-message');
+      errorDiv.style.display = 'block';
+    } catch (error) {
+      showError(errorDiv, error.message);
+    }
+  }
+
+  function showError(errorDiv, message) {
+    errorDiv.textContent = message;
+    errorDiv.classList.remove('success-message');
+    errorDiv.style.display = 'block';
+  }
+
+  async function handleLogout() {
+    await supabase.auth.signOut();
+    document.getElementById('loanForm').reset();
+  }
+
+  function showAuthForm() {
+    document.getElementById('auth').classList.add('active');
+    document.getElementById('application').classList.remove('active');
+    document.getElementById('dashboard').classList.remove('active');
+    document.querySelector('.logout-btn').classList.remove('show');
+    document.querySelector('.nav-tabs').classList.remove('show');
+  }
+
+  function showApplicationForm() {
+    document.getElementById('auth').classList.remove('active');
+    document.getElementById('application').classList.add('active');
+    document.querySelector('.logout-btn').classList.add('show');
+    document.querySelector('.nav-tabs').classList.add('show');
+  }
+
+  function switchTab(tab) {
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+    document.getElementById(tab).classList.add('active');
+    event.target.classList.add('active');
+    
+    if (tab === 'dashboard') {
+      loadDashboard();
+    }
+  }
+
+  function toggleStudentID() {
+    const studentStatus = document.getElementById("studentStatus").value;
+    const studentIdSection = document.getElementById("studentIdSection");
+    if (studentStatus === "Student") {
+      studentIdSection.style.display = "flex";
+    } else {
+      studentIdSection.style.display = "none";
+      document.getElementById("studentId").checked = false;
+    }
+  }
+
+  function updateLoanPurpose() {
+    const purpose = document.getElementById("businessPurpose").value;
+    const purposeText = document.getElementById("purposeText");
+    if (purpose === "Establishing") {
+      purposeText.placeholder = "Describe the business you want to establish and how the loan will help you start.";
+    } else if (purpose === "Scaling") {
+      purposeText.placeholder = "Describe your existing business and how the loan will help you expand.";
+    }
+  }
+
+  async function uploadFilesAndSaveApplication(data) {
+    try {
+      const timestamp = Date.now();
+      const userId = currentUser.id;
+      
+      let documents = {};
+
+      if (data.nationalIdFile) {
+        const natIdPath = `${userId}/${timestamp}_national_id_${data.nationalIdFile.name}`;
+        const { error: natIdError } = await supabase.storage
+          .from('documents')
+          .upload(natIdPath, data.nationalIdFile);
+        if (natIdError) throw natIdError;
+        documents.national_id_path = natIdPath;
+      }
+
+      if (data.studentIdFile) {
+        const studentIdPath = `${userId}/${timestamp}_student_id_${data.studentIdFile.name}`;
+        const { error: studentIdError } = await supabase.storage
+          .from('documents')
+          .upload(studentIdPath, data.studentIdFile);
+        if (studentIdError) throw studentIdError;
+        documents.student_id_path = studentIdPath;
+      }
+
+      if (data.businessPlanFile) {
+        const businessPath = `${userId}/${timestamp}_business_plan_${data.businessPlanFile.name}`;
+        const { error: businessError } = await supabase.storage
+          .from('documents')
+          .upload(businessPath, data.businessPlanFile);
+        if (businessError) throw businessError;
+        documents.business_plan_path = businessPath;
+      }
+
+      const { error: dbError } = await supabase.from('loans').insert([{
+        user_id: userId,
+        full_name: data.full_name,
+        age: data.age,
+        is_student: data.is_student,
+        business_purpose: data.business_purpose,
+        purpose_description: data.purpose_description,
+        loan_amount: data.loan_amount,
+        monthly_revenue: data.monthly_revenue,
+        documents_submitted: data.documents_submitted,
+        document_paths: documents
+      }]);
+
+      if (dbError) throw dbError;
+      console.log('Application saved successfully');
+    } catch (error) {
+      console.error('Error saving application:', error);
+      alert('Error saving application: ' + error.message);
+    }
+  }
+
+  async function checkEligibility() {
+    const age = document.getElementById("age").value;
+    const studentStatus = document.getElementById("studentStatus").value;
+    const businessPurpose = document.getElementById("businessPurpose").value;
+    const purposeText = document.getElementById("purposeText").value;
+    const loanAmount = document.getElementById("loanAmount").value;
+    const monthlyRevenue = document.getElementById("monthlyRevenue").value;
+
+    const omang = document.getElementById("omang").checked;
+    const studentId = document.getElementById("studentId").checked;
+    const applicationForm = document.getElementById("applicationForm").checked;
+    const agreement = document.getElementById("agreement").checked;
+    const proposal = document.getElementById("proposal").checked;
+
+    const nationalIdFile = document.getElementById("nationalId").files[0];
+    const studentIdFile = document.getElementById("studentIdFile").files[0];
+    const businessPlanFile = document.getElementById("businessPlanFile").files[0];
+
+    let missing = [];
+
+    if (age < 18 || age > 25) {
+      missing.push("Applicant must be between 18 - 25 years.");
+    }
+    if (businessPurpose === "") {
+      missing.push("Select the business funding purpose.");
+    }
+    if (purposeText.trim() === "") {
+      missing.push("Provide a business funding explanation.");
+    }
+    if (loanAmount < 500 || loanAmount > 2000) {
+      missing.push("Loan amount must be between P500 and P2000.");
+    }
+    if (monthlyRevenue === "" || monthlyRevenue <= 0) {
+      missing.push("Provide estimated monthly revenue generation.");
+    }
+    if (!omang) {
+      missing.push("Check the National ID/Omang checkbox.");
+    }
+    if (!nationalIdFile) {
+      missing.push("Upload your National ID / Omang file.");
+    }
+    if (studentStatus === "Student" && !studentId) {
+      missing.push("Check the Student ID checkbox.");
+    }
+    if (studentStatus === "Student" && !studentIdFile) {
+      missing.push("Upload your Student ID file.");
+    }
+    if (!applicationForm) {
+      missing.push("Check the Completed Loan Application Form checkbox.");
+    }
+    if (!agreement) {
+      missing.push("Check the Signed Loan Agreement checkbox.");
+    }
+    if (!proposal) {
+      missing.push("Check the Business Proposal checkbox.");
+    }
+    if (!businessPlanFile) {
+      missing.push("Upload your Business Plan/Proposal file.");
+    }
+
+    const result = document.getElementById("result");
+
+    if (missing.length === 0) {
+      result.style.display = "block";
+      result.className = "result success";
+      result.innerHTML = `
+        <h2>✅ APPLICATION QUALIFIED</h2>
+        <br>
+        <p>Congratulations! Your application satisfies all BETHEL SME FUNDINGS requirements and is eligible for review.</p>
+        <br>
+        <p><strong>Funding Purpose:</strong> ${businessPurpose}</p>
+        <p><strong>Requested Amount:</strong> P${loanAmount}</p>
+        <p><strong>Estimated Monthly Revenue:</strong> P${monthlyRevenue}</p>
+      `;
+
+      if (supabase) {
+        await uploadFilesAndSaveApplication({
+          full_name: document.getElementById("name").value,
+          age: parseInt(age),
+          is_student: studentStatus === "Student",
+          business_purpose: businessPurpose,
+          purpose_description: purposeText,
+          loan_amount: parseFloat(loanAmount),
+          monthly_revenue: parseFloat(monthlyRevenue),
+          documents_submitted: {
+            omang, studentId, applicationForm, agreement, proposal, collateral: document.getElementById("collateral").checked
+          },
+          nationalIdFile,
+          studentIdFile,
+          businessPlanFile
+        });
+      }
+    } else {
+      let list = "";
+      missing.forEach(item => {
+        list += `<li>${item}</li>`;
+      });
+      result.style.display = "block";
+      result.className = "result error";
+      result.innerHTML = `
+        <h2>❌ APPLICATION INCOMPLETE</h2>
+        <br>
+        <p>The following requirements are not satisfied:</p>
+        <ul class="missing-list">${list}</ul>
+      `;
+    }
+  }
+
+  async function loadDashboard() {
+    if (!supabase) {
+      document.getElementById('loansContainer').innerHTML = '<p style="color: #dc3545;">Database not configured.</p>';
+      return;
+    }
+
+    try {
+      const { data: loans, error } = await supabase
+        .from('loans')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      const total = loans.length;
+      const pending = loans.filter(l => l.status === 'Pending Review').length;
+      const approved = loans.filter(l => l.status === 'Approved').length;
+      const totalFunded = loans
+        .filter(l => l.status === 'Approved')
+        .reduce((sum, l) => sum + (l.loan_amount || 0), 0);
+
+      document.getElementById('totalLoans').textContent = total;
+      document.getElementById('pendingLoans').textContent = pending;
+      document.getElementById('approvedLoans').textContent = approved;
+      document.getElementById('totalFunded').textContent = `P${totalFunded.toLocaleString()}`;
+
+      if (loans.length === 0) {
+        document.getElementById('loansContainer').innerHTML = '<p style="text-align: center; padding: 20px; color: #666;">No applications yet.</p>';
+        return;
+      }
+
+      let html = '<table class="loans-table"><thead><tr><th>Name</th><th>Age</th><th>Purpose</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead><tbody>';
+      
+      loans.forEach(loan => {
+        const date = new Date(loan.created_at).toLocaleDateString();
+        const statusClass = `status-${loan.status.toLowerCase().replace(' ', '')}`;
+        html += `
+          <tr>
+            <td>${loan.full_name}</td>
+            <td>${loan.age}</td>
+            <td>${loan.business_purpose}</td>
+            <td>P${loan.loan_amount}</td>
+            <td><span class="status-badge ${statusClass}">${loan.status}</span></td>
+            <td>${date}</td>
+          </tr>
+        `;
+      });
+
+      html += '</tbody></table>';
+      document.getElementById('loansContainer').innerHTML = html;
+    } catch (error) {
+      console.error('Error loading dashboard:', error);
+      document.getElementById('loansContainer').innerHTML = `<p style="color: #dc3545;">Error: ${error.message}</p>`;
+    }
+  }
 </script>
 
 </body>
