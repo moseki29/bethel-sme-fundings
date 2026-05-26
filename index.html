@@ -6,6 +6,7 @@
   <title>BETHEL SME FUNDINGS</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
     :root {
       --navy: #041C32;
@@ -28,961 +29,1424 @@
       font-family: 'DM Sans', sans-serif;
       background: var(--navy);
       min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      position: relative;
       overflow-x: hidden;
     }
 
-    body::before {
+    #loginScreen {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      padding: 20px;
+    }
+
+    #loginScreen::before {
       content: '';
       position: fixed;
       inset: 0;
-      background: 
+      background:
+        radial-gradient(ellipse 50% 40% at 15% 25%, rgba(212,175,55,0.08) 0%, transparent 60%),
+        radial-gradient(ellipse 40% 50% at 85% 75%, rgba(6,40,61,0.9) 0%, transparent 60%),
+        radial-gradient(ellipse 30% 30% at 50% 50%, rgba(11,36,71,0.6) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .particle {
+      position: fixed;
+      width: 3px;
+      height: 3px;
+      background: var(--gold);
+      border-radius: 50%;
+      pointer-events: none;
+      opacity: 0;
+      z-index: 0;
+    }
+
+    @keyframes floatParticle {
+      0% { transform: translateY(100vh) scale(0); opacity: 0; }
+      10% { opacity: 0.6; }
+      90% { opacity: 0.3; }
+      100% { transform: translateY(-10vh) scale(1.5); opacity: 0; }
+    }
+
+    .grid-bg {
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(212,175,55,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(212,175,55,0.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .login-container {
+      width: 100%;
+      max-width: 440px;
+      position: relative;
+      z-index: 2;
+      animation: loginAppear 0.8s ease both;
+    }
+
+    @keyframes loginAppear {
+      from { opacity: 0; transform: translateY(40px) scale(0.96); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .login-brand { text-align: center; margin-bottom: 40px; }
+
+    .login-logo-ring {
+      width: 90px; height: 90px;
+      margin: 0 auto 20px;
+      border-radius: 50%;
+      border: 2px solid rgba(212,175,55,0.3);
+      display: flex; align-items: center; justify-content: center;
+      position: relative;
+      animation: ringPulse 3s ease-in-out infinite;
+    }
+
+    .login-logo-ring::before {
+      content: ''; position: absolute; inset: -6px;
+      border-radius: 50%; border: 1px solid rgba(212,175,55,0.1);
+    }
+
+    .login-logo-ring::after {
+      content: ''; position: absolute; inset: -12px;
+      border-radius: 50%; border: 1px dashed rgba(212,175,55,0.08);
+      animation: spinSlow 20s linear infinite;
+    }
+
+    @keyframes ringPulse {
+      0%, 100% { box-shadow: 0 0 20px rgba(212,175,55,0.1); }
+      50% { box-shadow: 0 0 40px rgba(212,175,55,0.2); }
+    }
+
+    @keyframes spinSlow { to { transform: rotate(360deg); } }
+
+    .login-logo-inner {
+      width: 60px; height: 60px;
+      background: linear-gradient(135deg, var(--gold), var(--gold-light));
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 26px; color: var(--navy); font-weight: 900;
+      font-family: 'Playfair Display', serif;
+    }
+
+    .login-brand h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem; color: var(--white); font-weight: 900;
+      letter-spacing: -0.5px;
+    }
+
+    .login-brand h1 span { color: var(--gold-light); }
+
+    .login-brand .tagline {
+      color: rgba(255,255,255,0.4); font-size: 12px;
+      letter-spacing: 3px; text-transform: uppercase; margin-top: 6px;
+    }
+
+    .login-card {
+      background: rgba(255,255,255,0.03);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 24px;
+      padding: 40px 35px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .login-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(212,175,55,0.3), transparent);
+    }
+
+    .login-card h2 {
+      color: var(--white);
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem; margin-bottom: 6px;
+    }
+
+    .login-card .subtitle {
+      color: rgba(255,255,255,0.4); font-size: 14px; margin-bottom: 30px;
+    }
+
+    .login-field { margin-bottom: 18px; }
+
+    .login-field label {
+      display: block; color: rgba(255,255,255,0.6);
+      font-size: 13px; font-weight: 500; margin-bottom: 8px;
+      letter-spacing: 0.3px;
+    }
+
+    .login-input-wrap { position: relative; }
+
+    .login-input-wrap i {
+      position: absolute; left: 14px; top: 50%;
+      transform: translateY(-50%);
+      color: rgba(255,255,255,0.25); font-size: 14px;
+      transition: 0.3s; pointer-events: none;
+    }
+
+    .login-input {
+      width: 100%; padding: 13px 14px 13px 42px;
+      background: rgba(255,255,255,0.06);
+      border: 1.5px solid rgba(255,255,255,0.1);
+      border-radius: 12px; color: var(--white);
+      font-size: 14px; font-family: 'DM Sans', sans-serif;
+      transition: 0.3s;
+    }
+
+    .login-input::placeholder { color: rgba(255,255,255,0.2); }
+
+    .login-input:focus {
+      outline: none; border-color: var(--gold);
+      background: rgba(212,175,55,0.05);
+      box-shadow: 0 0 0 3px rgba(212,175,55,0.08);
+    }
+
+    .login-input-wrap:focus-within i { color: var(--gold); }
+
+    .login-input-phone {
+      width: 100%; padding: 13px 14px 13px 72px;
+      background: rgba(255,255,255,0.06);
+      border: 1.5px solid rgba(255,255,255,0.1);
+      border-radius: 12px; color: var(--white);
+      font-size: 14px; font-family: 'DM Sans', sans-serif;
+      transition: 0.3s;
+    }
+
+    .login-input-phone::placeholder { color: rgba(255,255,255,0.2); }
+
+    .login-input-phone:focus {
+      outline: none; border-color: var(--gold);
+      background: rgba(212,175,55,0.05);
+      box-shadow: 0 0 0 3px rgba(212,175,55,0.08);
+    }
+
+    .phone-prefix {
+      position: absolute; left: 1px; top: 1px; bottom: 1px;
+      width: 56px; display: flex; align-items: center;
+      justify-content: center;
+      background: rgba(255,255,255,0.04);
+      border-right: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px 0 0 12px;
+      color: rgba(255,255,255,0.5); font-size: 13px;
+      font-weight: 600; pointer-events: none; z-index: 2;
+    }
+
+    .login-btn {
+      width: 100%; padding: 14px; border: none;
+      border-radius: 12px; font-size: 15px; font-weight: 700;
+      cursor: pointer; font-family: 'DM Sans', sans-serif;
+      text-transform: uppercase; letter-spacing: 1.5px;
+      background: linear-gradient(135deg, var(--gold), var(--gold-light));
+      color: var(--navy); transition: 0.3s; margin-top: 8px;
+      position: relative; overflow: hidden;
+    }
+
+    .login-btn::before {
+      content: ''; position: absolute;
+      top: 0; left: -100%; width: 100%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: 0.5s;
+    }
+
+    .login-btn:hover:not(:disabled)::before { left: 100%; }
+
+    .login-btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(255,215,0,0.25);
+    }
+
+    .login-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    .login-toggle {
+      text-align: center; margin-top: 22px;
+      padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .login-toggle span { color: rgba(255,255,255,0.35); font-size: 13px; }
+
+    .login-toggle button {
+      background: none; border: none;
+      color: var(--gold-light); font-size: 13px; font-weight: 600;
+      cursor: pointer; font-family: 'DM Sans', sans-serif;
+      text-decoration: underline; text-underline-offset: 3px;
+      transition: 0.3s;
+    }
+
+    .login-toggle button:hover { color: var(--white); }
+
+    .login-footer {
+      text-align: center; margin-top: 30px;
+      color: rgba(255,255,255,0.2); font-size: 11px;
+      letter-spacing: 1px;
+    }
+
+    .signup-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    .login-checkbox {
+      display: flex; align-items: center; gap: 10px;
+      margin: 15px 0 5px; padding: 10px 12px;
+      background: rgba(255,255,255,0.04);
+      border-radius: 10px; cursor: pointer; transition: 0.3s;
+    }
+
+    .login-checkbox:hover { background: rgba(255,255,255,0.06); }
+
+    .login-checkbox input[type="checkbox"] {
+      width: 16px; height: 16px; cursor: pointer;
+      accent-color: var(--gold-light); flex-shrink: 0;
+    }
+
+    .login-checkbox label {
+      margin: 0; color: rgba(255,255,255,0.5);
+      font-size: 12px; cursor: pointer; line-height: 1.4;
+    }
+
+    #appScreen {
+      display: none; min-height: 100vh;
+      padding: 20px; position: relative;
+    }
+
+    #appScreen::before {
+      content: ''; position: fixed; inset: 0;
+      background:
         radial-gradient(ellipse 60% 50% at 20% 20%, rgba(212,175,55,0.07) 0%, transparent 60%),
         radial-gradient(ellipse 50% 60% at 80% 80%, rgba(6,40,61,0.8) 0%, transparent 60%);
       pointer-events: none;
     }
 
-    body::after {
-      content: '';
-      position: fixed;
-      top: 0; right: 0;
-      width: 300px; height: 300px;
-      background: radial-gradient(circle at top right, rgba(212,175,55,0.12), transparent 70%);
-      pointer-events: none;
+    .app-wrap {
+      width: 100%; max-width: 600px;
+      margin: 0 auto; position: relative; z-index: 1;
     }
 
-    .app-wrap {
-      width: 100%;
-      max-width: 600px;
-      position: relative;
-      z-index: 1;
+    .app-topbar {
+      display: flex; justify-content: space-between;
+      align-items: center; margin-bottom: 8px;
+      animation: fadeDown 0.5s ease both;
+    }
+
+    .app-topbar-brand { display: flex; align-items: center; gap: 10px; }
+
+    .app-topbar-brand .mini-logo {
+      width: 36px; height: 36px;
+      background: linear-gradient(135deg, var(--gold), var(--gold-light));
+      border-radius: 50%; display: flex; align-items: center;
+      justify-content: center; font-size: 16px; color: var(--navy);
+      font-weight: 900; font-family: 'Playfair Display', serif;
+    }
+
+    .app-topbar-brand span {
+      color: var(--white); font-weight: 700;
+      font-size: 14px; letter-spacing: 1px;
+    }
+
+    .logout-btn {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: rgba(255,255,255,0.6); padding: 8px 16px;
+      border-radius: 10px; font-size: 12px; font-weight: 600;
+      cursor: pointer; font-family: 'DM Sans', sans-serif;
+      transition: 0.3s; display: flex; align-items: center; gap: 6px;
+    }
+
+    .logout-btn:hover {
+      background: rgba(192,57,43,0.2);
+      border-color: rgba(192,57,43,0.4); color: #e74c3c;
     }
 
     .brand-header {
-      text-align: center;
-      margin-bottom: 32px;
-      animation: fadeDown 0.6s ease both;
+      text-align: center; margin-bottom: 28px;
+      animation: fadeDown 0.6s ease both; animation-delay: 0.1s;
     }
 
     .brand-badge {
       display: inline-block;
       background: linear-gradient(135deg, var(--gold), var(--gold-light));
-      color: var(--navy);
-      font-family: 'DM Sans', sans-serif;
-      font-weight: 700;
-      font-size: 11px;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      padding: 6px 18px;
-      border-radius: 30px;
-      margin-bottom: 14px;
+      color: var(--navy); font-family: 'DM Sans', sans-serif;
+      font-weight: 700; font-size: 10px; letter-spacing: 3px;
+      text-transform: uppercase; padding: 5px 16px;
+      border-radius: 30px; margin-bottom: 12px;
     }
 
     .brand-header h1 {
       font-family: 'Playfair Display', serif;
-      font-size: 2.4rem;
-      color: var(--white);
-      line-height: 1.1;
-      font-weight: 900;
-      letter-spacing: -0.5px;
+      font-size: 2rem; color: var(--white);
+      line-height: 1.1; font-weight: 900;
     }
 
-    .brand-header h1 span {
-      color: var(--gold-light);
-    }
+    .brand-header h1 span { color: var(--gold-light); }
 
     .brand-header p {
-      color: rgba(255,255,255,0.5);
-      font-size: 13px;
-      margin-top: 8px;
-      letter-spacing: 1px;
+      color: rgba(255,255,255,0.4); font-size: 13px;
+      margin-top: 6px; letter-spacing: 1px;
     }
 
-    /* STEP INDICATORS */
     .steps-container {
-      display: flex;
-      justify-content: space-between;
-      margin: 30px 0;
-      position: relative;
+      display: flex; justify-content: space-between;
+      margin: 0 0 28px; position: relative;
       padding: 0 20px;
+      animation: fadeDown 0.6s ease both; animation-delay: 0.2s;
     }
 
     .steps-container::before {
-      content: '';
-      position: absolute;
-      top: 20px;
-      left: 50px;
-      right: 50px;
-      height: 2px;
-      background: var(--border);
-      z-index: 0;
+      content: ''; position: absolute; top: 20px;
+      left: 50px; right: 50px; height: 2px;
+      background: rgba(255,255,255,0.08); z-index: 0;
     }
 
+    .steps-container::after {
+      content: ''; position: absolute; top: 20px;
+      left: 50px; height: 2px;
+      background: linear-gradient(90deg, var(--success), var(--gold-light));
+      z-index: 0; transition: width 0.5s ease; width: 0;
+    }
+
+    .steps-container.at-step-2::after { width: calc(50% - 50px); }
+    .steps-container.at-step-3::after { width: calc(100% - 100px); }
+
     .step {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      position: relative;
-      z-index: 1;
-      flex: 1;
+      display: flex; flex-direction: column;
+      align-items: center; position: relative;
+      z-index: 1; flex: 1;
     }
 
     .step-circle {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: white;
-      border: 3px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: bold;
-      color: var(--text-muted);
-      margin-bottom: 8px;
-      transition: 0.3s;
+      width: 40px; height: 40px; border-radius: 50%;
+      background: rgba(255,255,255,0.05);
+      border: 2px solid rgba(255,255,255,0.1);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: bold; color: rgba(255,255,255,0.3);
+      margin-bottom: 8px; transition: 0.4s; font-size: 14px;
     }
 
     .step.active .step-circle {
-      background: var(--gold-light);
-      border-color: var(--gold-light);
-      color: var(--navy);
-      box-shadow: 0 0 15px rgba(255,215,0,0.4);
+      background: linear-gradient(135deg, var(--gold), var(--gold-light));
+      border-color: var(--gold-light); color: var(--navy);
+      box-shadow: 0 0 20px rgba(255,215,0,0.3);
     }
 
     .step.completed .step-circle {
-      background: var(--success);
-      border-color: var(--success);
-      color: white;
+      background: var(--success); border-color: var(--success);
+      color: white; box-shadow: 0 0 15px rgba(26,122,74,0.3);
     }
 
     .step-label {
-      font-size: 12px;
-      font-weight: 500;
-      color: var(--text-muted);
-      text-align: center;
+      font-size: 11px; font-weight: 500;
+      color: rgba(255,255,255,0.25); text-align: center;
+      transition: 0.3s;
     }
 
     .step.active .step-label { color: var(--gold-light); font-weight: 600; }
     .step.completed .step-label { color: var(--success); }
 
     .panel {
-      background: white;
-      border-radius: 20px;
-      padding: 40px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-      animation: slideUp 0.5s ease both;
-      margin-bottom: 20px;
+      background: white; border-radius: 20px;
+      padding: 36px; box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      animation: slideUp 0.5s ease both; margin-bottom: 20px;
     }
 
-    .form-group {
-      margin-bottom: 20px;
-    }
-
-    label {
-      display: block;
-      font-weight: 500;
+    .panel h2 {
       color: var(--text-dark);
-      margin-bottom: 8px;
-      font-size: 14px;
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem; margin-bottom: 6px;
     }
 
-    input[type="text"],
-    input[type="email"],
-    input[type="password"],
-    input[type="number"],
-    input[type="tel"],
-    select,
-    textarea {
-      width: 100%;
-      padding: 12px 14px;
-      border: 2px solid var(--border);
-      border-radius: 10px;
-      font-size: 14px;
-      font-family: 'DM Sans', sans-serif;
-      transition: 0.3s;
+    .panel .panel-sub {
+      color: var(--text-muted); font-size: 13px; margin-bottom: 25px;
     }
 
-    input:focus, select:focus, textarea:focus {
-      border-color: var(--gold-light);
-      outline: none;
+    .form-group { margin-bottom: 18px; }
+
+    .form-group label {
+      display: block; font-weight: 500; color: var(--text-dark);
+      margin-bottom: 7px; font-size: 14px;
+    }
+
+    .form-input {
+      width: 100%; padding: 12px 14px;
+      border: 2px solid var(--border); border-radius: 10px;
+      font-size: 14px; font-family: 'DM Sans', sans-serif;
+      transition: 0.3s; background: white; color: var(--text-dark);
+    }
+
+    .form-input:focus {
+      border-color: var(--gold-light); outline: none;
       box-shadow: 0 0 0 3px rgba(255,215,0,0.1);
     }
 
-    textarea {
-      resize: vertical;
-      min-height: 100px;
-    }
+    textarea.form-input { resize: vertical; min-height: 100px; }
 
     .checkbox-group {
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-      margin: 15px 0;
-      padding: 12px;
-      background: #f8f8f8;
+      display: flex; align-items: flex-start; gap: 10px;
+      margin: 12px 0; padding: 12px; background: #f8f8f8;
       border-radius: 10px;
     }
 
-    input[type="checkbox"] {
-      width: 18px;
-      height: 18px;
-      margin-top: 2px;
-      cursor: pointer;
-      accent-color: var(--gold-light);
+    .checkbox-group input[type="checkbox"] {
+      width: 18px; height: 18px; margin-top: 2px;
+      cursor: pointer; accent-color: var(--gold-light); flex-shrink: 0;
     }
 
-    .checkbox-label {
-      flex: 1;
-      font-size: 13px;
-      color: var(--text-dark);
-      cursor: pointer;
+    .checkbox-group label {
+      margin: 0; flex: 1; font-size: 13px;
+      color: var(--text-dark); cursor: pointer; line-height: 1.4;
     }
 
-    /* DOCUMENT UPLOAD */
     .upload-section {
-      background: #f8f8f8;
-      border: 2px dashed var(--border);
-      border-radius: 12px;
-      padding: 30px 20px;
-      text-align: center;
-      cursor: pointer;
-      transition: 0.3s;
-      position: relative;
+      background: #fafafa; border: 2px dashed var(--border);
+      border-radius: 12px; padding: 28px 20px;
+      text-align: center; cursor: pointer; transition: 0.3s;
     }
 
     .upload-section:hover {
-      border-color: var(--gold-light);
-      background: rgba(255,215,0,0.05);
+      border-color: var(--gold); background: rgba(212,175,55,0.03);
     }
 
     .upload-section.dragover {
-      border-color: var(--gold-light);
-      background: rgba(255,215,0,0.1);
+      border-color: var(--gold-light); background: rgba(255,215,0,0.06);
     }
 
-    .upload-section input[type="file"] {
-      display: none;
-    }
-
-    .upload-icon {
-      font-size: 32px;
-      margin-bottom: 10px;
-    }
-
-    .upload-text {
-      color: var(--text-muted);
-      font-size: 14px;
-    }
+    .upload-section input[type="file"] { display: none; }
+    .upload-icon { font-size: 28px; margin-bottom: 8px; color: #ccc; }
+    .upload-text { color: var(--text-muted); font-size: 13px; }
+    .upload-hint { color: #bbb; font-size: 11px; display: block; margin-top: 4px; }
 
     .file-name {
-      color: var(--success);
-      font-weight: 600;
-      margin-top: 8px;
-      display: none;
+      color: var(--success); font-weight: 600;
+      margin-top: 8px; font-size: 13px; display: none;
     }
 
-    .file-name.show {
-      display: block;
-    }
+    .file-name.show { display: block; }
 
     .upload-badge {
-      display: inline-block;
-      background: var(--success);
-      color: white;
-      padding: 4px 10px;
-      border-radius: 20px;
-      font-size: 11px;
-      font-weight: 600;
-      margin-top: 8px;
-      display: none;
+      display: none; padding: 3px 10px; border-radius: 20px;
+      font-size: 11px; font-weight: 600; margin-top: 6px;
     }
 
-    .upload-badge.show {
-      display: inline-block;
-    }
-
-    .upload-badge.verified {
-      background: var(--success);
-    }
-
-    .upload-badge.pending {
-      background: #f59e0b;
-    }
+    .upload-badge.show { display: inline-block; }
+    .upload-badge.pending { background: #fff3cd; color: #856404; }
+    .upload-badge.verified { background: #d4edda; color: #155724; }
 
     .btn {
-      width: 100%;
-      padding: 14px 20px;
-      border: none;
-      border-radius: 10px;
-      font-size: 15px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: 0.3s;
-      font-family: 'DM Sans', sans-serif;
-      text-transform: uppercase;
-      letter-spacing: 1px;
+      width: 100%; padding: 14px 20px; border: none;
+      border-radius: 10px; font-size: 14px; font-weight: 700;
+      cursor: pointer; transition: 0.3s; font-family: 'DM Sans', sans-serif;
+      text-transform: uppercase; letter-spacing: 1px;
     }
 
     .btn-primary {
       background: linear-gradient(135deg, var(--gold), var(--gold-light));
-      color: var(--navy);
+      color: var(--navy); position: relative; overflow: hidden;
     }
+
+    .btn-primary::before {
+      content: ''; position: absolute;
+      top: 0; left: -100%; width: 100%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
+      transition: 0.5s;
+    }
+
+    .btn-primary:hover:not(:disabled)::before { left: 100%; }
 
     .btn-primary:hover:not(:disabled) {
       transform: translateY(-2px);
-      box-shadow: 0 10px 25px rgba(255,215,0,0.3);
+      box-shadow: 0 8px 25px rgba(255,215,0,0.3);
     }
 
-    .btn-secondary {
-      background: white;
-      border: 2px solid var(--border);
-      color: var(--text-dark);
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    .user-info {
+      background: #f4f4f4; padding: 14px 18px;
+      border-radius: 12px; margin-bottom: 22px;
+      display: flex; justify-content: space-between;
+      align-items: center; flex-wrap: wrap; gap: 8px;
     }
 
-    .btn-secondary:hover:not(:disabled) {
-      border-color: var(--gold-light);
-      background: rgba(255,215,0,0.05);
+    .user-info-text { font-size: 13px; color: var(--text-dark); }
+    .user-info-text strong { color: var(--navy); }
+
+    .user-info-status {
+      display: inline-block; padding: 4px 12px;
+      border-radius: 20px; font-size: 11px; font-weight: 700;
+      letter-spacing: 0.5px;
     }
 
-    .btn:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
+    .status-active { background: #d4edda; color: #155724; }
+    .status-pending { background: #fff3cd; color: #856404; }
+
+    /* ALERT - at body level so it works on ALL screens */
+    #mainAlert {
+      position: fixed; top: 20px; left: 50%;
+      transform: translateX(-50%); z-index: 9999;
+      max-width: 500px; width: calc(100% - 40px);
+      padding: 16px 20px; border-radius: 12px;
+      display: none; animation: alertSlide 0.4s ease both;
+      white-space: pre-wrap; font-size: 14px; font-weight: 500;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2); text-align: left;
     }
 
-    .btn-group {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-top: 20px;
+    #mainAlert.show { display: block; }
+    .alert-success { background: #d4edda; border: 2px solid #28a745; color: #155724; }
+    .alert-error { background: #f8d7da; border: 2px solid #dc3545; color: #721c24; }
+    .alert-info { background: #d1ecf1; border: 2px solid #17a2b8; color: #0c5460; }
+
+    @keyframes alertSlide {
+      from { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+      to { opacity: 1; transform: translateX(-50%) translateY(0); }
     }
 
-    .btn-group .btn {
-      width: 100%;
-    }
-
-    .alert {
-      padding: 16px 20px;
-      border-radius: 10px;
-      margin-bottom: 20px;
-      display: none;
-      animation: slideDown 0.3s ease both;
-      white-space: pre-wrap;
-    }
-
-    .alert.show {
-      display: block;
-    }
-
-    .alert-success {
-      background: #d4edda;
-      border: 2px solid #28a745;
-      color: #155724;
-    }
-
-    .alert-error {
-      background: #f8d7da;
-      border: 2px solid #dc3545;
-      color: #721c24;
-    }
-
-    .alert-info {
-      background: #d1ecf1;
-      border: 2px solid #0c5460;
-      color: #0c5460;
+    .spinner {
+      display: inline-block; width: 18px; height: 18px;
+      border: 3px solid rgba(4,28,50,0.2); border-top-color: var(--navy);
+      border-radius: 50%; animation: spin 0.8s linear infinite;
+      margin-right: 8px; vertical-align: middle;
     }
 
     .hidden { display: none !important; }
 
-    .spinner {
-      display: inline-block;
-      width: 20px;
-      height: 20px;
-      border: 3px solid rgba(255,215,0,0.3);
-      border-top-color: var(--gold-light);
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-      margin-right: 8px;
-    }
-
     @keyframes spin { to { transform: rotate(360deg); } }
-    @keyframes fadeDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
-    @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-    @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-
-    .user-info {
-      background: #f0f0f0;
-      padding: 15px;
-      border-radius: 10px;
-      margin-bottom: 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
-    .user-info-text {
-      font-size: 14px;
-      color: var(--text-dark);
+    #transitionOverlay {
+      position: fixed; inset: 0; background: var(--navy);
+      z-index: 9998; display: flex; align-items: center;
+      justify-content: center; opacity: 0; pointer-events: none;
+      transition: opacity 0.4s ease;
     }
 
-    .user-info-status {
-      display: inline-block;
-      padding: 4px 12px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 600;
+    #transitionOverlay.active { opacity: 1; pointer-events: all; }
+
+    #transitionOverlay .trans-text {
+      color: var(--gold-light); font-family: 'Playfair Display', serif;
+      font-size: 1.4rem; animation: transPulse 1s ease-in-out infinite;
     }
 
-    .status-active {
-      background: #d4edda;
-      color: #155724;
+    @keyframes transPulse {
+      0%, 100% { opacity: 0.5; }
+      50% { opacity: 1; }
     }
 
-    .status-pending {
-      background: #fff3cd;
-      color: #856404;
+    #successScreen {
+      display: none; min-height: 100vh;
+      align-items: center; justify-content: center;
+      padding: 20px; position: relative;
     }
 
-    @media (max-width: 600px) {
-      .brand-header h1 { font-size: 1.8rem; }
-      .panel { padding: 25px; }
-      .steps-container { padding: 0; }
-      .steps-container::before { left: 20px; right: 20px; }
-      .btn-group { grid-template-columns: 1fr; }
+    #successScreen::before {
+      content: ''; position: fixed; inset: 0;
+      background: radial-gradient(ellipse at center, rgba(26,122,74,0.1), var(--navy) 70%);
+      pointer-events: none;
+    }
+
+    .success-card {
+      text-align: center; position: relative;
+      z-index: 1; animation: loginAppear 0.6s ease both;
+    }
+
+    .success-icon {
+      width: 100px; height: 100px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--success), #28a745);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 25px; font-size: 44px; color: white;
+      box-shadow: 0 15px 40px rgba(26,122,74,0.3);
+    }
+
+    .success-card h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem; color: var(--white); margin-bottom: 12px;
+    }
+
+    .success-card p {
+      color: rgba(255,255,255,0.5); font-size: 15px;
+      max-width: 380px; margin: 0 auto 30px; line-height: 1.6;
+    }
+
+    .success-card .btn-primary {
+      max-width: 280px; margin: 0 auto; display: block;
+    }
+
+    /* LOGOUT MODAL */
+    #logoutModal {
+      position: fixed; inset: 0; z-index: 10000;
+      display: none; align-items: center; justify-content: center;
+      padding: 20px;
+    }
+
+    #logoutModal.show { display: flex; }
+
+    #logoutModal::before {
+      content: ''; position: absolute; inset: 0;
+      background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);
+    }
+
+    .logout-modal-card {
+      background: white; border-radius: 20px;
+      padding: 36px 32px; max-width: 380px; width: 100%;
+      text-align: center; position: relative; z-index: 1;
+      animation: slideUp 0.3s ease both;
+    }
+
+    .logout-modal-card .modal-icon {
+      width: 56px; height: 56px; border-radius: 50%;
+      background: #fef2f2; display: flex; align-items: center;
+      justify-content: center; margin: 0 auto 18px;
+      font-size: 24px; color: var(--danger);
+    }
+
+    .logout-modal-card h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.25rem; color: var(--text-dark); margin-bottom: 8px;
+    }
+
+    .logout-modal-card p {
+      color: var(--text-muted); font-size: 13px; margin-bottom: 24px;
+    }
+
+    .logout-modal-btns {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+    }
+
+    .logout-modal-btns button {
+      padding: 12px; border-radius: 10px; font-size: 13px;
+      font-weight: 700; cursor: pointer; font-family: 'DM Sans', sans-serif;
+      text-transform: uppercase; letter-spacing: 0.5px; transition: 0.2s;
+    }
+
+    .modal-cancel-btn {
+      background: #f3f4f6; border: 1px solid #e5e7eb; color: var(--text-dark);
+    }
+
+    .modal-cancel-btn:hover { background: #e5e7eb; }
+
+    .modal-confirm-btn {
+      background: var(--danger); border: 1px solid var(--danger); color: white;
+    }
+
+    .modal-confirm-btn:hover { background: #a93226; }
+
+    @media (max-width: 500px) {
+      .login-card { padding: 30px 22px; }
+      .login-brand h1 { font-size: 1.6rem; }
+      .signup-row { grid-template-columns: 1fr; }
+      .brand-header h1 { font-size: 1.6rem; }
+      .panel { padding: 25px 20px; }
+      .steps-container { padding: 0 5px; }
+      .steps-container::before { left: 25px; right: 25px; }
+      .steps-container::after { left: 25px; }
+      .steps-container.at-step-2::after { width: calc(50% - 25px); }
+      .steps-container.at-step-3::after { width: calc(100% - 50px); }
+      .user-info { flex-direction: column; align-items: flex-start; }
     }
   </style>
 </head>
-
 <body>
 
-<div class="app-wrap">
+<!-- TRANSITION OVERLAY -->
+<div id="transitionOverlay">
+  <div class="trans-text">Preparing your dashboard...</div>
+</div>
 
-  <!-- HEADER -->
-  <div class="brand-header">
-    <div class="brand-badge">🏛️ Bethel Youth Capital</div>
-    <h1>BETHEL <span>SME</span> FUNDINGS</h1>
-    <p>Empowering Young Entrepreneurs</p>
-  </div>
+<!-- ALERT - moved to body level so it shows on ALL screens -->
+<div id="mainAlert" class="alert"></div>
 
-  <!-- STEP INDICATORS -->
-  <div class="steps-container" id="stepsContainer">
-    <div class="step active" id="step1">
-      <div class="step-circle">1</div>
-      <div class="step-label">Create Account</div>
-    </div>
-    <div class="step" id="step2">
-      <div class="step-circle">2</div>
-      <div class="step-label">Upload Documents</div>
-    </div>
-    <div class="step" id="step3">
-      <div class="step-circle">3</div>
-      <div class="step-label">Loan Application</div>
+<!-- LOGOUT MODAL -->
+<div id="logoutModal">
+  <div class="logout-modal-card">
+    <div class="modal-icon"><i class="fa-solid fa-right-from-bracket"></i></div>
+    <h3>Sign Out</h3>
+    <p>Are you sure you want to sign out of your account?</p>
+    <div class="logout-modal-btns">
+      <button class="modal-cancel-btn" onclick="closeLogoutModal()">Cancel</button>
+      <button class="modal-confirm-btn" onclick="confirmLogout()">Sign Out</button>
     </div>
   </div>
+</div>
 
-  <!-- ALERT -->
-  <div id="mainAlert" class="alert"></div>
+<!-- LOGIN SCREEN -->
+<div id="loginScreen">
+  <div class="grid-bg"></div>
 
-  <!-- STEP 1: AUTHENTICATION PANEL -->
-  <div id="authPanel" class="panel">
-    <div style="text-align: center; margin-bottom: 25px;">
-      <h2 style="color: var(--text-dark); font-family: 'Playfair Display', serif; font-size: 1.6rem; margin-bottom: 8px;">Sign In / Sign Up</h2>
-      <p style="color: var(--text-muted); font-size: 14px;">Create an account or sign in to proceed</p>
+  <div class="login-container">
+    <div class="login-brand">
+      <div class="login-logo-ring">
+        <div class="login-logo-inner">B</div>
+      </div>
+      <h1>BETHEL <span>SME</span></h1>
+      <div class="tagline">Youth Capital Fundings</div>
     </div>
 
-    <!-- SIGN UP FORM -->
-    <div id="signupForm">
-      <div class="form-group">
-        <label>First Name *</label>
-        <input type="text" id="signup_firstName" placeholder="Your first name" required>
+    <div class="login-card">
+      <!-- Sign In -->
+      <div id="signinView">
+        <h2>Welcome Back</h2>
+        <p class="subtitle">Sign in to access your application</p>
+        <div class="login-field">
+          <label>Email Address</label>
+          <div class="login-input-wrap">
+            <input type="email" class="login-input" id="signin_email" placeholder="your@email.com">
+            <i class="fa-regular fa-envelope"></i>
+          </div>
+        </div>
+        <div class="login-field">
+          <label>Password</label>
+          <div class="login-input-wrap">
+            <input type="password" class="login-input" id="signin_password" placeholder="Enter your password">
+            <i class="fa-solid fa-lock"></i>
+          </div>
+        </div>
+        <button class="login-btn" onclick="handleSignin()" id="signinBtn">
+          <i class="fa-solid fa-arrow-right-to-bracket" style="margin-right:8px;"></i>Sign In
+        </button>
+        <div class="login-toggle">
+          <span>New here? </span>
+          <button onclick="showSignupView()">Create an account</button>
+        </div>
       </div>
 
-      <div class="form-group">
-        <label>Last Name *</label>
-        <input type="text" id="signup_lastName" placeholder="Your last name" required>
+      <!-- Sign Up -->
+      <div id="signupView" class="hidden">
+        <h2>Create Account</h2>
+        <p class="subtitle">Register to start your application</p>
+        <div class="signup-row">
+          <div class="login-field">
+            <label>First Name</label>
+            <div class="login-input-wrap">
+              <input type="text" class="login-input" id="signup_firstName" placeholder="First name">
+              <i class="fa-regular fa-user"></i>
+            </div>
+          </div>
+          <div class="login-field">
+            <label>Last Name</label>
+            <div class="login-input-wrap">
+              <input type="text" class="login-input" id="signup_lastName" placeholder="Last name">
+              <i class="fa-regular fa-user"></i>
+            </div>
+          </div>
+        </div>
+        <div class="login-field">
+          <label>Email Address</label>
+          <div class="login-input-wrap">
+            <input type="email" class="login-input" id="signup_email" placeholder="your@email.com">
+            <i class="fa-regular fa-envelope"></i>
+          </div>
+        </div>
+        <div class="signup-row">
+          <div class="login-field">
+            <label>Phone Number (Botswana)</label>
+            <div class="login-input-wrap">
+              <span class="phone-prefix">+267</span>
+              <input type="tel" class="login-input-phone" id="signup_phone" placeholder="71 234 567" maxlength="11">
+              <i class="fa-solid fa-phone"></i>
+            </div>
+          </div>
+          <div class="login-field">
+            <label>Age (18-25)</label>
+            <div class="login-input-wrap">
+              <input type="number" class="login-input" id="signup_age" placeholder="20" min="18" max="25">
+              <i class="fa-regular fa-calendar"></i>
+            </div>
+          </div>
+        </div>
+        <div class="login-field">
+          <label>Password (min 8 characters)</label>
+          <div class="login-input-wrap">
+            <input type="password" class="login-input" id="signup_password" placeholder="Create a password">
+            <i class="fa-solid fa-lock"></i>
+          </div>
+        </div>
+        <div class="login-checkbox">
+          <input type="checkbox" id="signup_terms">
+          <label for="signup_terms">I agree to the Terms and Conditions of Bethel Youth Capital Fundings</label>
+        </div>
+        <button class="login-btn" onclick="handleSignup()" id="signupBtn" style="margin-top:10px;">
+          <i class="fa-solid fa-user-plus" style="margin-right:8px;"></i>Create Account
+        </button>
+        <div class="login-toggle">
+          <span>Already registered? </span>
+          <button onclick="showSigninView()">Sign in instead</button>
+        </div>
       </div>
-
-      <div class="form-group">
-        <label>Email Address *</label>
-        <input type="email" id="signup_email" placeholder="your@email.com" required>
-      </div>
-
-      <div class="form-group">
-        <label>Phone Number *</label>
-        <input type="tel" id="signup_phone" placeholder="+267 XXXXXXXX" required>
-      </div>
-
-      <div class="form-group">
-        <label>Age *</label>
-        <input type="number" id="signup_age" placeholder="18-25 years old" min="18" max="25" required>
-      </div>
-
-      <div class="form-group">
-        <label>Password (min 8 characters) *</label>
-        <input type="password" id="signup_password" placeholder="••••••••" required>
-      </div>
-
-      <div class="checkbox-group">
-        <input type="checkbox" id="signup_terms" required>
-        <label class="checkbox-label" for="signup_terms">I agree to the Terms and Conditions</label>
-      </div>
-
-      <button class="btn btn-primary" onclick="handleSignup()" id="signupBtn">Create Account</button>
-
-      <button class="btn btn-secondary" style="margin-top: 10px;" onclick="toggleAuthForm()">Already have an account? Sign In</button>
     </div>
 
-    <!-- SIGN IN FORM -->
-    <div id="signinForm" class="hidden">
+    <div class="login-footer">BETHEL YOUTH CAPITAL &middot; EMPOWERING YOUNG ENTREPRENEURS</div>
+  </div>
+</div>
+
+<!-- APP SCREEN -->
+<div id="appScreen">
+  <div class="app-wrap">
+    <div class="app-topbar">
+      <div class="app-topbar-brand">
+        <div class="mini-logo">B</div>
+        <span>BETHEL SME</span>
+      </div>
+      <button class="logout-btn" onclick="handleLogout()">
+        <i class="fa-solid fa-right-from-bracket"></i> Sign Out
+      </button>
+    </div>
+
+    <div class="brand-header">
+      <div class="brand-badge">Application Portal</div>
+      <h1>BETHEL <span>SME</span> FUNDINGS</h1>
+      <p>Empowering Young Entrepreneurs</p>
+    </div>
+
+    <div class="steps-container" id="stepsContainer">
+      <div class="step active" id="step1">
+        <div class="step-circle"><i class="fa-solid fa-check" style="font-size:14px;"></i></div>
+        <div class="step-label">Signed In</div>
+      </div>
+      <div class="step" id="step2">
+        <div class="step-circle">2</div>
+        <div class="step-label">Upload Documents</div>
+      </div>
+      <div class="step" id="step3">
+        <div class="step-circle">3</div>
+        <div class="step-label">Loan Application</div>
+      </div>
+    </div>
+
+    <!-- DOCUMENTS PANEL -->
+    <div id="documentsPanel" class="panel">
+      <div class="user-info">
+        <div class="user-info-text">Logged in as <strong id="userEmail"></strong></div>
+        <span class="user-info-status status-active">Active</span>
+      </div>
+      <h2>Upload Required Documents</h2>
+      <p class="panel-sub">All documents must be uploaded before you can apply for a loan.</p>
+
       <div class="form-group">
-        <label>Email Address *</label>
-        <input type="email" id="signin_email" placeholder="your@email.com" required>
+        <label><i class="fa-regular fa-id-card" style="margin-right:6px;color:var(--gold);"></i>National ID / Omang *</label>
+        <div class="upload-section" id="upload_file_national_id"
+             ondragover="dragOver(event,this)" ondragleave="dragLeave(this)"
+             ondrop="dropFile(event,'file_national_id','upload_file_national_id','name_file_national_id')"
+             onclick="document.getElementById('file_national_id').click()">
+          <div class="upload-icon"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+          <div class="upload-text">Click to upload or drag and drop</div>
+          <small class="upload-hint">PNG, JPG, PDF &mdash; Max 5MB</small>
+          <div class="file-name" id="name_file_national_id"></div>
+          <div class="upload-badge" id="badge_file_national_id"></div>
+        </div>
+        <input type="file" id="file_national_id" accept="image/*,.pdf" onchange="fileSelected('file_national_id','upload_file_national_id','name_file_national_id')">
       </div>
 
       <div class="form-group">
-        <label>Password *</label>
-        <input type="password" id="signin_password" placeholder="••••••••" required>
+        <label><i class="fa-solid fa-graduation-cap" style="margin-right:6px;color:var(--gold);"></i>Student ID / Proof of Registration *</label>
+        <div class="upload-section" id="upload_file_student_id"
+             ondragover="dragOver(event,this)" ondragleave="dragLeave(this)"
+             ondrop="dropFile(event,'file_student_id','upload_file_student_id','name_file_student_id')"
+             onclick="document.getElementById('file_student_id').click()">
+          <div class="upload-icon"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+          <div class="upload-text">Click to upload or drag and drop</div>
+          <small class="upload-hint">PNG, JPG, PDF &mdash; Max 5MB</small>
+          <div class="file-name" id="name_file_student_id"></div>
+          <div class="upload-badge" id="badge_file_student_id"></div>
+        </div>
+        <input type="file" id="file_student_id" accept="image/*,.pdf" onchange="fileSelected('file_student_id','upload_file_student_id','name_file_student_id')">
       </div>
 
-      <button class="btn btn-primary" onclick="handleSignin()" id="signinBtn">Sign In</button>
+      <div class="form-group">
+        <label><i class="fa-solid fa-chart-line" style="margin-right:6px;color:var(--gold);"></i>Business Plan / Proposal *</label>
+        <div class="upload-section" id="upload_file_business_plan"
+             ondragover="dragOver(event,this)" ondragleave="dragLeave(this)"
+             ondrop="dropFile(event,'file_business_plan','upload_file_business_plan','name_file_business_plan')"
+             onclick="document.getElementById('file_business_plan').click()">
+          <div class="upload-icon"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+          <div class="upload-text">Click to upload or drag and drop</div>
+          <small class="upload-hint">PDF, DOCX &mdash; Max 5MB</small>
+          <div class="file-name" id="name_file_business_plan"></div>
+          <div class="upload-badge" id="badge_file_business_plan"></div>
+        </div>
+        <input type="file" id="file_business_plan" accept=".pdf,.doc,.docx" onchange="fileSelected('file_business_plan','upload_file_business_plan','name_file_business_plan')">
+      </div>
 
-      <button class="btn btn-secondary" style="margin-top: 10px;" onclick="toggleAuthForm()">Don't have an account? Sign Up</button>
+      <button class="btn btn-primary" onclick="uploadDocuments()" id="uploadBtn">
+        <i class="fa-solid fa-upload" style="margin-right:8px;"></i>Upload All Documents
+      </button>
+    </div>
+
+    <!-- LOAN APPLICATION PANEL -->
+    <div id="applicationPanel" class="panel hidden">
+      <div class="user-info">
+        <div class="user-info-text">Applicant: <strong id="appName"></strong></div>
+        <span id="appDocStatus" class="user-info-status status-active">Docs Uploaded</span>
+      </div>
+      <h2>Loan Application</h2>
+      <p class="panel-sub">Complete the form below to submit your funding request.</p>
+
+      <div class="form-group">
+        <label>Are you a student? *</label>
+        <select class="form-input" id="app_student" onchange="toggleStudentField()">
+          <option value="">Select</option>
+          <option value="yes">Yes, I am a student</option>
+          <option value="no">No, I am not a student</option>
+        </select>
+      </div>
+
+      <div class="form-group hidden" id="institutionField">
+        <label>Name of Institution *</label>
+        <input type="text" class="form-input" id="app_institution" placeholder="Your school/university name">
+      </div>
+
+      <div class="form-group">
+        <label>Funding Purpose *</label>
+        <select class="form-input" id="app_purpose">
+          <option value="">Select Purpose</option>
+          <option value="Establishing">Establishing a New Business</option>
+          <option value="Scaling">Scaling / Expanding Existing Business</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Describe Your Business Plan *</label>
+        <textarea class="form-input" id="app_purposeText" placeholder="Explain how you will use the loan funds, your target market, and expected outcomes..."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Loan Amount Required (P500 - P2,000) *</label>
+        <input type="number" class="form-input" id="app_amount" placeholder="Enter amount in Pula" min="500" max="2000" step="100">
+      </div>
+
+      <div class="form-group">
+        <label>Estimated Monthly Revenue (Pula) *</label>
+        <input type="number" class="form-input" id="app_revenue" placeholder="Expected monthly business income" min="0" step="100">
+      </div>
+
+      <div class="form-group">
+        <label>Acknowledgements *</label>
+        <div class="checkbox-group">
+          <input type="checkbox" id="ck_agreement">
+          <label for="ck_agreement">I agree to the loan terms (10-20% interest, 8-month repayment period)</label>
+        </div>
+        <div class="checkbox-group">
+          <input type="checkbox" id="ck_accurate">
+          <label for="ck_accurate">I confirm all information provided is accurate and complete</label>
+        </div>
+      </div>
+
+      <button class="btn btn-primary" onclick="submitLoanApplication()" id="submitBtn">
+        <i class="fa-solid fa-paper-plane" style="margin-right:8px;"></i>Submit Loan Application
+      </button>
     </div>
   </div>
+</div>
 
-  <!-- STEP 2: DOCUMENTS PANEL -->
-  <div id="documentsPanel" class="panel hidden">
-    <div id="userGreeting" class="user-info">
-      <div class="user-info-text">Logged in as <strong id="userEmail"></strong></div>
-      <span class="user-info-status status-active">Active</span>
-    </div>
-
-    <div style="margin-bottom: 25px;">
-      <h2 style="color: var(--text-dark); font-family: 'Playfair Display', serif; font-size: 1.6rem; margin-bottom: 8px;">Upload Required Documents</h2>
-      <p style="color: var(--text-muted); font-size: 14px;">All documents must be verified before you can proceed to the loan application</p>
-    </div>
-
-    <!-- DOCUMENT 1: National ID -->
-    <div class="form-group">
-      <label>📋 National ID / Omang Document *</label>
-      <div class="upload-section" id="upload_file_national_id" 
-           ondragover="dragOver(event, this)" 
-           ondragleave="dragLeave(this)"
-           ondrop="dropFile(event, 'file_national_id', 'upload_file_national_id', 'name_file_national_id')"
-           onclick="document.getElementById('file_national_id').click()">
-        <div class="upload-icon">📄</div>
-        <div class="upload-text">Click to upload or drag and drop</div>
-        <small style="color: #999; display: block; margin-top: 5px;">PNG, JPG, PDF (Max 5MB)</small>
-        <div class="file-name" id="name_file_national_id"></div>
-        <div class="upload-badge" id="badge_file_national_id"></div>
-      </div>
-      <input type="file" id="file_national_id" accept="image/*,.pdf" onchange="fileSelected('file_national_id', 'upload_file_national_id', 'name_file_national_id')">
-    </div>
-
-    <!-- DOCUMENT 2: Student ID or Proof -->
-    <div class="form-group">
-      <label>🎓 Student ID / Proof of Registration *</label>
-      <div class="upload-section" id="upload_file_student_id" 
-           ondragover="dragOver(event, this)" 
-           ondragleave="dragLeave(this)"
-           ondrop="dropFile(event, 'file_student_id', 'upload_file_student_id', 'name_file_student_id')"
-           onclick="document.getElementById('file_student_id').click()">
-        <div class="upload-icon">📄</div>
-        <div class="upload-text">Click to upload or drag and drop</div>
-        <small style="color: #999; display: block; margin-top: 5px;">PNG, JPG, PDF (Max 5MB)</small>
-        <div class="file-name" id="name_file_student_id"></div>
-        <div class="upload-badge" id="badge_file_student_id"></div>
-      </div>
-      <input type="file" id="file_student_id" accept="image/*,.pdf" onchange="fileSelected('file_student_id', 'upload_file_student_id', 'name_file_student_id')">
-    </div>
-
-    <!-- DOCUMENT 3: Business Plan -->
-    <div class="form-group">
-      <label>📊 Business Plan / Business Proposal *</label>
-      <div class="upload-section" id="upload_file_business_plan" 
-           ondragover="dragOver(event, this)" 
-           ondragleave="dragLeave(this)"
-           ondrop="dropFile(event, 'file_business_plan', 'upload_file_business_plan', 'name_file_business_plan')"
-           onclick="document.getElementById('file_business_plan').click()">
-        <div class="upload-icon">📄</div>
-        <div class="upload-text">Click to upload or drag and drop</div>
-        <small style="color: #999; display: block; margin-top: 5px;">PDF, DOCX (Max 5MB)</small>
-        <div class="file-name" id="name_file_business_plan"></div>
-        <div class="upload-badge" id="badge_file_business_plan"></div>
-      </div>
-      <input type="file" id="file_business_plan" accept=".pdf,.doc,.docx" onchange="fileSelected('file_business_plan', 'upload_file_business_plan', 'name_file_business_plan')">
-    </div>
-
-    <button class="btn btn-primary" onclick="uploadDocuments()" id="uploadBtn">Upload Documents</button>
-    <button class="btn btn-secondary" style="margin-top: 10px;" onclick="handleLogout()">Sign Out</button>
+<!-- SUCCESS SCREEN -->
+<div id="successScreen">
+  <div class="success-card">
+    <div class="success-icon"><i class="fa-solid fa-check"></i></div>
+    <h2>Application Submitted</h2>
+    <p>Your loan application has been received successfully. Our team will review your documents and get back to you within 5 business days.</p>
+    <button class="btn btn-primary" onclick="handleLogout()">
+      <i class="fa-solid fa-arrow-right-from-bracket" style="margin-right:8px;"></i>Return to Login
+    </button>
   </div>
-
-  <!-- STEP 3: LOAN APPLICATION PANEL -->
-  <div id="applicationPanel" class="panel hidden">
-    <div style="margin-bottom: 25px;">
-      <h2 style="color: var(--text-dark); font-family: 'Playfair Display', serif; font-size: 1.6rem; margin-bottom: 8px;">Loan Application Form</h2>
-      <p style="color: var(--text-muted); font-size: 14px;">Your documents have been received. Complete your loan application below.</p>
-    </div>
-
-    <div class="user-info">
-      <div class="user-info-text">Applicant: <strong id="appName"></strong></div>
-      <span id="appDocStatus" class="user-info-status status-pending">Docs Received</span>
-    </div>
-
-    <div class="form-group">
-      <label>Are you a student? *</label>
-      <select id="app_student" onchange="toggleStudentField()">
-        <option value="">Select</option>
-        <option value="yes">Yes, I am a student</option>
-        <option value="no">No, I am not a student</option>
-      </select>
-    </div>
-
-    <div class="form-group hidden" id="institutionField">
-      <label>Name of Institution *</label>
-      <input type="text" id="app_institution" placeholder="Your school/university name">
-    </div>
-
-    <div class="form-group">
-      <label>Funding Purpose *</label>
-      <select id="app_purpose" onchange="updatePurposePlaceholder()">
-        <option value="">Select Purpose</option>
-        <option value="Establishing">Establishing a New Business</option>
-        <option value="Scaling">Scaling / Expanding Existing Business</option>
-      </select>
-    </div>
-
-    <div class="form-group">
-      <label>Explain Your Business Plan *</label>
-      <textarea id="app_purposeText" placeholder="Describe how you will use the loan..."></textarea>
-    </div>
-
-    <div class="form-group">
-      <label>Loan Amount Required (P500 - P2,000) *</label>
-      <input type="number" id="app_amount" placeholder="Enter amount" min="500" max="2000" step="100">
-    </div>
-
-    <div class="form-group">
-      <label>Estimated Monthly Revenue (Pula) *</label>
-      <input type="number" id="app_revenue" placeholder="Expected monthly business income" min="0" step="100">
-    </div>
-
-    <div class="form-group">
-      <label>Acknowledgements *</label>
-      <div class="checkbox-group">
-        <input type="checkbox" id="ck_agreement" required>
-        <label class="checkbox-label" for="ck_agreement">I agree to the loan terms and conditions (10-20% interest rate, 8-month repayment period)</label>
-      </div>
-      <div class="checkbox-group">
-        <input type="checkbox" id="ck_accurate" required>
-        <label class="checkbox-label" for="ck_accurate">I confirm all information provided is accurate and complete</label>
-      </div>
-    </div>
-
-    <button class="btn btn-primary" onclick="submitLoanApplication()" id="submitBtn">Submit Loan Application</button>
-    <button class="btn btn-secondary" style="margin-top: 10px;" onclick="handleLogout()">Sign Out</button>
-  </div>
-
 </div>
 
 <script>
-  // ============ CONFIGURATION ============
-  // Replace these with your actual Supabase credentials from https://supabase.com
-  const SUPABASE_URL = 'YOUR_SUPABASE_URL'; // e.g., https://xxxxx.supabase.co
-  const SUPABASE_KEY = 'YOUR_SUPABASE_ANON_KEY'; // Your public anon key
+  var SUPABASE_URL = 'https://rcgyzkevzqwxpfhwmfrq.supabase.co';
+  var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJjZ3l6a2V2enF3eHBmaHdtZnJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3MjAwOTksImV4cCI6MjA5NTI5NjA5OX0.9Kj2P9LAKPogir1F_A44RdvHpo4ohaVhqM-o_Uwm8wE';
 
-  let sb = null;
-  let currentUser = null;
-  let currentUserProfile = null;
+  var sb = null;
+  var currentUser = null;
+  var currentUserProfile = null;
 
-  // ============ INITIALIZATION ============
+  // Floating particles
+  function createParticles() {
+    var loginScreen = document.getElementById('loginScreen');
+    if (!loginScreen) return;
+    var old = loginScreen.querySelectorAll('.particle');
+    for (var i = 0; i < old.length; i++) old[i].remove();
+    for (var i = 0; i < 20; i++) {
+      var p = document.createElement('div');
+      p.className = 'particle';
+      p.style.left = Math.random() * 100 + '%';
+      var dur = 6 + Math.random() * 8;
+      var del = Math.random() * 10;
+      var size = 2 + Math.random() * 3;
+      p.style.width = size + 'px';
+      p.style.height = size + 'px';
+      p.style.animation = 'floatParticle ' + dur + 's ' + del + 's linear infinite';
+      loginScreen.appendChild(p);
+    }
+  }
+
+  // Init
   function initSupabase() {
-    if (SUPABASE_URL === 'YOUR_SUPABASE_URL') {
-      showAlert('⚠️ Setup required: Please update SUPABASE_URL and SUPABASE_KEY in the HTML file.\n\nSee SETUP.md for instructions.', 'info');
-      console.warn('Supabase credentials not configured');
+    if (!SUPABASE_URL || !SUPABASE_KEY) {
+      showAlert('Setup required: Update SUPABASE_URL and SUPABASE_KEY in the HTML file.', 'info');
       return;
     }
-    
     try {
-      sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-      console.log('✅ Supabase initialized');
+      sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+      // Listen for auth changes (e.g. session expiry)
+      sb.auth.onAuthStateChange(function(event, session) {
+        if (event === 'SIGNED_OUT' && currentUser) {
+          currentUser = null;
+          currentUserProfile = null;
+          showLoginScreen();
+        }
+      });
       checkAuthState();
     } catch (err) {
-      showAlert('❌ Database initialization error: ' + err.message, 'error');
-      console.error('Supabase init error:', err);
+      showAlert('Database initialization error: ' + err.message, 'error');
     }
   }
 
-  async function checkAuthState() {
-    try {
-      const { data: { session } } = await sb.auth.getSession();
-      if (session) {
+  function checkAuthState() {
+    if (!sb) return;
+    sb.auth.getSession().then(function(result) {
+      var session = result.data.session;
+      if (session && session.user) {
         currentUser = session.user;
-        await loadUserProfile();
-        await recordLoginEvent();
-        showApplicationFlow();
+        loadUserProfile().then(function() {
+          recordLoginEvent();
+          transitionToApp();
+        });
       } else {
-        showAuthPanel();
+        showLoginScreen();
       }
-    } catch (err) {
+    }).catch(function(err) {
       console.error('Auth check error:', err);
-      showAuthPanel();
-    }
+      showLoginScreen();
+    });
   }
 
-  // ============ USER PROFILE ============
-  async function loadUserProfile() {
-    if (!currentUser) return;
-    try {
-      const { data, error } = await sb
-        .from('users_profile')
-        .select('*')
-        .eq('id', currentUser.id)
-        .single();
-
-      if (!error && data) {
-        currentUserProfile = data;
-      }
-    } catch (err) {
-      console.error('Profile load error:', err);
-    }
+  function loadUserProfile() {
+    if (!currentUser || !sb) return Promise.resolve();
+    return sb.from('users_profile').select('*').eq('id', currentUser.id).single()
+      .then(function(result) {
+        if (result.error) {
+          console.warn('Profile load warning:', result.error.message);
+          return createProfileFallback();
+        }
+        if (result.data) {
+          currentUserProfile = result.data;
+        }
+      }).catch(function(err) {
+        console.error('Profile load error:', err);
+        return createProfileFallback();
+      });
   }
 
-  async function recordLoginEvent() {
-    if (!currentUser) return;
-    try {
-      await sb.from('login_history').insert([{
-        user_id: currentUser.id,
-        login_time: new Date().toISOString(),
-        ip_address: 'web-client',
-        status: 'active',
-        device_info: navigator.userAgent
-      }]);
-      console.log('✅ Login recorded');
-    } catch (err) {
+  // Fallback: create profile from user metadata if trigger didn't work
+  function createProfileFallback() {
+    if (!currentUser) return Promise.resolve();
+    var meta = currentUser.user_metadata || {};
+    var profileData = {
+      id: currentUser.id,
+      first_name: meta.first_name || '',
+      last_name: meta.last_name || '',
+      email: currentUser.email || '',
+      phone: meta.phone || '',
+      age: meta.age || null,
+      account_status: 'active',
+      documents_verified: false
+    };
+    return sb.from('users_profile').upsert(profileData).select().single()
+      .then(function(result) {
+        if (!result.error && result.data) {
+          currentUserProfile = result.data;
+        }
+      }).catch(function(err) {
+        console.error('Fallback profile error:', err);
+      });
+  }
+
+  function recordLoginEvent() {
+    if (!currentUser || !sb) return;
+    sb.from('login_history').insert([{
+      user_id: currentUser.id,
+      login_time: new Date().toISOString(),
+      ip_address: 'web-client',
+      status: 'active',
+      device_info: navigator.userAgent.substring(0, 200)
+    }]).then(function() {}, function(err) {
       console.error('Login recording error:', err);
-    }
+    });
   }
 
-  // ============ AUTHENTICATION ============
-  function toggleAuthForm() {
-    document.getElementById('signupForm').classList.toggle('hidden');
-    document.getElementById('signinForm').classList.toggle('hidden');
+  // Screen transitions
+  function showLoginScreen() {
+    document.getElementById('loginScreen').style.display = 'flex';
+    document.getElementById('appScreen').style.display = 'none';
+    document.getElementById('successScreen').style.display = 'none';
+    showSigninView();
+    createParticles();
   }
 
-  async function handleSignup() {
-    const firstName = document.getElementById('signup_firstName').value.trim();
-    const lastName = document.getElementById('signup_lastName').value.trim();
-    const email = document.getElementById('signup_email').value.trim();
-    const phone = document.getElementById('signup_phone').value.trim();
-    const age = parseInt(document.getElementById('signup_age').value);
-    const password = document.getElementById('signup_password').value;
-    const termsAccepted = document.getElementById('signup_terms').checked;
+  function transitionToApp() {
+    var overlay = document.getElementById('transitionOverlay');
+    overlay.classList.add('active');
+    setTimeout(function() {
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('successScreen').style.display = 'none';
+      document.getElementById('appScreen').style.display = 'block';
+      showApplicationFlow();
+      overlay.classList.remove('active');
+    }, 800);
+  }
+
+  function transitionToSuccess() {
+    var overlay = document.getElementById('transitionOverlay');
+    overlay.classList.add('active');
+    setTimeout(function() {
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('appScreen').style.display = 'none';
+      document.getElementById('successScreen').style.display = 'flex';
+      overlay.classList.remove('active');
+    }, 800);
+  }
+
+  // Login/Signup toggles
+  function showSignupView() {
+    document.getElementById('signinView').classList.add('hidden');
+    document.getElementById('signupView').classList.remove('hidden');
+  }
+
+  function showSigninView() {
+    document.getElementById('signupView').classList.add('hidden');
+    document.getElementById('signinView').classList.remove('hidden');
+  }
+
+  // Authentication
+  function handleSignup() {
+    var firstName = document.getElementById('signup_firstName').value.trim();
+    var lastName = document.getElementById('signup_lastName').value.trim();
+    var email = document.getElementById('signup_email').value.trim();
+    var phone = document.getElementById('signup_phone').value.trim();
+    var age = parseInt(document.getElementById('signup_age').value);
+    var password = document.getElementById('signup_password').value;
+    var termsAccepted = document.getElementById('signup_terms').checked;
 
     if (!firstName || !lastName || !email || !phone || !age || !password) {
-      showAlert('❌ Please fill in all fields', 'error');
-      return;
+      showAlert('Please fill in all fields.', 'error'); return;
     }
-
-    // Validation
-    const nameRegex = /^[a-zA-Z\s'-]+$/;
-    if (!nameRegex.test(firstName) || !nameRegex.test(lastName)) {
-      showAlert('❌ Names should only contain letters', 'error');
-      return;
+    if (!/^[a-zA-Z\s\'\-]+$/.test(firstName) || !/^[a-zA-Z\s\'\-]+$/.test(lastName)) {
+      showAlert('Names should only contain letters.', 'error'); return;
     }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      showAlert('❌ Please enter a valid email address', 'error');
-      return;
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      showAlert('Please enter a valid email address.', 'error'); return;
     }
-
-    const phoneRegex = /^(\+267|267)?[7][1-9]\d{6}$/;
-    if (!phoneRegex.test(phone.replace(/\s/g, ''))) {
-      showAlert('❌ Enter a valid Botswana number (e.g. 71234567 or +267 71234567)', 'error');
-      return;
+    var cleanPhone = phone.replace(/[\s\-\(\)]/g, '');
+    if (!/^(\+267|267)?[7][0-9]\d{6}$/.test(cleanPhone)) {
+      showAlert('Enter a valid Botswana number starting with 7 (e.g. 71 234 567)', 'error'); return;
     }
-
     if (isNaN(age) || age < 18 || age > 25) {
-      showAlert('❌ Age must be between 18 and 25 years old', 'error');
-      return;
+      showAlert('Age must be between 18 and 25.', 'error'); return;
     }
-
     if (password.length < 8) {
-      showAlert('❌ Password must be at least 8 characters', 'error');
-      return;
+      showAlert('Password must be at least 8 characters.', 'error'); return;
     }
-
     if (!termsAccepted) {
-      showAlert('❌ Please accept the terms and conditions', 'error');
-      return;
+      showAlert('Please accept the terms and conditions.', 'error'); return;
     }
 
-    const signupBtn = document.getElementById('signupBtn');
-    signupBtn.disabled = true;
-    signupBtn.innerHTML = '<span class="spinner"></span>Creating account...';
+    var btn = document.getElementById('signupBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span>Creating account...';
 
-    try {
-      const { data: authData, error: authError } = await sb.auth.signUp({
-        email: email,
-        password: password
-      });
-
-      if (authError) throw authError;
-
-      const userId = authData.user?.id;
-      if (!userId) throw new Error('No user ID returned');
-
-      const { error: profileError } = await sb
-        .from('users_profile')
-        .insert([{
-          id: userId,
+    // Pass user metadata so the database trigger can auto-create the profile
+    sb.auth.signUp({
+      email: email,
+      password: password,
+      options: {
+        data: {
           first_name: firstName,
           last_name: lastName,
-          email: email,
           phone: phone,
-          age: age,
-          account_status: 'active',
-          documents_verified: false,
-          created_at: new Date().toISOString()
-        }]);
+          age: age
+        }
+      }
+    }).then(function(result) {
+      if (result.error) throw result.error;
 
-      if (profileError) throw profileError;
+      var user = result.data.user;
+      if (!user) {
+        // This can happen if email confirmation is required
+        showAlert('Account created! Please check your email to verify, then sign in.', 'success');
+        setTimeout(function() {
+          showSigninView();
+          document.getElementById('signin_email').value = email;
+        }, 1500);
+        return;
+      }
 
-      showAlert('✅ Account created!\n\nPlease check your email to verify your account before signing in.', 'success');
-      
-      setTimeout(() => {
-        document.getElementById('signup_firstName').value = '';
-        document.getElementById('signup_lastName').value = '';
-        document.getElementById('signup_email').value = '';
-        document.getElementById('signup_phone').value = '';
-        document.getElementById('signup_age').value = '';
-        document.getElementById('signup_password').value = '';
-        document.getElementById('signup_terms').checked = false;
-        toggleAuthForm();
-      }, 3000);
-
-    } catch (err) {
-      showAlert('❌ Sign up error:\n' + err.message, 'error');
-    } finally {
-      signupBtn.disabled = false;
-      signupBtn.innerHTML = 'Create Account';
-    }
+      showAlert('Account created successfully! You can now sign in.', 'success');
+      setTimeout(function() {
+        showSigninView();
+        document.getElementById('signin_email').value = email;
+      }, 1500);
+    }).catch(function(err) {
+      var msg = err.message || 'Unknown error';
+      if (msg.indexOf('already registered') !== -1) {
+        msg = 'This email is already registered. Please sign in instead.';
+      }
+      showAlert('Sign up error: ' + msg, 'error');
+    }).then(function() {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fa-solid fa-user-plus" style="margin-right:8px;"></i>Create Account';
+    });
   }
 
-  async function handleSignin() {
-    const email = document.getElementById('signin_email').value.trim();
-    const password = document.getElementById('signin_password').value;
+  function handleSignin() {
+    var email = document.getElementById('signin_email').value.trim();
+    var password = document.getElementById('signin_password').value;
 
     if (!email || !password) {
-      showAlert('❌ Please enter email and password', 'error');
-      return;
+      showAlert('Please enter your email and password.', 'error'); return;
     }
 
-    const signinBtn = document.getElementById('signinBtn');
-    signinBtn.disabled = true;
-    signinBtn.innerHTML = '<span class="spinner"></span>Signing in...';
+    var btn = document.getElementById('signinBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span>Signing in...';
 
-    try {
-      const { data, error } = await sb.auth.signInWithPassword({
-        email: email,
-        password: password
+    sb.auth.signInWithPassword({ email: email, password: password }).then(function(result) {
+      if (result.error) throw result.error;
+      currentUser = result.data.user;
+      return loadUserProfile().then(function() {
+        recordLoginEvent();
+        transitionToApp();
       });
-
-      if (error) throw error;
-
-      currentUser = data.user;
-      await loadUserProfile();
-      await recordLoginEvent();
-      
-      showAlert('✅ Welcome! Redirecting...', 'success');
-      setTimeout(() => {
-        showApplicationFlow();
-      }, 1000);
-
-    } catch (err) {
-      showAlert('❌ Sign in error:\n' + err.message, 'error');
-    } finally {
-      signinBtn.disabled = false;
-      signinBtn.innerHTML = 'Sign In';
-    }
-  }
-
-  async function handleLogout() {
-    if (confirm('Sign out?')) {
-      try {
-        await sb.auth.signOut();
-        currentUser = null;
-        currentUserProfile = null;
-        showAuthPanel();
-        showAlert('✅ Signed out', 'success');
-      } catch (err) {
-        showAlert('❌ Logout error: ' + err.message, 'error');
+    }).catch(function(err) {
+      var msg = err.message || 'Unknown error';
+      if (msg.indexOf('Invalid login') !== -1 || msg.indexOf('invalid') !== -1) {
+        msg = 'Invalid email or password. Please check your credentials.';
+      } else if (msg.indexOf('Email not confirmed') !== -1) {
+        msg = 'Please verify your email address before signing in.';
       }
+      showAlert('Sign in error: ' + msg, 'error');
+    }).then(function() {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fa-solid fa-arrow-right-to-bracket" style="margin-right:8px;"></i>Sign In';
+    });
+  }
+
+  function handleLogout() {
+    openLogoutModal();
+  }
+
+  function openLogoutModal() {
+    document.getElementById('logoutModal').classList.add('show');
+  }
+
+  function closeLogoutModal() {
+    document.getElementById('logoutModal').classList.remove('show');
+  }
+
+  function confirmLogout() {
+    closeLogoutModal();
+    if (sb) {
+     sb.auth.signOut().then(function() {}, function() {});    
     }
+    currentUser = null;
+    currentUserProfile = null;
+
+    var allInputs = document.querySelectorAll('.login-input, .login-input-phone, .form-input');
+    for (var i = 0; i < allInputs.length; i++) allInputs[i].value = '';
+    var allChecks = document.querySelectorAll('input[type="checkbox"]');
+    for (var i = 0; i < allChecks.length; i++) allChecks[i].checked = false;
+    var allNames = document.querySelectorAll('.file-name');
+    for (var i = 0; i < allNames.length; i++) {
+      allNames[i].classList.remove('show');
+      allNames[i].textContent = '';
+    }
+    var allBadges = document.querySelectorAll('.upload-badge');
+    for (var i = 0; i < allBadges.length; i++) allBadges[i].classList.remove('show');
+    var allFiles = document.querySelectorAll('input[type="file"]');
+    for (var i = 0; i < allFiles.length; i++) allFiles[i].value = '';
+    var allZones = document.querySelectorAll('.upload-section');
+    for (var i = 0; i < allZones.length; i++) {
+      allZones[i].style.borderColor = '';
+      allZones[i].style.background = '';
+    }
+    document.getElementById('institutionField').classList.add('hidden');
+
+    var overlay = document.getElementById('transitionOverlay');
+    overlay.classList.add('active');
+    setTimeout(function() {
+      document.getElementById('appScreen').style.display = 'none';
+      document.getElementById('successScreen').style.display = 'none';
+      document.getElementById('loginScreen').style.display = 'flex';
+      showSigninView();
+      overlay.classList.remove('active');
+    }, 600);
   }
 
-  // ============ UI FLOW ============
-  function showAuthPanel() {
-    document.getElementById('authPanel').classList.remove('hidden');
-    document.getElementById('documentsPanel').classList.add('hidden');
-    document.getElementById('applicationPanel').classList.add('hidden');
-    updateStepIndicators(1);
-  }
-
+  // App flow
   function showApplicationFlow() {
-    const documentsVerified = currentUserProfile?.documents_verified || false;
-    
-    document.getElementById('authPanel').classList.add('hidden');
-    document.getElementById('documentsPanel').classList.remove('hidden');
+    var docsVerified = currentUserProfile && currentUserProfile.documents_verified;
     document.getElementById('userEmail').textContent = currentUser.email;
 
-    if (documentsVerified) {
+    if (docsVerified) {
       document.getElementById('documentsPanel').classList.add('hidden');
       document.getElementById('applicationPanel').classList.remove('hidden');
-      document.getElementById('appName').textContent = `${currentUserProfile.first_name} ${currentUserProfile.last_name}`;
+      document.getElementById('appName').textContent =
+        (currentUserProfile.first_name || '') + ' ' + (currentUserProfile.last_name || '');
       updateStepIndicators(3);
     } else {
+      document.getElementById('documentsPanel').classList.remove('hidden');
+      document.getElementById('applicationPanel').classList.add('hidden');
       updateStepIndicators(2);
     }
   }
 
   function updateStepIndicators(activeStep) {
-    for (let i = 1; i <= 3; i++) {
-      const step = document.getElementById(`step${i}`);
+    var container = document.getElementById('stepsContainer');
+    container.className = 'steps-container at-step-' + activeStep;
+
+    for (var i = 1; i <= 3; i++) {
+      var step = document.getElementById('step' + i);
+      var circle = step.querySelector('.step-circle');
       step.classList.remove('active', 'completed');
       if (i < activeStep) {
         step.classList.add('completed');
+        circle.innerHTML = '<i class="fa-solid fa-check" style="font-size:14px;"></i>';
       } else if (i === activeStep) {
         step.classList.add('active');
+        circle.innerHTML = i === 1
+          ? '<i class="fa-solid fa-check" style="font-size:14px;"></i>'
+          : String(i);
+      } else {
+        circle.textContent = String(i);
       }
     }
   }
 
-  // ============ FILE UPLOAD ============
+  // File upload
   function fileSelected(inputId, zoneId, nameId) {
-    const file = document.getElementById(inputId).files[0];
+    var file = document.getElementById(inputId).files[0];
     if (!file) return;
-
     if (file.size > 5 * 1024 * 1024) {
-      showAlert('❌ File too large. Max 5MB.', 'error');
+      showAlert('File too large. Maximum size is 5MB.', 'error');
       document.getElementById(inputId).value = '';
       return;
     }
-
-    const zone = document.getElementById(zoneId);
-    zone.classList.add('uploaded');
-    const nameEl = document.getElementById(nameId);
-    nameEl.textContent = '✓ ' + file.name;
+    var zone = document.getElementById(zoneId);
+    zone.style.borderColor = 'var(--success)';
+    zone.style.background = 'rgba(26,122,74,0.04)';
+    var nameEl = document.getElementById(nameId);
+    nameEl.innerHTML = '<i class="fa-solid fa-circle-check" style="margin-right:6px;"></i>' + file.name;
     nameEl.classList.add('show');
 
-    const badge = document.getElementById('badge_' + inputId);
+    var badge = document.getElementById('badge_' + inputId);
     if (badge) {
-      badge.textContent = '⏳ Ready';
-      badge.classList.add('show', 'pending');
+      badge.textContent = 'Ready to upload';
+      badge.className = 'upload-badge show pending';
     }
   }
 
@@ -999,163 +1463,170 @@
   function dropFile(e, inputId, zoneId, nameId) {
     e.preventDefault();
     e.stopPropagation();
-    const zone = document.getElementById(zoneId);
-    zone.classList.remove('dragover');
-
-    const files = e.dataTransfer.files;
-    if (files.length) {
-      const input = document.getElementById(inputId);
-      const dt = new DataTransfer();
-      dt.items.add(files[0]);
-      input.files = dt.files;
+    document.getElementById(zoneId).classList.remove('dragover');
+    if (e.dataTransfer.files.length) {
+      var dt = new DataTransfer();
+      dt.items.add(e.dataTransfer.files[0]);
+      document.getElementById(inputId).files = dt.files;
       fileSelected(inputId, zoneId, nameId);
     }
   }
 
-  async function uploadDocuments() {
-    const natFile = document.getElementById('file_national_id').files[0];
-    const stuFile = document.getElementById('file_student_id').files[0];
-    const bizFile = document.getElementById('file_business_plan').files[0];
+  function uploadDocuments() {
+    var natFile = document.getElementById('file_national_id').files[0];
+    var stuFile = document.getElementById('file_student_id').files[0];
+    var bizFile = document.getElementById('file_business_plan').files[0];
 
     if (!natFile || !stuFile || !bizFile) {
-      showAlert('❌ Please upload all three documents', 'error');
+      showAlert('Please upload all three documents before proceeding.', 'error');
       return;
     }
 
-    const uploadBtn = document.getElementById('uploadBtn');
-    uploadBtn.disabled = true;
-    uploadBtn.innerHTML = '<span class="spinner"></span>Uploading...';
+    var btn = document.getElementById('uploadBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span>Uploading documents...';
 
-    try {
-      // Upload files to Supabase storage
-      const nationalIdPath = `${currentUser.id}/national_id_${Date.now()}`;
-      const studentIdPath = `${currentUser.id}/student_id_${Date.now()}`;
-      const businessPlanPath = `${currentUser.id}/business_plan_${Date.now()}`;
+    var ts = Date.now();
+    var natExt = natFile.name.split('.').pop() || 'pdf';
+    var stuExt = stuFile.name.split('.').pop() || 'pdf';
+    var bizExt = bizFile.name.split('.').pop() || 'pdf';
 
-      const { error: err1 } = await sb.storage.from('documents').upload(nationalIdPath, natFile);
-      const { error: err2 } = await sb.storage.from('documents').upload(studentIdPath, stuFile);
-      const { error: err3 } = await sb.storage.from('documents').upload(businessPlanPath, bizFile);
+    var natPath = currentUser.id + '/national_id_' + ts + '.' + natExt;
+    var stuPath = currentUser.id + '/student_id_' + ts + '.' + stuExt;
+    var bizPath = currentUser.id + '/business_plan_' + ts + '.' + bizExt;
 
-      if (err1 || err2 || err3) throw new Error('File upload failed');
-
-      // Update user profile
-      const { error: updateError } = await sb
-        .from('users_profile')
-        .update({ 
-          documents_verified: true,
-          national_id_path: nationalIdPath,
-          student_id_path: studentIdPath,
-          business_plan_path: businessPlanPath,
-          documents_uploaded_at: new Date().toISOString()
-        })
-        .eq('id', currentUser.id);
-
-      if (updateError) throw updateError;
-
+    Promise.all([
+      sb.storage.from('documents').upload(natPath, natFile, { cacheControl: '3600', upsert: false }),
+      sb.storage.from('documents').upload(stuPath, stuFile, { cacheControl: '3600', upsert: false }),
+      sb.storage.from('documents').upload(bizPath, bizFile, { cacheControl: '3600', upsert: false })
+    ]).then(function(results) {
+      for (var i = 0; i < results.length; i++) {
+        if (results[i].error) throw results[i].error;
+      }
+      return sb.from('users_profile').update({
+        documents_verified: true,
+        national_id_path: natPath,
+        student_id_path: stuPath,
+        business_plan_path: bizPath,
+        documents_uploaded_at: new Date().toISOString()
+      }).eq('id', currentUser.id);
+    }).then(function(result) {
+      if (result.error) throw result.error;
       currentUserProfile.documents_verified = true;
-      showAlert('✅ Documents uploaded successfully!', 'success');
-      
-      setTimeout(() => {
-        showApplicationFlow();
-      }, 1500);
+      showAlert('All documents uploaded successfully!', 'success');
 
-    } catch (err) {
-      showAlert('❌ Upload error:\n' + err.message, 'error');
+      setTimeout(function() {
+        var appPanel = document.getElementById('applicationPanel');
+        appPanel.style.animation = 'none';
+        appPanel.offsetHeight;
+        appPanel.style.animation = 'slideUp 0.5s ease both';
+
+        document.getElementById('documentsPanel').classList.add('hidden');
+        appPanel.classList.remove('hidden');
+        document.getElementById('appName').textContent =
+          (currentUserProfile.first_name || '') + ' ' + (currentUserProfile.last_name || '');
+        updateStepIndicators(3);
+      }, 1200);
+    }).catch(function(err) {
+      var msg = err.message || 'Unknown error';
+      if (msg.indexOf('already exists') !== -1) {
+        msg = 'A file with this name already exists. Please rename and try again.';
+      } else if (msg.indexOf('bucket') !== -1) {
+        msg = 'Storage not configured. Make sure the "documents" bucket exists in Supabase.';
+      } else if (msg.indexOf('policy') !== -1 || msg.indexOf('permission') !== -1 || msg.indexOf('not allowed') !== -1) {
+        msg = 'Upload permission denied. Check that storage policies are set up in Supabase.';
+      }
+      showAlert('Upload error: ' + msg, 'error');
       console.error('Upload error:', err);
-    } finally {
-      uploadBtn.disabled = false;
-      uploadBtn.innerHTML = 'Upload Documents';
-    }
+    }).then(function() {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fa-solid fa-upload" style="margin-right:8px;"></i>Upload All Documents';
+    });
   }
 
-  // ============ LOAN APPLICATION ============
+  // Loan application
   function toggleStudentField() {
-    const isStudent = document.getElementById('app_student').value === 'yes';
-    document.getElementById('institutionField').classList.toggle('hidden', !isStudent);
+    var show = document.getElementById('app_student').value === 'yes';
+    document.getElementById('institutionField').classList.toggle('hidden', !show);
   }
 
-  function updatePurposePlaceholder() {
-    // Additional UI updates if needed
-  }
-
-  async function submitLoanApplication() {
-    const student = document.getElementById('app_student').value;
-    const institution = document.getElementById('app_institution').value.trim();
-    const purpose = document.getElementById('app_purpose').value;
-    const purposeText = document.getElementById('app_purposeText').value.trim();
-    const amount = parseInt(document.getElementById('app_amount').value);
-    const revenue = parseInt(document.getElementById('app_revenue').value);
-    const agreedTerms = document.getElementById('ck_agreement').checked;
-    const confirmedAccuracy = document.getElementById('ck_accurate').checked;
+  function submitLoanApplication() {
+    var student = document.getElementById('app_student').value;
+    var institution = document.getElementById('app_institution').value.trim();
+    var purpose = document.getElementById('app_purpose').value;
+    var purposeText = document.getElementById('app_purposeText').value.trim();
+    var amount = parseInt(document.getElementById('app_amount').value);
+    var revenue = parseInt(document.getElementById('app_revenue').value);
+    var agreedTerms = document.getElementById('ck_agreement').checked;
+    var confirmedAccuracy = document.getElementById('ck_accurate').checked;
 
     if (!student || !purpose || !purposeText || !amount || !revenue) {
-      showAlert('❌ Please fill in all required fields', 'error');
-      return;
+      showAlert('Please fill in all required fields.', 'error'); return;
     }
-
     if (student === 'yes' && !institution) {
-      showAlert('❌ Please enter your institution name', 'error');
-      return;
+      showAlert('Please enter your institution name.', 'error'); return;
     }
-
-    if (amount < 500 || amount > 2000) {
-      showAlert('❌ Loan amount must be between P500 and P2000', 'error');
-      return;
+    if (isNaN(amount) || amount < 500 || amount > 2000) {
+      showAlert('Loan amount must be between P500 and P2,000.', 'error'); return;
     }
-
     if (!agreedTerms || !confirmedAccuracy) {
-      showAlert('❌ Please accept all acknowledgements', 'error');
-      return;
+      showAlert('Please accept all acknowledgements to proceed.', 'error'); return;
     }
 
-    const submitBtn = document.getElementById('submitBtn');
-    submitBtn.disabled = true;
-    submitBtn.innerHTML = '<span class="spinner"></span>Submitting...';
+    var btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span>Submitting application...';
 
-    try {
-      const { error } = await sb
-        .from('loan_applications')
-        .insert([{
-          user_id: currentUser.id,
-          is_student: student === 'yes',
-          institution: institution || null,
-          purpose: purpose,
-          purpose_description: purposeText,
-          loan_amount: amount,
-          monthly_revenue: revenue,
-          status: 'pending',
-          created_at: new Date().toISOString()
-        }]);
-
-      if (error) throw error;
-
-      showAlert('✅ Loan application submitted successfully!\n\nYou will be contacted within 5 business days.', 'success');
-      
-      setTimeout(() => {
-        handleLogout();
-      }, 2000);
-
-    } catch (err) {
-      showAlert('❌ Submission error:\n' + err.message, 'error');
+    sb.from('loan_applications').insert([{
+      user_id: currentUser.id,
+      is_student: student === 'yes',
+      institution: institution || null,
+      purpose: purpose,
+      purpose_description: purposeText,
+      loan_amount: amount,
+      monthly_revenue: revenue,
+      status: 'pending',
+      created_at: new Date().toISOString()
+    }]).then(function(result) {
+      if (result.error) throw result.error;
+      transitionToSuccess();
+    }).catch(function(err) {
+      var msg = err.message || 'Unknown error';
+      if (msg.indexOf('policy') !== -1 || msg.indexOf('permission') !== -1) {
+        msg = 'Permission denied. Make sure RLS policies are configured in Supabase.';
+      }
+      showAlert('Submission error: ' + msg, 'error');
       console.error('Submission error:', err);
-    } finally {
-      submitBtn.disabled = false;
-      submitBtn.innerHTML = 'Submit Loan Application';
+    }).then(function() {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fa-solid fa-paper-plane" style="margin-right:8px;"></i>Submit Loan Application';
+    });
+  }
+
+  // Alert utility
+  function showAlert(message, type) {
+    var el = document.getElementById('mainAlert');
+    el.textContent = message;
+    el.className = 'alert-' + (type || 'info') + ' show';
+    clearTimeout(el._timer);
+    el._timer = setTimeout(function() { el.classList.remove('show'); }, 5000);
+  }
+
+  // Enter key support on login
+  document.addEventListener('keydown', function(e) {
+    if (e.key !== 'Enter') return;
+    var loginScreen = document.getElementById('loginScreen');
+    if (loginScreen.style.display === 'none') return;
+    if (e.target.tagName === 'TEXTAREA') return;
+    var signinView = document.getElementById('signinView');
+    if (!signinView.classList.contains('hidden')) {
+      handleSignin();
+    } else {
+      handleSignup();
     }
-  }
+  });
 
-  // ============ UTILITIES ============
-  function showAlert(message, type = 'info') {
-    const alert = document.getElementById('mainAlert');
-    alert.textContent = message;
-    alert.className = `alert show alert-${type}`;
-    
-    setTimeout(() => {
-      alert.classList.remove('show');
-    }, 5000);
-  }
-
-  // Initialize on page load
+  // Boot
   window.addEventListener('load', initSupabase);
 </script>
 
