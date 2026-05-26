@@ -5,970 +5,1404 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BETHEL SME FUNDINGS</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: Arial, Helvetica, sans-serif;
+    :root {
+      --navy: #041C32;
+      --mid: #06283D;
+      --deep: #0B2447;
+      --gold: #D4AF37;
+      --gold-light: #FFD700;
+      --cream: #F9F5EC;
+      --white: #ffffff;
+      --danger: #c0392b;
+      --success: #1a7a4a;
+      --text-dark: #1a1a2e;
+      --text-muted: #6b7280;
+      --border: #e2ddd5;
     }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
-      background: linear-gradient(135deg, #041C32, #06283D, #0B2447);
+      font-family: 'DM Sans', sans-serif;
+      background: var(--navy);
       min-height: 100vh;
       display: flex;
-      justify-content: center;
       align-items: center;
-      padding: 30px;
-    }
-
-    .container {
-      width: 100%;
-      max-width: 850px;
-      background: white;
-      border-radius: 22px;
-      padding: 35px;
-      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+      justify-content: center;
+      padding: 20px;
       position: relative;
+      overflow-x: hidden;
     }
 
-    .title {
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: 
+        radial-gradient(ellipse 60% 50% at 20% 20%, rgba(212,175,55,0.07) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 60% at 80% 80%, rgba(6,40,61,0.8) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    /* GOLD CORNER ACCENT */
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0; right: 0;
+      width: 300px; height: 300px;
+      background: radial-gradient(circle at top right, rgba(212,175,55,0.12), transparent 70%);
+      pointer-events: none;
+    }
+
+    .app-wrap {
+      width: 100%;
+      max-width: 560px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* HEADER */
+    .brand-header {
       text-align: center;
-      margin-bottom: 25px;
+      margin-bottom: 32px;
+      animation: fadeDown 0.6s ease both;
     }
 
-    .title h1 {
-      color: #0B2447;
-      font-size: 2.6rem;
-      margin-bottom: 5px;
+    .brand-badge {
+      display: inline-block;
+      background: linear-gradient(135deg, var(--gold), var(--gold-light));
+      color: var(--navy);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 700;
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      padding: 6px 18px;
+      border-radius: 30px;
+      margin-bottom: 14px;
     }
 
-    .title p {
-      color: #666;
-      font-size: 15px;
+    .brand-header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.4rem;
+      color: var(--white);
+      line-height: 1.1;
+      font-weight: 900;
+      letter-spacing: -0.5px;
     }
 
-    .logout-btn {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      padding: 10px 15px;
-      background: #dc3545;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: bold;
-      display: none;
+    .brand-header h1 span {
+      color: var(--gold-light);
     }
 
-    .logout-btn.show {
-      display: block;
+    .brand-header p {
+      color: rgba(255,255,255,0.5);
+      font-size: 13px;
+      margin-top: 6px;
+      letter-spacing: 0.5px;
     }
 
-    .nav-tabs {
+    /* CARD */
+    .card {
+      background: var(--white);
+      border-radius: 24px;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(212,175,55,0.15);
+      overflow: hidden;
+      animation: fadeUp 0.6s ease 0.1s both;
+    }
+
+    /* STEP INDICATOR */
+    .step-bar {
+      background: var(--deep);
+      padding: 16px 28px;
       display: flex;
-      gap: 10px;
-      margin-bottom: 25px;
-      border-bottom: 2px solid #ddd;
-      display: none;
+      align-items: center;
+      gap: 8px;
     }
 
-    .nav-tabs.show {
+    .step-item {
       display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: 1;
     }
 
-    .nav-btn {
-      padding: 12px 20px;
-      border: none;
-      background: none;
-      cursor: pointer;
-      font-size: 16px;
-      font-weight: bold;
-      color: #666;
-      border-bottom: 3px solid transparent;
-      transition: 0.3s;
+    .step-dot {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.1);
+      border: 2px solid rgba(255,255,255,0.2);
+      color: rgba(255,255,255,0.4);
+      font-size: 12px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: all 0.3s;
     }
 
-    .nav-btn.active {
-      color: #0B2447;
-      border-bottom-color: #FFD700;
+    .step-dot.active {
+      background: var(--gold);
+      border-color: var(--gold);
+      color: var(--navy);
     }
 
-    .tab-content {
+    .step-dot.done {
+      background: var(--success);
+      border-color: var(--success);
+      color: white;
+    }
+
+    .step-label {
+      font-size: 11px;
+      color: rgba(255,255,255,0.4);
+      font-weight: 500;
+      letter-spacing: 0.3px;
+      transition: color 0.3s;
+    }
+
+    .step-label.active { color: var(--gold-light); }
+    .step-label.done { color: rgba(255,255,255,0.7); }
+
+    .step-line {
+      flex: 1;
+      height: 1px;
+      background: rgba(255,255,255,0.1);
+      max-width: 30px;
+    }
+
+    /* PANEL */
+    .panel {
+      padding: 32px 36px;
       display: none;
     }
 
-    .tab-content.active {
-      display: block;
+    .panel.active { display: block; }
+
+    .panel-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.6rem;
+      color: var(--deep);
+      margin-bottom: 6px;
+      font-weight: 700;
     }
 
-    .loan-box {
-      background: #0B2447;
-      color: white;
-      padding: 22px;
-      border-radius: 16px;
-      text-align: center;
-      margin-bottom: 25px;
+    .panel-subtitle {
+      color: var(--text-muted);
+      font-size: 14px;
+      margin-bottom: 28px;
+      line-height: 1.5;
     }
 
-    .loan-box h2 {
-      color: #FFD700;
-      margin-bottom: 8px;
-    }
-
-    .loan-box p {
-      margin: 6px 0;
-    }
-
-    .section-title {
-      margin-top: 25px;
-      margin-bottom: 15px;
-      color: #0B2447;
-      font-size: 22px;
-      font-weight: bold;
-    }
-
-    .auth-title {
-      text-align: center;
-      margin-top: 0;
-      margin-bottom: 25px;
+    /* FORM ELEMENTS */
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
     }
 
     .form-group {
       margin-bottom: 20px;
     }
 
+    .form-group.full { grid-column: 1 / -1; }
+
     label {
       display: block;
-      margin-bottom: 8px;
-      font-weight: bold;
-      color: #0B2447;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--deep);
+      margin-bottom: 7px;
+      letter-spacing: 0.2px;
     }
 
-    input,
+    label .req { color: var(--gold); margin-left: 3px; }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="number"],
+    input[type="tel"],
     select,
     textarea {
       width: 100%;
-      padding: 14px;
-      border: 2px solid #ddd;
+      padding: 13px 16px;
+      border: 2px solid var(--border);
       border-radius: 12px;
-      font-size: 16px;
-      transition: 0.3s;
-    }
-
-    input[type="file"] {
-      padding: 8px;
-    }
-
-    input:focus,
-    select:focus,
-    textarea:focus {
-      border-color: #FFD700;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      color: var(--text-dark);
+      background: var(--cream);
+      transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
       outline: none;
     }
 
-    textarea {
-      resize: none;
-      height: 120px;
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--gold);
+      background: white;
+      box-shadow: 0 0 0 4px rgba(212,175,55,0.12);
     }
 
-    small {
+    textarea { resize: vertical; min-height: 110px; }
+
+    select { cursor: pointer; }
+
+    /* FILE UPLOAD */
+    .file-upload-area {
+      border: 2px dashed var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      background: var(--cream);
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+    }
+
+    .file-upload-area:hover, .file-upload-area.dragover {
+      border-color: var(--gold);
+      background: #fdf9ee;
+    }
+
+    .file-upload-area.uploaded {
+      border-color: var(--success);
+      background: #f0faf5;
+    }
+
+    .file-upload-area input[type="file"] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+      width: 100%;
+      height: 100%;
+    }
+
+    .upload-icon {
+      font-size: 28px;
+      margin-bottom: 8px;
+    }
+
+    .upload-text {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .upload-text strong {
       display: block;
-      margin-top: 5px;
-      color: #999;
-      font-size: 12px;
+      color: var(--deep);
+      font-size: 14px;
+      margin-bottom: 3px;
     }
 
-    .checklist {
-      background: #f8f8f8;
-      padding: 22px;
+    .file-name {
+      font-size: 12px;
+      color: var(--success);
+      font-weight: 600;
+      margin-top: 6px;
+      display: none;
+    }
+
+    .file-name.show { display: block; }
+
+    /* DOCS STATUS */
+    .doc-verify-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 20px;
+      margin-top: 6px;
+    }
+
+    .doc-verify-badge.pending {
+      background: #fff8e1;
+      color: #b8860b;
+    }
+
+    .doc-verify-badge.verified {
+      background: #e8f5e9;
+      color: #1a7a4a;
+    }
+
+    /* LOAN INFO BOX */
+    .loan-info-box {
+      background: linear-gradient(135deg, var(--deep), var(--mid));
+      color: white;
       border-radius: 16px;
-      margin-top: 10px;
+      padding: 20px 24px;
+      margin-bottom: 28px;
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
+
+    .loan-info-icon {
+      font-size: 36px;
+      flex-shrink: 0;
+    }
+
+    .loan-info-box h3 {
+      font-family: 'Playfair Display', serif;
+      color: var(--gold-light);
+      font-size: 1.1rem;
+      margin-bottom: 4px;
+    }
+
+    .loan-info-box p {
+      font-size: 13px;
+      opacity: 0.8;
+      line-height: 1.5;
+    }
+
+    /* CHECKLIST */
+    .checklist {
+      background: var(--cream);
+      border-radius: 14px;
+      padding: 20px;
+      margin-bottom: 20px;
     }
 
     .check-item {
       display: flex;
       align-items: flex-start;
       gap: 12px;
-      margin-bottom: 18px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
     }
+
+    .check-item:last-child { border-bottom: none; }
 
     .check-item input[type="checkbox"] {
-      width: auto;
-      transform: scale(1.2);
-      margin-top: 4px;
+      width: 18px;
+      height: 18px;
+      margin-top: 2px;
+      accent-color: var(--gold);
+      flex-shrink: 0;
+      cursor: pointer;
     }
 
-    .btn {
+    .check-item label {
+      font-size: 13.5px;
+      font-weight: 400;
+      color: var(--text-dark);
+      line-height: 1.5;
+      margin-bottom: 0;
+      cursor: pointer;
+    }
+
+    .check-item label strong {
+      display: block;
+      font-weight: 700;
+      color: var(--deep);
+      margin-bottom: 2px;
+    }
+
+    /* BUTTONS */
+    .btn-primary {
       width: 100%;
-      padding: 18px;
+      padding: 16px;
+      background: linear-gradient(135deg, var(--gold), var(--gold-light));
+      color: var(--navy);
       border: none;
       border-radius: 14px;
-      background: linear-gradient(135deg, #FFD700, #D4AF37);
-      color: #111;
-      font-size: 18px;
-      font-weight: bold;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
       cursor: pointer;
-      transition: 0.3s;
-      margin-top: 25px;
+      transition: all 0.25s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 8px;
     }
 
-    .btn:hover {
-      transform: scale(1.02);
+    .btn-primary:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(212,175,55,0.4);
     }
 
-    .btn:disabled {
+    .btn-primary:disabled {
       opacity: 0.5;
       cursor: not-allowed;
+      transform: none;
     }
 
-    .result {
-      margin-top: 25px;
-      padding: 22px;
-      border-radius: 15px;
+    .btn-secondary {
+      background: transparent;
+      border: 2px solid var(--border);
+      color: var(--text-muted);
+      padding: 12px;
+      border-radius: 12px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--deep);
+      color: var(--deep);
+    }
+
+    /* ALERTS */
+    .alert {
+      padding: 14px 18px;
+      border-radius: 12px;
+      font-size: 13.5px;
+      line-height: 1.5;
+      margin-top: 16px;
       display: none;
     }
 
-    .success {
-      background: #d4edda;
-      border: 2px solid #28a745;
-      color: #155724;
+    .alert.show { display: block; }
+
+    .alert-error {
+      background: #fdf0ef;
+      border: 2px solid #e74c3c;
+      color: var(--danger);
     }
 
-    .error {
-      background: #f8d7da;
-      border: 2px solid #dc3545;
-      color: #721c24;
+    .alert-success {
+      background: #edfaf3;
+      border: 2px solid #2ecc71;
+      color: var(--success);
     }
 
-    .missing-list {
-      margin-top: 10px;
-      padding-left: 20px;
+    .alert-info {
+      background: #eef4ff;
+      border: 2px solid #3b82f6;
+      color: #1d4ed8;
     }
 
-    .auth-link {
+    .alert ul { padding-left: 18px; margin-top: 8px; }
+    .alert li { margin-bottom: 4px; }
+
+    /* AUTH FOOTER */
+    .auth-switch {
       text-align: center;
-      margin-top: 15px;
-      color: #666;
+      margin-top: 20px;
+      font-size: 14px;
+      color: var(--text-muted);
     }
 
-    .auth-link a {
-      color: #0B2447;
-      font-weight: bold;
+    .auth-switch a {
+      color: var(--deep);
+      font-weight: 700;
       cursor: pointer;
       text-decoration: none;
+      border-bottom: 1px solid var(--gold);
+      transition: color 0.2s;
     }
 
-    .auth-link a:hover {
-      text-decoration: underline;
-    }
+    .auth-switch a:hover { color: var(--gold); }
 
-    .error-message {
+    /* NAV BAR (post-login) */
+    .app-nav {
+      background: var(--deep);
       display: none;
-      margin-top: 15px;
-      padding: 12px;
-      background: #f8d7da;
-      border: 2px solid #dc3545;
-      color: #721c24;
+      padding: 0 36px;
+      border-bottom: 1px solid rgba(212,175,55,0.2);
+    }
+
+    .app-nav.show { display: flex; }
+
+    .nav-item {
+      padding: 14px 0;
+      margin-right: 24px;
+      color: rgba(255,255,255,0.5);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      transition: all 0.2s;
+    }
+
+    .nav-item.active {
+      color: var(--gold-light);
+      border-bottom-color: var(--gold-light);
+    }
+
+    .nav-item:hover { color: white; }
+
+    /* TOP BAR */
+    .top-bar {
+      background: var(--navy);
+      padding: 14px 36px;
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .top-bar.show { display: flex; }
+
+    .user-info {
+      color: rgba(255,255,255,0.7);
+      font-size: 13px;
+    }
+
+    .user-info strong { color: var(--gold-light); }
+
+    .btn-logout {
+      padding: 8px 16px;
+      background: rgba(192,57,43,0.15);
+      border: 1px solid rgba(192,57,43,0.4);
+      color: #e74c3c;
       border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: 'DM Sans', sans-serif;
     }
 
-    .success-message {
-      background: #d4edda;
-      border-color: #28a745;
-      color: #155724;
+    .btn-logout:hover {
+      background: rgba(192,57,43,0.3);
     }
 
-    .stats-grid {
+    /* DASHBOARD */
+    .stats-row {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 15px;
-      margin-bottom: 30px;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      margin-bottom: 28px;
     }
 
-    .stat-card {
-      background: linear-gradient(135deg, #0B2447, #06283D);
-      color: white;
+    .stat-tile {
+      background: linear-gradient(135deg, var(--deep), var(--mid));
+      border-radius: 16px;
       padding: 20px;
-      border-radius: 12px;
       text-align: center;
     }
 
-    .stat-card h3 {
-      font-size: 14px;
-      margin-bottom: 10px;
-      opacity: 0.9;
+    .stat-tile .stat-val {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem;
+      color: var(--gold-light);
+      font-weight: 900;
+      line-height: 1;
+      margin-bottom: 6px;
     }
 
-    .stat-card .number {
-      font-size: 2.5rem;
-      font-weight: bold;
-      color: #FFD700;
+    .stat-tile .stat-lbl {
+      font-size: 12px;
+      color: rgba(255,255,255,0.6);
+      font-weight: 500;
+      letter-spacing: 0.3px;
     }
 
-    .loans-table {
+    .table-wrap { overflow-x: auto; margin-top: 16px; }
+
+    table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 20px;
+      font-size: 13.5px;
     }
 
-    .loans-table th,
-    .loans-table td {
-      padding: 12px;
-      text-align: left;
-      border-bottom: 1px solid #ddd;
-    }
-
-    .loans-table th {
-      background: #0B2447;
+    th {
+      background: var(--deep);
       color: white;
-      font-weight: bold;
-    }
-
-    .loans-table tr:hover {
-      background: #f9f9f9;
-    }
-
-    .status-badge {
-      padding: 5px 10px;
-      border-radius: 8px;
+      padding: 12px 14px;
+      text-align: left;
       font-size: 12px;
-      font-weight: bold;
+      letter-spacing: 0.5px;
+      font-weight: 700;
     }
 
-    .status-pending {
-      background: #fff3cd;
-      color: #856404;
+    th:first-child { border-radius: 10px 0 0 0; }
+    th:last-child { border-radius: 0 10px 0 0; }
+
+    td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text-dark);
     }
 
-    .status-approved {
-      background: #d4edda;
-      color: #155724;
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #fafaf8; }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
     }
 
-    .status-rejected {
-      background: #f8d7da;
-      color: #721c24;
+    .badge-pending { background: #fff8e1; color: #b8860b; }
+    .badge-approved { background: #e8f5e9; color: #1a7a4a; }
+    .badge-rejected { background: #fdf0ef; color: #c0392b; }
+
+    /* DIVIDER */
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin: 20px 0;
     }
 
-    .loading {
-      text-align: center;
-      padding: 20px;
-      color: #666;
+    .divider::before, .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
     }
 
+    .divider span {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    /* SPINNER */
     .spinner {
-      border: 4px solid #f3f3f3;
-      border-top: 4px solid #FFD700;
+      width: 36px;
+      height: 36px;
+      border: 3px solid var(--border);
+      border-top-color: var(--gold);
       border-radius: 50%;
-      width: 40px;
-      height: 40px;
-      animation: spin 1s linear infinite;
-      margin: 0 auto;
+      animation: spin 0.8s linear infinite;
+      margin: 30px auto;
+    }
+
+    /* SUCCESS STATE */
+    .success-screen {
+      text-align: center;
+      padding: 20px 0;
+    }
+
+    .success-icon {
+      width: 72px;
+      height: 72px;
+      background: linear-gradient(135deg, var(--gold), var(--gold-light));
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      margin: 0 auto 20px;
+      box-shadow: 0 8px 30px rgba(212,175,55,0.4);
+    }
+
+    .section-heading {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.15rem;
+      color: var(--deep);
+      margin-bottom: 16px;
+      font-weight: 700;
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--border);
+    }
+
+    /* PASSWORD STRENGTH */
+    .pw-strength {
+      margin-top: 6px;
+      display: flex;
+      gap: 4px;
+    }
+
+    .pw-bar {
+      flex: 1;
+      height: 3px;
+      border-radius: 3px;
+      background: var(--border);
+      transition: background 0.3s;
+    }
+
+    .pw-bar.weak { background: #e74c3c; }
+    .pw-bar.medium { background: #f39c12; }
+    .pw-bar.strong { background: #27ae60; }
+
+    /* ANIMATIONS */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-15px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .fade-in {
+      animation: fadeUp 0.4s ease both;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 480px) {
+      .panel { padding: 24px 20px; }
+      .brand-header h1 { font-size: 1.9rem; }
+      .form-row { grid-template-columns: 1fr; }
+      .stats-row { grid-template-columns: 1fr; }
+      .app-nav, .top-bar { padding-left: 20px; padding-right: 20px; }
     }
   </style>
 </head>
 <body>
 
-<div class="container">
-  <button class="logout-btn" onclick="handleLogout()">Logout</button>
-  
-  <div class="nav-tabs">
-    <button class="nav-btn active" onclick="switchTab('application')">Application Form</button>
-    <button class="nav-btn" onclick="switchTab('dashboard')">Dashboard</button>
+<div class="app-wrap">
+
+  <!-- BRAND HEADER -->
+  <div class="brand-header">
+    <div class="brand-badge">Bethel Youth Capital Initiative</div>
+    <h1>BETHEL <span>SME</span> FUNDINGS</h1>
+    <p>Empowering young entrepreneurs across Botswana</p>
   </div>
 
-  <div id="auth" class="tab-content active">
-    <div class="title">
-      <h1>BETHEL SME FUNDINGS</h1>
-      <p>(Bethel Youth Capital Initiative)</p>
+  <div class="card">
+
+    <!-- TOP BAR (logged in) -->
+    <div class="top-bar" id="topBar">
+      <div class="user-info">Logged in as <strong id="userEmailDisplay"></strong></div>
+      <button class="btn-logout" onclick="handleLogout()">Sign Out</button>
     </div>
 
-    <div id="loginForm" style="display: block;">
-      <div class="section-title auth-title">Login to Your Account</div>
-      
-      <div class="form-group">
-        <label>Email</label>
-        <input type="email" id="loginEmail" placeholder="Enter your email" required>
-      </div>
-
-      <div class="form-group">
-        <label>Password</label>
-        <input type="password" id="loginPassword" placeholder="Enter your password" required>
-      </div>
-
-      <button type="button" class="btn" onclick="handleLogin()" style="margin-top: 15px;">Login</button>
-
-      <div class="auth-link">
-        Don't have an account? <a onclick="toggleAuthForm()">Sign Up</a>
-      </div>
-
-      <div id="loginError" class="error-message"></div>
+    <!-- APP NAV -->
+    <div class="app-nav" id="appNav">
+      <div class="nav-item active" onclick="goTab('application', this)">Application</div>
+      <div class="nav-item" onclick="goTab('dashboard', this)">Dashboard</div>
     </div>
 
-    <div id="signupForm" style="display: none;">
-      <div class="section-title auth-title">Create New Account</div>
-      
-      <div class="form-group">
-        <label>Email</label>
-        <input type="email" id="signupEmail" placeholder="Enter your email" required>
+    <!-- ===================== PANEL: SIGN UP ===================== -->
+    <div class="panel active" id="panelSignup">
+      <div class="panel-title">Create Account</div>
+      <div class="panel-subtitle">You must register before submitting a loan application. Your documents will be linked to your account.</div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>First Name <span class="req">*</span></label>
+          <input type="text" id="su_fname" placeholder="e.g. Kefilwe">
+        </div>
+        <div class="form-group">
+          <label>Last Name <span class="req">*</span></label>
+          <input type="text" id="su_lname" placeholder="e.g. Moeti">
+        </div>
       </div>
 
       <div class="form-group">
-        <label>Password</label>
-        <input type="password" id="signupPassword" placeholder="Create a password (min 6 characters)" required>
+        <label>Email Address <span class="req">*</span></label>
+        <input type="email" id="su_email" placeholder="your@email.com">
       </div>
 
       <div class="form-group">
-        <label>Confirm Password</label>
-        <input type="password" id="signupConfirm" placeholder="Confirm your password" required>
+        <label>Phone Number <span class="req">*</span></label>
+        <input type="tel" id="su_phone" placeholder="+267 7x xxx xxx">
       </div>
 
-      <button type="button" class="btn" onclick="handleSignup()" style="margin-top: 15px;">Create Account</button>
-
-      <div class="auth-link">
-        Already have an account? <a onclick="toggleAuthForm()">Login</a>
+      <div class="form-group">
+        <label>Password <span class="req">*</span></label>
+        <input type="password" id="su_password" placeholder="Min 6 characters" oninput="checkPwStrength(this.value)">
+        <div class="pw-strength">
+          <div class="pw-bar" id="pwBar1"></div>
+          <div class="pw-bar" id="pwBar2"></div>
+          <div class="pw-bar" id="pwBar3"></div>
+        </div>
       </div>
 
-      <div id="signupError" class="error-message"></div>
+      <div class="form-group">
+        <label>Confirm Password <span class="req">*</span></label>
+        <input type="password" id="su_confirm" placeholder="Repeat password">
+      </div>
+
+      <button class="btn-primary" onclick="handleSignup()">
+        <span>Create My Account</span> →
+      </button>
+
+      <div class="alert alert-error" id="signupAlert"></div>
+
+      <div class="divider"><span>Already registered?</span></div>
+      <div class="auth-switch">Have an account? <a onclick="showPanel('panelLogin')">Sign in here</a></div>
     </div>
-  </div>
 
-  <div id="application" class="tab-content">
-    <div class="title">
-      <h1>BETHEL SME FUNDINGS</h1>
-      <p>(Bethel Youth Capital Initiative)</p>
-    </div>
-
-    <div class="loan-box">
-      <h2>MICRO LOANS</h2>
-      <p>P500 - P2000</p>
-      <p>Interest Rate: 10% - 20%</p>
-      <small>Maximum Repayment Period: 8 Months</small>
-    </div>
-
-    <form id="loanForm">
-      <div class="section-title">Applicant Information</div>
+    <!-- ===================== PANEL: LOGIN ===================== -->
+    <div class="panel" id="panelLogin">
+      <div class="panel-title">Welcome Back</div>
+      <div class="panel-subtitle">Sign in to access your loan application and track your status.</div>
 
       <div class="form-group">
-        <label>Full Name</label>
-        <input type="text" id="name" placeholder="Enter full name" required>
+        <label>Email Address <span class="req">*</span></label>
+        <input type="email" id="li_email" placeholder="your@email.com">
       </div>
 
       <div class="form-group">
-        <label>Age</label>
-        <input type="number" id="age" placeholder="Enter age" required>
+        <label>Password <span class="req">*</span></label>
+        <input type="password" id="li_password" placeholder="Your password">
+      </div>
+
+      <button class="btn-primary" onclick="handleLogin()">
+        <span>Sign In</span> →
+      </button>
+
+      <div class="alert alert-error" id="loginAlert"></div>
+
+      <div class="divider"><span>New here?</span></div>
+      <div class="auth-switch">No account yet? <a onclick="showPanel('panelSignup')">Register now</a></div>
+    </div>
+
+    <!-- ===================== PANEL: APPLICATION ===================== -->
+    <div class="panel" id="application">
+
+      <div class="loan-info-box">
+        <div class="loan-info-icon">💼</div>
+        <div>
+          <h3>MICRO LOANS — P500 to P2,000</h3>
+          <p>Interest: 10% – 20% &nbsp;|&nbsp; Max repayment: 8 months<br>Ages 18–25 only. Document verification required.</p>
+        </div>
+      </div>
+
+      <!-- SECTION: Applicant -->
+      <div class="section-heading">Applicant Information</div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Full Legal Name <span class="req">*</span></label>
+          <input type="text" id="a_name" placeholder="As on your Omang">
+        </div>
+        <div class="form-group">
+          <label>Age <span class="req">*</span></label>
+          <input type="number" id="a_age" placeholder="18–25" min="18" max="25">
+        </div>
       </div>
 
       <div class="form-group">
-        <label>Are You Schooling?</label>
-        <select id="studentStatus" onchange="toggleStudentID()" required>
-          <option value="">Select</option>
-          <option value="Student">YES</option>
-          <option value="Non-Student">NO</option>
+        <label>Are you currently a student? <span class="req">*</span></label>
+        <select id="a_student" onchange="toggleStudentSection()">
+          <option value="">Select...</option>
+          <option value="yes">Yes — I am enrolled at an institution</option>
+          <option value="no">No — I am not a student</option>
         </select>
       </div>
 
-      <div class="section-title">Business Funding Purpose</div>
+      <div class="form-group" id="institutionGroup" style="display:none;">
+        <label>Institution Name <span class="req">*</span></label>
+        <input type="text" id="a_institution" placeholder="e.g. University of Botswana">
+      </div>
+
+      <!-- SECTION: Funding -->
+      <div class="section-heading" style="margin-top: 28px;">Business Funding Purpose</div>
 
       <div class="form-group">
-        <label>What do you need the loan for?</label>
-        <select id="businessPurpose" onchange="updateLoanPurpose()" required>
-          <option value="">Select Purpose</option>
+        <label>What is the loan for? <span class="req">*</span></label>
+        <select id="a_purpose" onchange="updatePlaceholder()">
+          <option value="">Select purpose...</option>
           <option value="Establishing">Establishing a New Business</option>
-          <option value="Scaling">Scaling / Expanding Existing Business</option>
+          <option value="Scaling">Scaling / Expanding an Existing Business</option>
         </select>
       </div>
 
       <div class="form-group">
-        <label>Explain the Purpose of Funding</label>
-        <textarea id="purposeText" placeholder="Explain how the loan will help your business..."></textarea>
+        <label>Explain how the funds will be used <span class="req">*</span></label>
+        <textarea id="a_purposeText" placeholder="Describe your business plan and how the loan will help..."></textarea>
       </div>
 
+      <div class="form-row">
+        <div class="form-group">
+          <label>Loan Amount Required (P) <span class="req">*</span></label>
+          <input type="number" id="a_amount" placeholder="P500 – P2,000" min="500" max="2000">
+        </div>
+        <div class="form-group">
+          <label>Est. Monthly Revenue (P) <span class="req">*</span></label>
+          <input type="number" id="a_revenue" placeholder="Expected monthly">
+        </div>
+      </div>
+
+      <!-- SECTION: Documents -->
+      <div class="section-heading" style="margin-top: 28px;">Required Document Uploads</div>
+      <p style="font-size:13px; color: var(--text-muted); margin-bottom: 20px;">All three documents must be uploaded. Your application will only be processed after verification.</p>
+
+      <!-- National ID -->
       <div class="form-group">
-        <label>Estimated Loan Amount Required (Pula)</label>
-        <input type="number" id="loanAmount" placeholder="Enter amount required">
+        <label>National ID / Omang <span class="req">*</span></label>
+        <div class="file-upload-area" id="zone_natid" ondragover="dragOver(event,this)" ondragleave="dragLeave(this)" ondrop="dropFile(event,'natid','zone_natid')">
+          <input type="file" id="natid" accept=".pdf,.jpg,.jpeg,.png" onchange="fileSelected('natid','zone_natid','nameNatid')">
+          <div class="upload-icon">🪪</div>
+          <div class="upload-text">
+            <strong>Upload National ID / Omang</strong>
+            PDF, JPG, or PNG — Max 10MB
+          </div>
+          <div class="file-name" id="nameNatid"></div>
+          <span class="doc-verify-badge pending" id="badge_natid" style="display:none;">⏳ Awaiting Verification</span>
+        </div>
       </div>
 
+      <!-- Student ID / Proof -->
+      <div class="form-group" id="studentDocGroup">
+        <label>
+          Student ID / Proof of Registration <span class="req">*</span>
+          <span style="font-weight:400; color:var(--text-muted);">(Required if student)</span>
+        </label>
+        <div class="file-upload-area" id="zone_studentid" ondragover="dragOver(event,this)" ondragleave="dragLeave(this)" ondrop="dropFile(event,'studentid','zone_studentid')">
+          <input type="file" id="studentid" accept=".pdf,.jpg,.jpeg,.png" onchange="fileSelected('studentid','zone_studentid','nameStudentid')">
+          <div class="upload-icon">🎓</div>
+          <div class="upload-text">
+            <strong>Upload Student ID or Enrollment Proof</strong>
+            PDF, JPG, or PNG — Max 10MB
+          </div>
+          <div class="file-name" id="nameStudentid"></div>
+          <span class="doc-verify-badge pending" id="badge_studentid" style="display:none;">⏳ Awaiting Verification</span>
+        </div>
+        <small style="color:var(--text-muted); font-size:12px; margin-top:6px; display:block;">If you selected "No" above, this document is optional but recommended.</small>
+      </div>
+
+      <!-- Business Plan -->
       <div class="form-group">
-        <label>Estimated Monthly Revenue Generation (Pula)</label>
-        <input type="number" id="monthlyRevenue" placeholder="Expected monthly business revenue">
+        <label>Business Plan / Proposal (PDF) <span class="req">*</span></label>
+        <div class="file-upload-area" id="zone_bizplan" ondragover="dragOver(event,this)" ondragleave="dragLeave(this)" ondrop="dropFile(event,'bizplan','zone_bizplan')">
+          <input type="file" id="bizplan" accept=".pdf" onchange="fileSelected('bizplan','zone_bizplan','nameBizplan')">
+          <div class="upload-icon">📋</div>
+          <div class="upload-text">
+            <strong>Upload Business Plan / Proposal</strong>
+            PDF only — Max 10MB. Must include: loan amount, purpose, growth strategy, monthly revenue, 2-year vision
+          </div>
+          <div class="file-name" id="nameBizplan"></div>
+          <span class="doc-verify-badge pending" id="badge_bizplan" style="display:none;">⏳ Awaiting Verification</span>
+        </div>
       </div>
 
-      <div class="section-title">Document Uploads (Required)</div>
-
-      <div class="form-group">
-        <label>National ID / Omang (PDF or Image)</label>
-        <input type="file" id="nationalId" accept=".pdf,.jpg,.jpeg,.png" required>
-        <small>Max 10MB</small>
-      </div>
-
-      <div class="form-group">
-        <label>Student ID (PDF or Image) - If applicable</label>
-        <input type="file" id="studentIdFile" accept=".pdf,.jpg,.jpeg,.png">
-        <small>Optional - Only required if you selected "YES" for schooling</small>
-      </div>
-
-      <div class="form-group">
-        <label>Business Plan/Proposal (PDF)</label>
-        <input type="file" id="businessPlanFile" accept=".pdf" required>
-        <small>Max 10MB. Must include: Loan amount, Purpose, Growth strategy, Monthly revenue, 2-year vision</small>
-      </div>
-
-      <div class="section-title">Loan Requirements Checklist</div>
+      <!-- SECTION: Checklist -->
+      <div class="section-heading" style="margin-top: 28px;">Confirmation Checklist</div>
 
       <div class="checklist">
         <div class="check-item">
-          <input type="checkbox" id="omang">
-          <label for="omang">Valid National ID / Omang</label>
+          <input type="checkbox" id="ck_omang">
+          <label for="ck_omang"><strong>Valid National ID / Omang</strong>I confirm my Omang is valid and I have uploaded a clear copy.</label>
         </div>
 
-        <div class="check-item" id="studentIdSection" style="display:none;">
-          <input type="checkbox" id="studentId">
-          <label for="studentId">Student ID</label>
-        </div>
-
-        <div class="check-item">
-          <input type="checkbox" id="applicationForm">
-          <label for="applicationForm">Completed Loan Application Form</label>
+        <div class="check-item" id="ck_studentRow" style="display:none;">
+          <input type="checkbox" id="ck_student">
+          <label for="ck_student"><strong>Student ID / Proof of Registration</strong>I confirm I have uploaded a valid student ID or proof of registration.</label>
         </div>
 
         <div class="check-item">
-          <input type="checkbox" id="agreement">
-          <label for="agreement">Signed Loan Agreement Document</label>
+          <input type="checkbox" id="ck_form">
+          <label for="ck_form"><strong>Application Form Complete</strong>All fields in this form have been truthfully filled in.</label>
         </div>
 
         <div class="check-item">
-          <input type="checkbox" id="proposal">
-          <label for="proposal">
-            Business Proposal MUST include:<br><br>
-            • Loan Requirement Amount<br>
-            • Purpose of Funding<br>
-            • Business Growth Strategy<br>
-            • Estimated Monthly Revenue Generation<br>
-            • Minimum 2-Year Vision
-          </label>
+          <input type="checkbox" id="ck_agreement">
+          <label for="ck_agreement"><strong>Loan Agreement</strong>I understand and agree to the loan terms including repayment obligations.</label>
         </div>
 
         <div class="check-item">
-          <input type="checkbox" id="collateral">
-          <label for="collateral">Optional Physical Collateral / Reference</label>
+          <input type="checkbox" id="ck_proposal">
+          <label for="ck_proposal"><strong>Business Proposal Complete</strong>My proposal includes: loan amount, purpose, growth strategy, monthly revenue, and a minimum 2-year vision.</label>
+        </div>
+
+        <div class="check-item">
+          <input type="checkbox" id="ck_collateral">
+          <label for="ck_collateral"><strong>Optional: Physical Collateral / Reference</strong>I have or will provide collateral or a reference person (optional).</label>
         </div>
       </div>
 
-      <button type="button" class="btn" onclick="checkEligibility()">CHECK LOAN ELIGIBILITY</button>
-    </form>
+      <button class="btn-primary" onclick="checkEligibility()" id="submitBtn">
+        ✓ &nbsp;Submit Application
+      </button>
 
-    <div id="result" class="result"></div>
-  </div>
-
-  <div id="dashboard" class="tab-content">
-    <div class="title">
-      <h1>Loan Dashboard</h1>
-      <p>Real-time tracking of all loan applications</p>
+      <div class="alert" id="appAlert"></div>
     </div>
 
-    <div class="stats-grid">
-      <div class="stat-card">
-        <h3>Total Applications</h3>
-        <div class="number" id="totalLoans">0</div>
+    <!-- ===================== PANEL: DASHBOARD ===================== -->
+    <div class="panel" id="dashboard">
+      <div class="panel-title">Application Dashboard</div>
+      <div class="panel-subtitle">Real-time overview of all submitted loan applications.</div>
+
+      <div class="stats-row">
+        <div class="stat-tile">
+          <div class="stat-val" id="d_total">—</div>
+          <div class="stat-lbl">Total Applications</div>
+        </div>
+        <div class="stat-tile">
+          <div class="stat-val" id="d_pending">—</div>
+          <div class="stat-lbl">Pending Review</div>
+        </div>
+        <div class="stat-tile">
+          <div class="stat-val" id="d_approved">—</div>
+          <div class="stat-lbl">Approved</div>
+        </div>
+        <div class="stat-tile">
+          <div class="stat-val" id="d_funded">P0</div>
+          <div class="stat-lbl">Total Funded</div>
+        </div>
       </div>
-      <div class="stat-card">
-        <h3>Pending Review</h3>
-        <div class="number" id="pendingLoans">0</div>
-      </div>
-      <div class="stat-card">
-        <h3>Approved</h3>
-        <div class="number" id="approvedLoans">0</div>
-      </div>
-      <div class="stat-card">
-        <h3>Total Funded</h3>
-        <div class="number" id="totalFunded">P0</div>
-      </div>
+
+      <div class="section-heading">Recent Applications</div>
+      <div id="dashContent"><div class="spinner"></div></div>
     </div>
 
-    <h3 style="margin-top: 30px; color: #0B2447;">Recent Applications</h3>
-    <div id="loansContainer" class="loading">
-      <div class="spinner"></div>
-      <p>Loading data...</p>
-    </div>
-  </div>
-</div>
+  </div><!-- /card -->
+</div><!-- /app-wrap -->
 
 <script>
-  const SUPABASE_URL = 'https://rcgyzkevzqwxpfhwmfrq.supabase.co';
-  const SUPABASE_ANON_KEY = 'sb_secret_TQu6LV5e3td4OlkFsUHWhA_fBRgmcAi';
+  // ─── CONFIG ─────────────────────────────────────────────────────
+  const SUPABASE_URL  = 'https://rcgyzkevzqwxpfhwmfrq.supabase.co';
+  const SUPABASE_ANON = 'sb_secret_TQu6LV5e3td4OlkFsUHWhA_fBRgmcAi';
 
-  let supabase;
+  let sb = null;
   let currentUser = null;
 
-  if (SUPABASE_URL && SUPABASE_ANON_KEY) {
-    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    
+  if (SUPABASE_URL && SUPABASE_ANON) {
+    sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
     window.addEventListener('load', () => {
-      supabase.auth.onAuthStateChange((event, session) => {
-        if (session) {
-          currentUser = session.user;
-          showApplicationForm();
+      sb.auth.onAuthStateChange((event, session) => {
+        currentUser = session ? session.user : null;
+        if (currentUser) {
+          document.getElementById('userEmailDisplay').textContent = currentUser.email;
+          document.getElementById('topBar').classList.add('show');
+          document.getElementById('appNav').classList.add('show');
+          showPanel('application');
         } else {
-          currentUser = null;
-          showAuthForm();
+          document.getElementById('topBar').classList.remove('show');
+          document.getElementById('appNav').classList.remove('show');
+          showPanel('panelSignup');
         }
       });
     });
   }
 
-  function toggleAuthForm() {
-    const loginForm = document.getElementById('loginForm');
-    const signupForm = document.getElementById('signupForm');
-    
-    if (loginForm.style.display === 'none') {
-      loginForm.style.display = 'block';
-      signupForm.style.display = 'none';
-    } else {
-      loginForm.style.display = 'none';
-      signupForm.style.display = 'block';
+  // ─── PANEL ROUTING ──────────────────────────────────────────────
+  function showPanel(id) {
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    const el = document.getElementById(id);
+    if (el) { el.classList.add('active'); el.classList.add('fade-in'); }
+  }
+
+  function goTab(tab, navEl) {
+    showPanel(tab);
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    navEl.classList.add('active');
+    if (tab === 'dashboard') loadDashboard();
+  }
+
+  // ─── AUTH ────────────────────────────────────────────────────────
+  async function handleSignup() {
+    const fname    = document.getElementById('su_fname').value.trim();
+    const lname    = document.getElementById('su_lname').value.trim();
+    const email    = document.getElementById('su_email').value.trim();
+    const phone    = document.getElementById('su_phone').value.trim();
+    const password = document.getElementById('su_password').value;
+    const confirm  = document.getElementById('su_confirm').value;
+    const alert    = document.getElementById('signupAlert');
+
+    clearAlert('signupAlert');
+
+    if (!fname || !lname || !email || !phone || !password || !confirm)
+      return showAlert('signupAlert', 'error', 'Please fill in all required fields.');
+    if (password !== confirm)
+      return showAlert('signupAlert', 'error', 'Passwords do not match.');
+    if (password.length < 6)
+      return showAlert('signupAlert', 'error', 'Password must be at least 6 characters.');
+
+    try {
+      const { error } = await sb.auth.signUp({
+        email, password,
+        options: { data: { first_name: fname, last_name: lname, phone } }
+      });
+      if (error) throw error;
+      showAlert('signupAlert', 'success', '✅ Account created! Check your email to confirm, then sign in.');
+    } catch (e) {
+      showAlert('signupAlert', 'error', e.message);
     }
   }
 
   async function handleLogin() {
-    const email = document.getElementById('loginEmail').value;
-    const password = document.getElementById('loginPassword').value;
-    const errorDiv = document.getElementById('loginError');
+    const email    = document.getElementById('li_email').value.trim();
+    const password = document.getElementById('li_password').value;
+    clearAlert('loginAlert');
 
-    if (!email || !password) {
-      showError(errorDiv, 'Please fill in all fields');
-      return;
-    }
+    if (!email || !password)
+      return showAlert('loginAlert', 'error', 'Please enter your email and password.');
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
-      
+      const { error } = await sb.auth.signInWithPassword({ email, password });
       if (error) throw error;
-      
-      errorDiv.style.display = 'none';
-    } catch (error) {
-      showError(errorDiv, error.message);
+    } catch (e) {
+      showAlert('loginAlert', 'error', e.message);
     }
-  }
-
-  async function handleSignup() {
-    const email = document.getElementById('signupEmail').value;
-    const password = document.getElementById('signupPassword').value;
-    const confirm = document.getElementById('signupConfirm').value;
-    const errorDiv = document.getElementById('signupError');
-
-    if (!email || !password || !confirm) {
-      showError(errorDiv, 'Please fill in all fields');
-      return;
-    }
-
-    if (password !== confirm) {
-      showError(errorDiv, 'Passwords do not match');
-      return;
-    }
-
-    if (password.length < 6) {
-      showError(errorDiv, 'Password must be at least 6 characters');
-      return;
-    }
-
-    try {
-      const { error } = await supabase.auth.signUp({ email, password });
-      
-      if (error) throw error;
-      
-      errorDiv.textContent = 'Account created! Check your email to confirm, then login.';
-      errorDiv.classList.add('success-message');
-      errorDiv.style.display = 'block';
-    } catch (error) {
-      showError(errorDiv, error.message);
-    }
-  }
-
-  function showError(errorDiv, message) {
-    errorDiv.textContent = message;
-    errorDiv.classList.remove('success-message');
-    errorDiv.style.display = 'block';
   }
 
   async function handleLogout() {
-    await supabase.auth.signOut();
-    document.getElementById('loanForm').reset();
+    await sb.auth.signOut();
+    document.getElementById('loanForm') && document.getElementById('loanForm').reset();
   }
 
-  function showAuthForm() {
-    document.getElementById('auth').classList.add('active');
-    document.getElementById('application').classList.remove('active');
-    document.getElementById('dashboard').classList.remove('active');
-    document.querySelector('.logout-btn').classList.remove('show');
-    document.querySelector('.nav-tabs').classList.remove('show');
+  // ─── PASSWORD STRENGTH ──────────────────────────────────────────
+  function checkPwStrength(pw) {
+    const bars = ['pwBar1','pwBar2','pwBar3'];
+    bars.forEach(b => { document.getElementById(b).className = 'pw-bar'; });
+    if (!pw) return;
+    const score = (pw.length >= 6 ? 1 : 0) + (/[A-Z]/.test(pw) || /[0-9]/.test(pw) ? 1 : 0) + (pw.length >= 10 ? 1 : 0);
+    const cls = score === 1 ? 'weak' : score === 2 ? 'medium' : 'strong';
+    for (let i = 0; i < score; i++) document.getElementById(bars[i]).classList.add(cls);
   }
 
-  function showApplicationForm() {
-    document.getElementById('auth').classList.remove('active');
-    document.getElementById('application').classList.add('active');
-    document.querySelector('.logout-btn').classList.add('show');
-    document.querySelector('.nav-tabs').classList.add('show');
+  // ─── FORM INTERACTIONS ──────────────────────────────────────────
+  function toggleStudentSection() {
+    const val = document.getElementById('a_student').value;
+    const ig  = document.getElementById('institutionGroup');
+    const ckr = document.getElementById('ck_studentRow');
+    ig.style.display  = val === 'yes' ? 'block' : 'none';
+    ckr.style.display = val === 'yes' ? 'flex'  : 'none';
+    if (val !== 'yes') document.getElementById('ck_student').checked = false;
   }
 
-  function switchTab(tab) {
-    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-    document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
-    document.getElementById(tab).classList.add('active');
-    event.target.classList.add('active');
-    
-    if (tab === 'dashboard') {
-      loadDashboard();
+  function updatePlaceholder() {
+    const purpose = document.getElementById('a_purpose').value;
+    const ta = document.getElementById('a_purposeText');
+    if (purpose === 'Establishing')
+      ta.placeholder = 'Describe the business you want to establish and how the loan will help you launch it…';
+    else if (purpose === 'Scaling')
+      ta.placeholder = 'Describe your existing business and how the loan will help you expand operations…';
+  }
+
+  // ─── FILE UPLOADS ────────────────────────────────────────────────
+  function fileSelected(inputId, zoneId, nameId) {
+    const file = document.getElementById(inputId).files[0];
+    if (!file) return;
+    const zone = document.getElementById(zoneId);
+    zone.classList.add('uploaded');
+    const nameEl = document.getElementById(nameId);
+    nameEl.textContent = '📎 ' + file.name;
+    nameEl.classList.add('show');
+    const badge = document.getElementById('badge_' + inputId);
+    if (badge) badge.style.display = 'inline-flex';
+  }
+
+  function dragOver(e, zone) { e.preventDefault(); zone.classList.add('dragover'); }
+  function dragLeave(zone) { zone.classList.remove('dragover'); }
+
+  function dropFile(e, inputId, zoneId) {
+    e.preventDefault();
+    dragLeave(document.getElementById(zoneId));
+    const dt = e.dataTransfer;
+    if (dt.files.length) {
+      const input = document.getElementById(inputId);
+      const container = new DataTransfer();
+      container.items.add(dt.files[0]);
+      input.files = container.files;
+      fileSelected(inputId, zoneId, 'name' + inputId.charAt(0).toUpperCase() + inputId.slice(1));
     }
   }
 
-  function toggleStudentID() {
-    const studentStatus = document.getElementById("studentStatus").value;
-    const studentIdSection = document.getElementById("studentIdSection");
-    if (studentStatus === "Student") {
-      studentIdSection.style.display = "flex";
-    } else {
-      studentIdSection.style.display = "none";
-      document.getElementById("studentId").checked = false;
-    }
-  }
-
-  function updateLoanPurpose() {
-    const purpose = document.getElementById("businessPurpose").value;
-    const purposeText = document.getElementById("purposeText");
-    if (purpose === "Establishing") {
-      purposeText.placeholder = "Describe the business you want to establish and how the loan will help you start.";
-    } else if (purpose === "Scaling") {
-      purposeText.placeholder = "Describe your existing business and how the loan will help you expand.";
-    }
-  }
-
-  async function uploadFilesAndSaveApplication(data) {
-    try {
-      const timestamp = Date.now();
-      const userId = currentUser.id;
-      
-      let documents = {};
-
-      if (data.nationalIdFile) {
-        const natIdPath = `${userId}/${timestamp}_national_id_${data.nationalIdFile.name}`;
-        const { error: natIdError } = await supabase.storage
-          .from('documents')
-          .upload(natIdPath, data.nationalIdFile);
-        if (natIdError) throw natIdError;
-        documents.national_id_path = natIdPath;
-      }
-
-      if (data.studentIdFile) {
-        const studentIdPath = `${userId}/${timestamp}_student_id_${data.studentIdFile.name}`;
-        const { error: studentIdError } = await supabase.storage
-          .from('documents')
-          .upload(studentIdPath, data.studentIdFile);
-        if (studentIdError) throw studentIdError;
-        documents.student_id_path = studentIdPath;
-      }
-
-      if (data.businessPlanFile) {
-        const businessPath = `${userId}/${timestamp}_business_plan_${data.businessPlanFile.name}`;
-        const { error: businessError } = await supabase.storage
-          .from('documents')
-          .upload(businessPath, data.businessPlanFile);
-        if (businessError) throw businessError;
-        documents.business_plan_path = businessPath;
-      }
-
-      const { error: dbError } = await supabase.from('loans').insert([{
-        user_id: userId,
-        full_name: data.full_name,
-        age: data.age,
-        is_student: data.is_student,
-        business_purpose: data.business_purpose,
-        purpose_description: data.purpose_description,
-        loan_amount: data.loan_amount,
-        monthly_revenue: data.monthly_revenue,
-        documents_submitted: data.documents_submitted,
-        document_paths: documents
-      }]);
-
-      if (dbError) throw dbError;
-      console.log('Application saved successfully');
-    } catch (error) {
-      console.error('Error saving application:', error);
-      alert('Error saving application: ' + error.message);
-    }
-  }
-
+  // ─── ELIGIBILITY CHECK ──────────────────────────────────────────
   async function checkEligibility() {
-    const age = document.getElementById("age").value;
-    const studentStatus = document.getElementById("studentStatus").value;
-    const businessPurpose = document.getElementById("businessPurpose").value;
-    const purposeText = document.getElementById("purposeText").value;
-    const loanAmount = document.getElementById("loanAmount").value;
-    const monthlyRevenue = document.getElementById("monthlyRevenue").value;
+    const name      = document.getElementById('a_name').value.trim();
+    const age       = parseInt(document.getElementById('a_age').value);
+    const student   = document.getElementById('a_student').value;
+    const instit    = document.getElementById('a_institution').value.trim();
+    const purpose   = document.getElementById('a_purpose').value;
+    const pText     = document.getElementById('a_purposeText').value.trim();
+    const amount    = parseFloat(document.getElementById('a_amount').value);
+    const revenue   = parseFloat(document.getElementById('a_revenue').value);
 
-    const omang = document.getElementById("omang").checked;
-    const studentId = document.getElementById("studentId").checked;
-    const applicationForm = document.getElementById("applicationForm").checked;
-    const agreement = document.getElementById("agreement").checked;
-    const proposal = document.getElementById("proposal").checked;
+    const natidFile   = document.getElementById('natid').files[0];
+    const studentFile = document.getElementById('studentid').files[0];
+    const bizFile     = document.getElementById('bizplan').files[0];
 
-    const nationalIdFile = document.getElementById("nationalId").files[0];
-    const studentIdFile = document.getElementById("studentIdFile").files[0];
-    const businessPlanFile = document.getElementById("businessPlanFile").files[0];
+    const ckOmang    = document.getElementById('ck_omang').checked;
+    const ckStudent  = document.getElementById('ck_student').checked;
+    const ckForm     = document.getElementById('ck_form').checked;
+    const ckAgreement= document.getElementById('ck_agreement').checked;
+    const ckProposal = document.getElementById('ck_proposal').checked;
 
     let missing = [];
 
-    if (age < 18 || age > 25) {
-      missing.push("Applicant must be between 18 - 25 years.");
-    }
-    if (businessPurpose === "") {
-      missing.push("Select the business funding purpose.");
-    }
-    if (purposeText.trim() === "") {
-      missing.push("Provide a business funding explanation.");
-    }
-    if (loanAmount < 500 || loanAmount > 2000) {
-      missing.push("Loan amount must be between P500 and P2000.");
-    }
-    if (monthlyRevenue === "" || monthlyRevenue <= 0) {
-      missing.push("Provide estimated monthly revenue generation.");
-    }
-    if (!omang) {
-      missing.push("Check the National ID/Omang checkbox.");
-    }
-    if (!nationalIdFile) {
-      missing.push("Upload your National ID / Omang file.");
-    }
-    if (studentStatus === "Student" && !studentId) {
-      missing.push("Check the Student ID checkbox.");
-    }
-    if (studentStatus === "Student" && !studentIdFile) {
-      missing.push("Upload your Student ID file.");
-    }
-    if (!applicationForm) {
-      missing.push("Check the Completed Loan Application Form checkbox.");
-    }
-    if (!agreement) {
-      missing.push("Check the Signed Loan Agreement checkbox.");
-    }
-    if (!proposal) {
-      missing.push("Check the Business Proposal checkbox.");
-    }
-    if (!businessPlanFile) {
-      missing.push("Upload your Business Plan/Proposal file.");
-    }
+    if (!name)            missing.push('Enter your full legal name.');
+    if (!age || age < 18 || age > 25) missing.push('Applicant must be between 18–25 years old.');
+    if (!student)         missing.push('Select your student status.');
+    if (student === 'yes' && !instit) missing.push('Enter your institution name.');
+    if (!purpose)         missing.push('Select the business funding purpose.');
+    if (!pText)           missing.push('Explain how the funds will be used.');
+    if (!amount || amount < 500 || amount > 2000) missing.push('Loan amount must be between P500 and P2,000.');
+    if (!revenue || revenue <= 0) missing.push('Provide estimated monthly revenue.');
 
-    const result = document.getElementById("result");
+    // Document checks
+    if (!natidFile)       missing.push('Upload your National ID / Omang document.');
+    if (student === 'yes' && !studentFile) missing.push('Upload your Student ID or proof of registration.');
+    if (!bizFile)         missing.push('Upload your Business Plan / Proposal (PDF).');
 
-    if (missing.length === 0) {
-      result.style.display = "block";
-      result.className = "result success";
-      result.innerHTML = `
-        <h2>✅ APPLICATION QUALIFIED</h2>
-        <br>
-        <p>Congratulations! Your application satisfies all BETHEL SME FUNDINGS requirements and is eligible for review.</p>
-        <br>
-        <p><strong>Funding Purpose:</strong> ${businessPurpose}</p>
-        <p><strong>Requested Amount:</strong> P${loanAmount}</p>
-        <p><strong>Estimated Monthly Revenue:</strong> P${monthlyRevenue}</p>
-      `;
+    // Checkbox checks
+    if (!ckOmang)         missing.push('Confirm you have a valid Omang (checklist).');
+    if (student === 'yes' && !ckStudent) missing.push('Confirm your student ID (checklist).');
+    if (!ckForm)          missing.push('Confirm the application form is complete (checklist).');
+    if (!ckAgreement)     missing.push('Agree to the loan terms (checklist).');
+    if (!ckProposal)      missing.push('Confirm your business proposal is complete (checklist).');
 
-      if (supabase) {
-        await uploadFilesAndSaveApplication({
-          full_name: document.getElementById("name").value,
-          age: parseInt(age),
-          is_student: studentStatus === "Student",
-          business_purpose: businessPurpose,
-          purpose_description: purposeText,
-          loan_amount: parseFloat(loanAmount),
-          monthly_revenue: parseFloat(monthlyRevenue),
-          documents_submitted: {
-            omang, studentId, applicationForm, agreement, proposal, collateral: document.getElementById("collateral").checked
-          },
-          nationalIdFile,
-          studentIdFile,
-          businessPlanFile
-        });
-      }
-    } else {
-      let list = "";
-      missing.forEach(item => {
-        list += `<li>${item}</li>`;
-      });
-      result.style.display = "block";
-      result.className = "result error";
-      result.innerHTML = `
-        <h2>❌ APPLICATION INCOMPLETE</h2>
-        <br>
-        <p>The following requirements are not satisfied:</p>
-        <ul class="missing-list">${list}</ul>
-      `;
-    }
-  }
-
-  async function loadDashboard() {
-    if (!supabase) {
-      document.getElementById('loansContainer').innerHTML = '<p style="color: #dc3545;">Database not configured.</p>';
+    if (missing.length > 0) {
+      const list = missing.map(m => `<li>${m}</li>`).join('');
+      showAlert('appAlert', 'error', `<strong>❌ Application Incomplete</strong><ul>${list}</ul>`);
+      document.getElementById('appAlert').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       return;
     }
 
-    try {
-      const { data: loans, error } = await supabase
-        .from('loans')
-        .select('*')
-        .order('created_at', { ascending: false });
+    // Save
+    if (sb && currentUser) {
+      document.getElementById('submitBtn').disabled = true;
+      document.getElementById('submitBtn').textContent = '⏳ Submitting…';
 
+      try {
+        const ts = Date.now();
+        const uid = currentUser.id;
+        const docs = {};
+
+        // Upload national ID
+        const natPath = `${uid}/${ts}_national_id_${natidFile.name}`;
+        const { error: e1 } = await sb.storage.from('documents').upload(natPath, natidFile);
+        if (e1) throw e1;
+        docs.national_id = natPath;
+
+        // Upload student ID if exists
+        if (studentFile) {
+          const stPath = `${uid}/${ts}_student_id_${studentFile.name}`;
+          const { error: e2 } = await sb.storage.from('documents').upload(stPath, studentFile);
+          if (e2) throw e2;
+          docs.student_id = stPath;
+        }
+
+        // Upload biz plan
+        const bizPath = `${uid}/${ts}_business_plan_${bizFile.name}`;
+        const { error: e3 } = await sb.storage.from('documents').upload(bizPath, bizFile);
+        if (e3) throw e3;
+        docs.business_plan = bizPath;
+
+        // DB insert
+        const { error: dbErr } = await sb.from('loans').insert([{
+          user_id:             uid,
+          full_name:           name,
+          age:                 age,
+          is_student:          student === 'yes',
+          institution:         student === 'yes' ? instit : null,
+          business_purpose:    purpose,
+          purpose_description: pText,
+          loan_amount:         amount,
+          monthly_revenue:     revenue,
+          document_paths:      docs,
+          documents_verified:  false,
+          status:              'Pending Review'
+        }]);
+
+        if (dbErr) throw dbErr;
+
+        // Mark verified badge
+        ['natid','bizplan'].forEach(id => {
+          const badge = document.getElementById('badge_' + id);
+          if (badge) { badge.textContent = '✅ Uploaded'; badge.className = 'doc-verify-badge verified'; }
+        });
+        if (studentFile) {
+          const b = document.getElementById('badge_studentid');
+          if (b) { b.textContent = '✅ Uploaded'; b.className = 'doc-verify-badge verified'; }
+        }
+
+        showAlert('appAlert', 'success', `
+          <strong>✅ Application Submitted Successfully!</strong><br><br>
+          Congratulations, <strong>${name}</strong>! Your application has been received and is pending document verification.<br><br>
+          <strong>Requested Amount:</strong> P${amount.toLocaleString()}<br>
+          <strong>Purpose:</strong> ${purpose}<br>
+          <strong>Est. Monthly Revenue:</strong> P${revenue.toLocaleString()}<br><br>
+          You will be notified once your documents have been reviewed.
+        `);
+
+      } catch (err) {
+        showAlert('appAlert', 'error', '❌ Error submitting application: ' + err.message);
+      } finally {
+        document.getElementById('submitBtn').disabled = false;
+        document.getElementById('submitBtn').innerHTML = '✓ &nbsp;Submit Application';
+        document.getElementById('appAlert').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+    } else {
+      // offline / no db
+      showAlert('appAlert', 'success', `
+        <strong>✅ Application Qualifies!</strong><br><br>
+        All requirements satisfied. Requested: P${amount} | Revenue: P${revenue}/month.
+      `);
+    }
+  }
+
+  // ─── DASHBOARD ───────────────────────────────────────────────────
+  async function loadDashboard() {
+    if (!sb) {
+      document.getElementById('dashContent').innerHTML = '<p style="color:var(--danger)">Database not configured.</p>';
+      return;
+    }
+
+    document.getElementById('dashContent').innerHTML = '<div class="spinner"></div>';
+
+    try {
+      const { data: loans, error } = await sb.from('loans').select('*').order('created_at', { ascending: false });
       if (error) throw error;
 
-      const total = loans.length;
-      const pending = loans.filter(l => l.status === 'Pending Review').length;
+      const total    = loans.length;
+      const pending  = loans.filter(l => l.status === 'Pending Review').length;
       const approved = loans.filter(l => l.status === 'Approved').length;
-      const totalFunded = loans
-        .filter(l => l.status === 'Approved')
-        .reduce((sum, l) => sum + (l.loan_amount || 0), 0);
+      const funded   = loans.filter(l => l.status === 'Approved').reduce((s, l) => s + (l.loan_amount || 0), 0);
 
-      document.getElementById('totalLoans').textContent = total;
-      document.getElementById('pendingLoans').textContent = pending;
-      document.getElementById('approvedLoans').textContent = approved;
-      document.getElementById('totalFunded').textContent = `P${totalFunded.toLocaleString()}`;
+      document.getElementById('d_total').textContent   = total;
+      document.getElementById('d_pending').textContent = pending;
+      document.getElementById('d_approved').textContent= approved;
+      document.getElementById('d_funded').textContent  = 'P' + funded.toLocaleString();
 
-      if (loans.length === 0) {
-        document.getElementById('loansContainer').innerHTML = '<p style="text-align: center; padding: 20px; color: #666;">No applications yet.</p>';
+      if (!loans.length) {
+        document.getElementById('dashContent').innerHTML = '<p style="text-align:center;padding:30px;color:var(--text-muted)">No applications yet.</p>';
         return;
       }
 
-      let html = '<table class="loans-table"><thead><tr><th>Name</th><th>Age</th><th>Purpose</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead><tbody>';
-      
-      loans.forEach(loan => {
-        const date = new Date(loan.created_at).toLocaleDateString();
-        const statusClass = `status-${loan.status.toLowerCase().replace(' ', '')}`;
-        html += `
-          <tr>
-            <td>${loan.full_name}</td>
-            <td>${loan.age}</td>
-            <td>${loan.business_purpose}</td>
-            <td>P${loan.loan_amount}</td>
-            <td><span class="status-badge ${statusClass}">${loan.status}</span></td>
-            <td>${date}</td>
-          </tr>
-        `;
+      let html = `<div class="table-wrap"><table>
+        <thead><tr>
+          <th>Name</th><th>Age</th><th>Purpose</th><th>Amount</th><th>Student</th><th>Status</th><th>Date</th>
+        </tr></thead><tbody>`;
+
+      loans.forEach(l => {
+        const date = new Date(l.created_at).toLocaleDateString('en-BW', { day:'2-digit', month:'short', year:'numeric' });
+        const st   = (l.status || 'Pending Review').toLowerCase().replace(' ','');
+        const badgeCls = st === 'approved' ? 'badge-approved' : st === 'rejected' ? 'badge-rejected' : 'badge-pending';
+        html += `<tr>
+          <td>${l.full_name}</td>
+          <td>${l.age}</td>
+          <td>${l.business_purpose}</td>
+          <td>P${(l.loan_amount || 0).toLocaleString()}</td>
+          <td>${l.is_student ? '✅ Yes' : '—'}</td>
+          <td><span class="badge ${badgeCls}">${l.status || 'Pending Review'}</span></td>
+          <td>${date}</td>
+        </tr>`;
       });
 
-      html += '</tbody></table>';
-      document.getElementById('loansContainer').innerHTML = html;
-    } catch (error) {
-      console.error('Error loading dashboard:', error);
-      document.getElementById('loansContainer').innerHTML = `<p style="color: #dc3545;">Error: ${error.message}</p>`;
+      html += '</tbody></table></div>';
+      document.getElementById('dashContent').innerHTML = html;
+
+    } catch (err) {
+      document.getElementById('dashContent').innerHTML = `<p style="color:var(--danger)">Error: ${err.message}</p>`;
     }
   }
-</script>
 
+  // ─── ALERT HELPERS ───────────────────────────────────────────────
+  function showAlert(id, type, html) {
+    const el = document.getElementById(id);
+    el.innerHTML = html;
+    el.className = `alert alert-${type} show`;
+  }
+
+  function clearAlert(id) {
+    const el = document.getElementById(id);
+    el.className = 'alert';
+    el.innerHTML = '';
+  }
+</script>
 </body>
 </html>
