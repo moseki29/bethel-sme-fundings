@@ -571,7 +571,7 @@
       <div class="upload-section" id="upload_file_national_id" 
            ondragover="dragOver(event, this)" 
            ondragleave="dragLeave(this)"
-           ondrop="dropFile(event, 'file_national_id', 'upload_file_national_id')"
+           ondrop="dropFile(event, 'file_national_id', 'upload_file_national_id', 'name_file_national_id')"
            onclick="document.getElementById('file_national_id').click()">
         <div class="upload-icon">📄</div>
         <div class="upload-text">Click to upload or drag and drop</div>
@@ -588,7 +588,7 @@
       <div class="upload-section" id="upload_file_student_id" 
            ondragover="dragOver(event, this)" 
            ondragleave="dragLeave(this)"
-           ondrop="dropFile(event, 'file_student_id', 'upload_file_student_id')"
+           ondrop="dropFile(event, 'file_student_id', 'upload_file_student_id', 'name_file_student_id')"
            onclick="document.getElementById('file_student_id').click()">
         <div class="upload-icon">📄</div>
         <div class="upload-text">Click to upload or drag and drop</div>
@@ -605,7 +605,7 @@
       <div class="upload-section" id="upload_file_business_plan" 
            ondragover="dragOver(event, this)" 
            ondragleave="dragLeave(this)"
-           ondrop="dropFile(event, 'file_business_plan', 'upload_file_business_plan')"
+           ondrop="dropFile(event, 'file_business_plan', 'upload_file_business_plan', 'name_file_business_plan')"
            onclick="document.getElementById('file_business_plan').click()">
         <div class="upload-icon">📄</div>
         <div class="upload-text">Click to upload or drag and drop</div>
@@ -689,20 +689,29 @@
 </div>
 
 <script>
-  const SUPABASE_URL = 'https://rcgyzkevzqwxpfhwmfrq.supabase.co';
-  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJjZ3l6a2V2enF3eHBmaHdtZnJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3MjAwOTksImV4cCI6MjA5NTI5NjA5OX0.9Kj2P9LAKPogir1F_A44RdvHpo4ohaVhqM-o_Uwm8wE';
+  // ============ CONFIGURATION ============
+  // Replace these with your actual Supabase credentials from https://supabase.com
+  const SUPABASE_URL = 'YOUR_SUPABASE_URL'; // e.g., https://xxxxx.supabase.co
+  const SUPABASE_KEY = 'YOUR_SUPABASE_ANON_KEY'; // Your public anon key
 
   let sb = null;
   let currentUser = null;
   let currentUserProfile = null;
 
+  // ============ INITIALIZATION ============
   function initSupabase() {
+    if (SUPABASE_URL === 'YOUR_SUPABASE_URL') {
+      showAlert('⚠️ Setup required: Please update SUPABASE_URL and SUPABASE_KEY in the HTML file.\n\nSee SETUP.md for instructions.', 'info');
+      console.warn('Supabase credentials not configured');
+      return;
+    }
+    
     try {
       sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
       console.log('✅ Supabase initialized');
       checkAuthState();
     } catch (err) {
-      showAlert('❌ Database error: ' + err.message, 'error');
+      showAlert('❌ Database initialization error: ' + err.message, 'error');
       console.error('Supabase init error:', err);
     }
   }
@@ -724,6 +733,7 @@
     }
   }
 
+  // ============ USER PROFILE ============
   async function loadUserProfile() {
     if (!currentUser) return;
     try {
@@ -746,6 +756,7 @@
     try {
       await sb.from('login_history').insert([{
         user_id: currentUser.id,
+        login_time: new Date().toISOString(),
         ip_address: 'web-client',
         status: 'active',
         device_info: navigator.userAgent
@@ -756,6 +767,7 @@
     }
   }
 
+  // ============ AUTHENTICATION ============
   function toggleAuthForm() {
     document.getElementById('signupForm').classList.toggle('hidden');
     document.getElementById('signinForm').classList.toggle('hidden');
@@ -770,47 +782,44 @@
     const password = document.getElementById('signup_password').value;
     const termsAccepted = document.getElementById('signup_terms').checked;
 
-if (!firstName || !lastName || !email || !phone || !age || !password) {
-  showAlert('❌ Please fill in all fields', 'error');
-  return;
-}
+    if (!firstName || !lastName || !email || !phone || !age || !password) {
+      showAlert('❌ Please fill in all fields', 'error');
+      return;
+    }
 
-// Name validation - letters only
-const nameRegex = /^[a-zA-Z\s'-]+$/;
-if (!nameRegex.test(firstName) || !nameRegex.test(lastName)) {
-  showAlert('❌ Names should only contain letters', 'error');
-  return;
-}
+    // Validation
+    const nameRegex = /^[a-zA-Z\s'-]+$/;
+    if (!nameRegex.test(firstName) || !nameRegex.test(lastName)) {
+      showAlert('❌ Names should only contain letters', 'error');
+      return;
+    }
 
-// Email format check
-const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-if (!emailRegex.test(email)) {
-  showAlert('❌ Please enter a valid email address', 'error');
-  return;
-}
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      showAlert('❌ Please enter a valid email address', 'error');
+      return;
+    }
 
-// Phone validation - Botswana numbers (7xxxxxxx or +267 7xxxxxxx)
-const phoneRegex = /^(\+267|267)?[7][1-9]\d{6}$/;
-if (!phoneRegex.test(phone.replace(/\s/g, ''))) {
-  showAlert('❌ Enter a valid Botswana number (e.g. 71234567 or +267 71234567)', 'error');
-  return;
-}
+    const phoneRegex = /^(\+267|267)?[7][1-9]\d{6}$/;
+    if (!phoneRegex.test(phone.replace(/\s/g, ''))) {
+      showAlert('❌ Enter a valid Botswana number (e.g. 71234567 or +267 71234567)', 'error');
+      return;
+    }
 
-// Age range check
-if (isNaN(age) || age < 18 || age > 25) {
-  showAlert('❌ Age must be between 18 and 25 years old', 'error');
-  return;
-}
+    if (isNaN(age) || age < 18 || age > 25) {
+      showAlert('❌ Age must be between 18 and 25 years old', 'error');
+      return;
+    }
 
-if (password.length < 8) {
-  showAlert('❌ Password must be at least 8 characters', 'error');
-  return;
-}
+    if (password.length < 8) {
+      showAlert('❌ Password must be at least 8 characters', 'error');
+      return;
+    }
 
-if (!termsAccepted) {
-  showAlert('❌ Please accept the terms and conditions', 'error');
-  return;
-}
+    if (!termsAccepted) {
+      showAlert('❌ Please accept the terms and conditions', 'error');
+      return;
+    }
 
     const signupBtn = document.getElementById('signupBtn');
     signupBtn.disabled = true;
@@ -837,7 +846,8 @@ if (!termsAccepted) {
           phone: phone,
           age: age,
           account_status: 'active',
-          documents_verified: false
+          documents_verified: false,
+          created_at: new Date().toISOString()
         }]);
 
       if (profileError) throw profileError;
@@ -915,6 +925,7 @@ if (!termsAccepted) {
     }
   }
 
+  // ============ UI FLOW ============
   function showAuthPanel() {
     document.getElementById('authPanel').classList.remove('hidden');
     document.getElementById('documentsPanel').classList.add('hidden');
@@ -939,12 +950,26 @@ if (!termsAccepted) {
     }
   }
 
+  function updateStepIndicators(activeStep) {
+    for (let i = 1; i <= 3; i++) {
+      const step = document.getElementById(`step${i}`);
+      step.classList.remove('active', 'completed');
+      if (i < activeStep) {
+        step.classList.add('completed');
+      } else if (i === activeStep) {
+        step.classList.add('active');
+      }
+    }
+  }
+
+  // ============ FILE UPLOAD ============
   function fileSelected(inputId, zoneId, nameId) {
     const file = document.getElementById(inputId).files[0];
     if (!file) return;
 
     if (file.size > 5 * 1024 * 1024) {
       showAlert('❌ File too large. Max 5MB.', 'error');
+      document.getElementById(inputId).value = '';
       return;
     }
 
@@ -963,6 +988,7 @@ if (!termsAccepted) {
 
   function dragOver(e, zone) {
     e.preventDefault();
+    e.stopPropagation();
     zone.classList.add('dragover');
   }
 
@@ -970,10 +996,11 @@ if (!termsAccepted) {
     zone.classList.remove('dragover');
   }
 
-  function dropFile(e, inputId, zoneId) {
+  function dropFile(e, inputId, zoneId, nameId) {
     e.preventDefault();
+    e.stopPropagation();
     const zone = document.getElementById(zoneId);
-    dragLeave(zone);
+    zone.classList.remove('dragover');
 
     const files = e.dataTransfer.files;
     if (files.length) {
@@ -981,7 +1008,7 @@ if (!termsAccepted) {
       const dt = new DataTransfer();
       dt.items.add(files[0]);
       input.files = dt.files;
-      fileSelected(inputId, zoneId, 'name' + inputId.charAt(0).toUpperCase() + inputId.slice(1));
+      fileSelected(inputId, zoneId, nameId);
     }
   }
 
@@ -1000,58 +1027,37 @@ if (!termsAccepted) {
     uploadBtn.innerHTML = '<span class="spinner"></span>Uploading...';
 
     try {
-      const ts = Date.now();
-      const uid = currentUser.id;
+      // Upload files to Supabase storage
+      const nationalIdPath = `${currentUser.id}/national_id_${Date.now()}`;
+      const studentIdPath = `${currentUser.id}/student_id_${Date.now()}`;
+      const businessPlanPath = `${currentUser.id}/business_plan_${Date.now()}`;
 
-      const natPath = `${uid}/${ts}_national_id_${natFile.name}`;
-      const { error: e1 } = await sb.storage.from('documents').upload(natPath, natFile);
-      if (e1) throw e1;
+      const { error: err1 } = await sb.storage.from('documents').upload(nationalIdPath, natFile);
+      const { error: err2 } = await sb.storage.from('documents').upload(studentIdPath, stuFile);
+      const { error: err3 } = await sb.storage.from('documents').upload(businessPlanPath, bizFile);
 
-      const stuPath = `${uid}/${ts}_student_id_${stuFile.name}`;
-      const { error: e2 } = await sb.storage.from('documents').upload(stuPath, stuFile);
-      if (e2) throw e2;
+      if (err1 || err2 || err3) throw new Error('File upload failed');
 
-      const bizPath = `${uid}/${ts}_business_plan_${bizFile.name}`;
-      const { error: e3 } = await sb.storage.from('documents').upload(bizPath, bizFile);
-      if (e3) throw e3;
+      // Update user profile
+      const { error: updateError } = await sb
+        .from('users_profile')
+        .update({ 
+          documents_verified: true,
+          national_id_path: nationalIdPath,
+          student_id_path: studentIdPath,
+          business_plan_path: businessPlanPath,
+          documents_uploaded_at: new Date().toISOString()
+        })
+        .eq('id', currentUser.id);
 
-      const { error: docError } = await sb.from('documents').insert([
-        {
-          user_id: uid,
-          document_type: 'national_id',
-          original_filename: natFile.name,
-          storage_path: natPath,
-          file_size_kb: Math.round(natFile.size / 1024),
-          file_mime_type: natFile.type,
-          verification_status: 'pending'
-        },
-        {
-          user_id: uid,
-          document_type: 'student_id',
-          original_filename: stuFile.name,
-          storage_path: stuPath,
-          file_size_kb: Math.round(stuFile.size / 1024),
-          file_mime_type: stuFile.type,
-          verification_status: 'pending'
-        },
-        {
-          user_id: uid,
-          document_type: 'business_plan',
-          original_filename: bizFile.name,
-          storage_path: bizPath,
-          file_size_kb: Math.round(bizFile.size / 1024),
-          file_mime_type: bizFile.type,
-          verification_status: 'pending'
-        }
-      ]);
+      if (updateError) throw updateError;
 
-      if (docError) throw docError;
-
-      showAlert('✅ Documents uploaded!\n\nWaiting for admin verification...', 'success');
-
+      currentUserProfile.documents_verified = true;
+      showAlert('✅ Documents uploaded successfully!', 'success');
+      
       setTimeout(() => {
         showApplicationFlow();
-      }, 2000);
+      }, 1500);
 
     } catch (err) {
       showAlert('❌ Upload error:\n' + err.message, 'error');
@@ -1062,24 +1068,14 @@ if (!termsAccepted) {
     }
   }
 
+  // ============ LOAN APPLICATION ============
   function toggleStudentField() {
-    const val = document.getElementById('app_student').value;
-    const field = document.getElementById('institutionField');
-    if (val === 'yes') {
-      field.classList.remove('hidden');
-    } else {
-      field.classList.add('hidden');
-    }
+    const isStudent = document.getElementById('app_student').value === 'yes';
+    document.getElementById('institutionField').classList.toggle('hidden', !isStudent);
   }
 
   function updatePurposePlaceholder() {
-    const purpose = document.getElementById('app_purpose').value;
-    const textarea = document.getElementById('app_purposeText');
-    if (purpose === 'Establishing') {
-      textarea.placeholder = 'Describe the business you want to establish...';
-    } else if (purpose === 'Scaling') {
-      textarea.placeholder = 'Describe your existing business and expansion plans...';
-    }
+    // Additional UI updates if needed
   }
 
   async function submitLoanApplication() {
@@ -1087,23 +1083,28 @@ if (!termsAccepted) {
     const institution = document.getElementById('app_institution').value.trim();
     const purpose = document.getElementById('app_purpose').value;
     const purposeText = document.getElementById('app_purposeText').value.trim();
-    const amount = parseFloat(document.getElementById('app_amount').value);
-    const revenue = parseFloat(document.getElementById('app_revenue').value);
-    const agreementOk = document.getElementById('ck_agreement').checked;
-    const accurateOk = document.getElementById('ck_accurate').checked;
+    const amount = parseInt(document.getElementById('app_amount').value);
+    const revenue = parseInt(document.getElementById('app_revenue').value);
+    const agreedTerms = document.getElementById('ck_agreement').checked;
+    const confirmedAccuracy = document.getElementById('ck_accurate').checked;
 
-    let errors = [];
+    if (!student || !purpose || !purposeText || !amount || !revenue) {
+      showAlert('❌ Please fill in all required fields', 'error');
+      return;
+    }
 
-    if (!student) errors.push('Select student status');
-    if (student === 'yes' && !institution) errors.push('Enter institution name');
-    if (!purpose) errors.push('Select funding purpose');
-    if (!purposeText) errors.push('Explain business plan');
-    if (!amount || amount < 500 || amount > 2000) errors.push('Amount must be P500-P2,000');
-    if (!revenue || revenue <= 0) errors.push('Enter monthly revenue');
-    if (!agreementOk || !accurateOk) errors.push('Check all boxes');
+    if (student === 'yes' && !institution) {
+      showAlert('❌ Please enter your institution name', 'error');
+      return;
+    }
 
-    if (errors.length > 0) {
-      showAlert('❌ Please fix:\n' + errors.join('\n'), 'error');
+    if (amount < 500 || amount > 2000) {
+      showAlert('❌ Loan amount must be between P500 and P2000', 'error');
+      return;
+    }
+
+    if (!agreedTerms || !confirmedAccuracy) {
+      showAlert('❌ Please accept all acknowledgements', 'error');
       return;
     }
 
@@ -1112,65 +1113,50 @@ if (!termsAccepted) {
     submitBtn.innerHTML = '<span class="spinner"></span>Submitting...';
 
     try {
-      const uid = currentUser.id;
-      const name = `${currentUserProfile.first_name} ${currentUserProfile.last_name}`;
+      const { error } = await sb
+        .from('loan_applications')
+        .insert([{
+          user_id: currentUser.id,
+          is_student: student === 'yes',
+          institution: institution || null,
+          purpose: purpose,
+          purpose_description: purposeText,
+          loan_amount: amount,
+          monthly_revenue: revenue,
+          status: 'pending',
+          created_at: new Date().toISOString()
+        }]);
 
-      const { data: loanData, error: loanError } = await sb.from('loans').insert([{
-        user_id: uid,
-        full_name: name,
-        age: currentUserProfile.age,
-        is_student: student === 'yes',
-        institution: student === 'yes' ? institution : null,
-        business_purpose: purpose,
-        purpose_description: purposeText,
-        loan_amount: amount,
-        monthly_revenue: revenue,
-        documents_verified: false,
-        status: 'Pending Review'
-      }]).select();
+      if (error) throw error;
 
-      if (loanError) throw loanError;
-
-      const loanId = loanData[0].id;
-
-      await sb.from('documents')
-        .update({ loan_id: loanId })
-        .eq('user_id', uid)
-        .is('loan_id', null);
-
-      showAlert(`✅ Application submitted!\n\nAmount: P${amount}\nStatus: Pending Review`, 'success');
+      showAlert('✅ Loan application submitted successfully!\n\nYou will be contacted within 5 business days.', 'success');
+      
+      setTimeout(() => {
+        handleLogout();
+      }, 2000);
 
     } catch (err) {
-      showAlert('❌ Error:\n' + err.message, 'error');
-      console.error('Submit error:', err);
+      showAlert('❌ Submission error:\n' + err.message, 'error');
+      console.error('Submission error:', err);
     } finally {
       submitBtn.disabled = false;
       submitBtn.innerHTML = 'Submit Loan Application';
     }
   }
 
-  function updateStepIndicators(activeStep) {
-    for (let i = 1; i <= 3; i++) {
-      const step = document.getElementById('step' + i);
-      step.classList.remove('active', 'completed');
-      if (i < activeStep) {
-        step.classList.add('completed');
-      } else if (i === activeStep) {
-        step.classList.add('active');
-      }
-    }
-  }
-
+  // ============ UTILITIES ============
   function showAlert(message, type = 'info') {
     const alert = document.getElementById('mainAlert');
     alert.textContent = message;
     alert.className = `alert show alert-${type}`;
+    
     setTimeout(() => {
       alert.classList.remove('show');
-    }, 6000);
+    }, 5000);
   }
 
-  window.addEventListener('DOMContentLoaded', initSupabase);
+  // Initialize on page load
+  window.addEventListener('load', initSupabase);
 </script>
 
 </body>
