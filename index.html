@@ -46,7 +46,6 @@
       pointer-events: none;
     }
 
-    /* GOLD CORNER ACCENT */
     body::after {
       content: '';
       position: fixed;
@@ -58,12 +57,11 @@
 
     .app-wrap {
       width: 100%;
-      max-width: 560px;
+      max-width: 600px;
       position: relative;
       z-index: 1;
     }
 
-    /* HEADER */
     .brand-header {
       text-align: center;
       margin-bottom: 32px;
@@ -100,127 +98,97 @@
     .brand-header p {
       color: rgba(255,255,255,0.5);
       font-size: 13px;
-      margin-top: 6px;
-      letter-spacing: 0.5px;
+      margin-top: 8px;
+      letter-spacing: 1px;
     }
 
-    /* CARD */
-    .card {
-      background: var(--white);
-      border-radius: 24px;
-      box-shadow: 0 30px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(212,175,55,0.15);
-      overflow: hidden;
-      animation: fadeUp 0.6s ease 0.1s both;
-    }
-
-    /* STEP INDICATOR */
-    .step-bar {
-      background: var(--deep);
-      padding: 16px 28px;
+    /* STEP INDICATORS */
+    .steps-container {
       display: flex;
-      align-items: center;
-      gap: 8px;
+      justify-content: space-between;
+      margin: 30px 0;
+      position: relative;
+      padding: 0 20px;
     }
 
-    .step-item {
+    .steps-container::before {
+      content: '';
+      position: absolute;
+      top: 20px;
+      left: 50px;
+      right: 50px;
+      height: 2px;
+      background: var(--border);
+      z-index: 0;
+    }
+
+    .step {
       display: flex;
+      flex-direction: column;
       align-items: center;
-      gap: 8px;
+      position: relative;
+      z-index: 1;
       flex: 1;
     }
 
-    .step-dot {
-      width: 28px;
-      height: 28px;
+    .step-circle {
+      width: 40px;
+      height: 40px;
       border-radius: 50%;
-      background: rgba(255,255,255,0.1);
-      border: 2px solid rgba(255,255,255,0.2);
-      color: rgba(255,255,255,0.4);
-      font-size: 12px;
-      font-weight: 700;
+      background: white;
+      border: 3px solid var(--border);
       display: flex;
       align-items: center;
       justify-content: center;
-      flex-shrink: 0;
-      transition: all 0.3s;
+      font-weight: bold;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      transition: 0.3s;
     }
 
-    .step-dot.active {
-      background: var(--gold);
-      border-color: var(--gold);
+    .step.active .step-circle {
+      background: var(--gold-light);
+      border-color: var(--gold-light);
       color: var(--navy);
+      box-shadow: 0 0 15px rgba(255,215,0,0.4);
     }
 
-    .step-dot.done {
+    .step.completed .step-circle {
       background: var(--success);
       border-color: var(--success);
       color: white;
     }
 
     .step-label {
-      font-size: 11px;
-      color: rgba(255,255,255,0.4);
+      font-size: 12px;
       font-weight: 500;
-      letter-spacing: 0.3px;
-      transition: color 0.3s;
-    }
-
-    .step-label.active { color: var(--gold-light); }
-    .step-label.done { color: rgba(255,255,255,0.7); }
-
-    .step-line {
-      flex: 1;
-      height: 1px;
-      background: rgba(255,255,255,0.1);
-      max-width: 30px;
-    }
-
-    /* PANEL */
-    .panel {
-      padding: 32px 36px;
-      display: none;
-    }
-
-    .panel.active { display: block; }
-
-    .panel-title {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.6rem;
-      color: var(--deep);
-      margin-bottom: 6px;
-      font-weight: 700;
-    }
-
-    .panel-subtitle {
       color: var(--text-muted);
-      font-size: 14px;
-      margin-bottom: 28px;
-      line-height: 1.5;
+      text-align: center;
     }
 
-    /* FORM ELEMENTS */
-    .form-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
+    .step.active .step-label { color: var(--gold-light); font-weight: 600; }
+    .step.completed .step-label { color: var(--success); }
+
+    .panel {
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      animation: slideUp 0.5s ease both;
+      margin-bottom: 20px;
     }
 
     .form-group {
       margin-bottom: 20px;
     }
 
-    .form-group.full { grid-column: 1 / -1; }
-
     label {
       display: block;
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--deep);
-      margin-bottom: 7px;
-      letter-spacing: 0.2px;
+      font-weight: 500;
+      color: var(--text-dark);
+      margin-bottom: 8px;
+      font-size: 14px;
     }
-
-    label .req { color: var(--gold); margin-left: 3px; }
 
     input[type="text"],
     input[type="email"],
@@ -230,1179 +198,980 @@
     select,
     textarea {
       width: 100%;
-      padding: 13px 16px;
+      padding: 12px 14px;
       border: 2px solid var(--border);
-      border-radius: 12px;
+      border-radius: 10px;
+      font-size: 14px;
       font-family: 'DM Sans', sans-serif;
-      font-size: 15px;
-      color: var(--text-dark);
-      background: var(--cream);
-      transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
-      outline: none;
+      transition: 0.3s;
     }
 
     input:focus, select:focus, textarea:focus {
-      border-color: var(--gold);
-      background: white;
-      box-shadow: 0 0 0 4px rgba(212,175,55,0.12);
+      border-color: var(--gold-light);
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(255,215,0,0.1);
     }
 
-    textarea { resize: vertical; min-height: 110px; }
-
-    select { cursor: pointer; }
-
-    /* FILE UPLOAD */
-    .file-upload-area {
-      border: 2px dashed var(--border);
-      border-radius: 12px;
-      padding: 20px;
-      text-align: center;
-      background: var(--cream);
-      cursor: pointer;
-      transition: all 0.2s;
-      position: relative;
+    textarea {
+      resize: vertical;
+      min-height: 100px;
     }
 
-    .file-upload-area:hover, .file-upload-area.dragover {
-      border-color: var(--gold);
-      background: #fdf9ee;
-    }
-
-    .file-upload-area.uploaded {
-      border-color: var(--success);
-      background: #f0faf5;
-    }
-
-    .file-upload-area input[type="file"] {
-      position: absolute;
-      inset: 0;
-      opacity: 0;
-      cursor: pointer;
-      width: 100%;
-      height: 100%;
-    }
-
-    .upload-icon {
-      font-size: 28px;
-      margin-bottom: 8px;
-    }
-
-    .upload-text {
-      font-size: 13px;
-      color: var(--text-muted);
-    }
-
-    .upload-text strong {
-      display: block;
-      color: var(--deep);
-      font-size: 14px;
-      margin-bottom: 3px;
-    }
-
-    .file-name {
-      font-size: 12px;
-      color: var(--success);
-      font-weight: 600;
-      margin-top: 6px;
-      display: none;
-    }
-
-    .file-name.show { display: block; }
-
-    /* DOCS STATUS */
-    .doc-verify-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 11px;
-      font-weight: 700;
-      padding: 4px 10px;
-      border-radius: 20px;
-      margin-top: 6px;
-    }
-
-    .doc-verify-badge.pending {
-      background: #fff8e1;
-      color: #b8860b;
-    }
-
-    .doc-verify-badge.verified {
-      background: #e8f5e9;
-      color: #1a7a4a;
-    }
-
-    /* LOAN INFO BOX */
-    .loan-info-box {
-      background: linear-gradient(135deg, var(--deep), var(--mid));
-      color: white;
-      border-radius: 16px;
-      padding: 20px 24px;
-      margin-bottom: 28px;
-      display: flex;
-      gap: 20px;
-      align-items: center;
-    }
-
-    .loan-info-icon {
-      font-size: 36px;
-      flex-shrink: 0;
-    }
-
-    .loan-info-box h3 {
-      font-family: 'Playfair Display', serif;
-      color: var(--gold-light);
-      font-size: 1.1rem;
-      margin-bottom: 4px;
-    }
-
-    .loan-info-box p {
-      font-size: 13px;
-      opacity: 0.8;
-      line-height: 1.5;
-    }
-
-    /* CHECKLIST */
-    .checklist {
-      background: var(--cream);
-      border-radius: 14px;
-      padding: 20px;
-      margin-bottom: 20px;
-    }
-
-    .check-item {
+    .checkbox-group {
       display: flex;
       align-items: flex-start;
-      gap: 12px;
-      padding: 10px 0;
-      border-bottom: 1px solid var(--border);
+      gap: 10px;
+      margin: 15px 0;
+      padding: 12px;
+      background: #f8f8f8;
+      border-radius: 10px;
     }
 
-    .check-item:last-child { border-bottom: none; }
-
-    .check-item input[type="checkbox"] {
+    input[type="checkbox"] {
       width: 18px;
       height: 18px;
       margin-top: 2px;
-      accent-color: var(--gold);
-      flex-shrink: 0;
       cursor: pointer;
+      accent-color: var(--gold-light);
     }
 
-    .check-item label {
-      font-size: 13.5px;
-      font-weight: 400;
+    .checkbox-label {
+      flex: 1;
+      font-size: 13px;
       color: var(--text-dark);
-      line-height: 1.5;
-      margin-bottom: 0;
       cursor: pointer;
     }
 
-    .check-item label strong {
-      display: block;
-      font-weight: 700;
-      color: var(--deep);
-      margin-bottom: 2px;
+    /* DOCUMENT UPLOAD */
+    .upload-section {
+      background: #f8f8f8;
+      border: 2px dashed var(--border);
+      border-radius: 12px;
+      padding: 30px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: 0.3s;
+      position: relative;
     }
 
-    /* BUTTONS */
-    .btn-primary {
+    .upload-section:hover {
+      border-color: var(--gold-light);
+      background: rgba(255,215,0,0.05);
+    }
+
+    .upload-section.dragover {
+      border-color: var(--gold-light);
+      background: rgba(255,215,0,0.1);
+    }
+
+    .upload-section input[type="file"] {
+      display: none;
+    }
+
+    .upload-icon {
+      font-size: 32px;
+      margin-bottom: 10px;
+    }
+
+    .upload-text {
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+
+    .file-name {
+      color: var(--success);
+      font-weight: 600;
+      margin-top: 8px;
+      display: none;
+    }
+
+    .file-name.show {
+      display: block;
+    }
+
+    .upload-badge {
+      display: inline-block;
+      background: var(--success);
+      color: white;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      margin-top: 8px;
+      display: none;
+    }
+
+    .upload-badge.show {
+      display: inline-block;
+    }
+
+    .upload-badge.verified {
+      background: var(--success);
+    }
+
+    .upload-badge.pending {
+      background: #f59e0b;
+    }
+
+    .btn {
       width: 100%;
-      padding: 16px;
+      padding: 14px 20px;
+      border: none;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.3s;
+      font-family: 'DM Sans', sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .btn-primary {
       background: linear-gradient(135deg, var(--gold), var(--gold-light));
       color: var(--navy);
-      border: none;
-      border-radius: 14px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 16px;
-      font-weight: 700;
-      letter-spacing: 0.3px;
-      cursor: pointer;
-      transition: all 0.25s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      margin-top: 8px;
     }
 
     .btn-primary:hover:not(:disabled) {
       transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(212,175,55,0.4);
-    }
-
-    .btn-primary:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-      transform: none;
+      box-shadow: 0 10px 25px rgba(255,215,0,0.3);
     }
 
     .btn-secondary {
-      background: transparent;
+      background: white;
       border: 2px solid var(--border);
-      color: var(--text-muted);
-      padding: 12px;
-      border-radius: 12px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s;
-      width: 100%;
-      margin-top: 10px;
-    }
-
-    .btn-secondary:hover {
-      border-color: var(--deep);
-      color: var(--deep);
-    }
-
-    /* ALERTS */
-    .alert {
-      padding: 14px 18px;
-      border-radius: 12px;
-      font-size: 13.5px;
-      line-height: 1.5;
-      margin-top: 16px;
-      display: none;
-    }
-
-    .alert.show { display: block; }
-
-    .alert-error {
-      background: #fdf0ef;
-      border: 2px solid #e74c3c;
-      color: var(--danger);
-    }
-
-    .alert-success {
-      background: #edfaf3;
-      border: 2px solid #2ecc71;
-      color: var(--success);
-    }
-
-    .alert-info {
-      background: #eef4ff;
-      border: 2px solid #3b82f6;
-      color: #1d4ed8;
-    }
-
-    .alert ul { padding-left: 18px; margin-top: 8px; }
-    .alert li { margin-bottom: 4px; }
-
-    /* AUTH FOOTER */
-    .auth-switch {
-      text-align: center;
-      margin-top: 20px;
-      font-size: 14px;
-      color: var(--text-muted);
-    }
-
-    .auth-switch a {
-      color: var(--deep);
-      font-weight: 700;
-      cursor: pointer;
-      text-decoration: none;
-      border-bottom: 1px solid var(--gold);
-      transition: color 0.2s;
-    }
-
-    .auth-switch a:hover { color: var(--gold); }
-
-    /* NAV BAR (post-login) */
-    .app-nav {
-      background: var(--deep);
-      display: none;
-      padding: 0 36px;
-      border-bottom: 1px solid rgba(212,175,55,0.2);
-    }
-
-    .app-nav.show { display: flex; }
-
-    .nav-item {
-      padding: 14px 0;
-      margin-right: 24px;
-      color: rgba(255,255,255,0.5);
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      border-bottom: 3px solid transparent;
-      transition: all 0.2s;
-    }
-
-    .nav-item.active {
-      color: var(--gold-light);
-      border-bottom-color: var(--gold-light);
-    }
-
-    .nav-item:hover { color: white; }
-
-    /* TOP BAR */
-    .top-bar {
-      background: var(--navy);
-      padding: 14px 36px;
-      display: none;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .top-bar.show { display: flex; }
-
-    .user-info {
-      color: rgba(255,255,255,0.7);
-      font-size: 13px;
-    }
-
-    .user-info strong { color: var(--gold-light); }
-
-    .btn-logout {
-      padding: 8px 16px;
-      background: rgba(192,57,43,0.15);
-      border: 1px solid rgba(192,57,43,0.4);
-      color: #e74c3c;
-      border-radius: 8px;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s;
-      font-family: 'DM Sans', sans-serif;
-    }
-
-    .btn-logout:hover {
-      background: rgba(192,57,43,0.3);
-    }
-
-    /* DASHBOARD */
-    .stats-row {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 14px;
-      margin-bottom: 28px;
-    }
-
-    .stat-tile {
-      background: linear-gradient(135deg, var(--deep), var(--mid));
-      border-radius: 16px;
-      padding: 20px;
-      text-align: center;
-    }
-
-    .stat-tile .stat-val {
-      font-family: 'Playfair Display', serif;
-      font-size: 2rem;
-      color: var(--gold-light);
-      font-weight: 900;
-      line-height: 1;
-      margin-bottom: 6px;
-    }
-
-    .stat-tile .stat-lbl {
-      font-size: 12px;
-      color: rgba(255,255,255,0.6);
-      font-weight: 500;
-      letter-spacing: 0.3px;
-    }
-
-    .table-wrap { overflow-x: auto; margin-top: 16px; }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 13.5px;
-    }
-
-    th {
-      background: var(--deep);
-      color: white;
-      padding: 12px 14px;
-      text-align: left;
-      font-size: 12px;
-      letter-spacing: 0.5px;
-      font-weight: 700;
-    }
-
-    th:first-child { border-radius: 10px 0 0 0; }
-    th:last-child { border-radius: 0 10px 0 0; }
-
-    td {
-      padding: 12px 14px;
-      border-bottom: 1px solid var(--border);
       color: var(--text-dark);
     }
 
-    tr:last-child td { border-bottom: none; }
-    tr:hover td { background: #fafaf8; }
-
-    .badge {
-      display: inline-block;
-      padding: 4px 10px;
-      border-radius: 20px;
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.3px;
+    .btn-secondary:hover:not(:disabled) {
+      border-color: var(--gold-light);
+      background: rgba(255,215,0,0.05);
     }
 
-    .badge-pending { background: #fff8e1; color: #b8860b; }
-    .badge-approved { background: #e8f5e9; color: #1a7a4a; }
-    .badge-rejected { background: #fdf0ef; color: #c0392b; }
-
-    /* DIVIDER */
-    .divider {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      margin: 20px 0;
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
     }
 
-    .divider::before, .divider::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: var(--border);
+    .btn-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 20px;
     }
 
-    .divider span {
-      font-size: 12px;
-      color: var(--text-muted);
-      font-weight: 600;
-      letter-spacing: 1px;
-      text-transform: uppercase;
+    .btn-group .btn {
+      width: 100%;
     }
 
-    /* SPINNER */
+    .alert {
+      padding: 16px 20px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      display: none;
+      animation: slideDown 0.3s ease both;
+      white-space: pre-wrap;
+    }
+
+    .alert.show {
+      display: block;
+    }
+
+    .alert-success {
+      background: #d4edda;
+      border: 2px solid #28a745;
+      color: #155724;
+    }
+
+    .alert-error {
+      background: #f8d7da;
+      border: 2px solid #dc3545;
+      color: #721c24;
+    }
+
+    .alert-info {
+      background: #d1ecf1;
+      border: 2px solid #0c5460;
+      color: #0c5460;
+    }
+
+    .hidden { display: none !important; }
+
     .spinner {
-      width: 36px;
-      height: 36px;
-      border: 3px solid var(--border);
-      border-top-color: var(--gold);
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255,215,0,0.3);
+      border-top-color: var(--gold-light);
       border-radius: 50%;
       animation: spin 0.8s linear infinite;
-      margin: 30px auto;
+      margin-right: 8px;
     }
 
-    /* SUCCESS STATE */
-    .success-screen {
-      text-align: center;
-      padding: 20px 0;
-    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes fadeDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
-    .success-icon {
-      width: 72px;
-      height: 72px;
-      background: linear-gradient(135deg, var(--gold), var(--gold-light));
-      border-radius: 50%;
+    .user-info {
+      background: #f0f0f0;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 20px;
       display: flex;
+      justify-content: space-between;
       align-items: center;
-      justify-content: center;
-      font-size: 32px;
-      margin: 0 auto 20px;
-      box-shadow: 0 8px 30px rgba(212,175,55,0.4);
     }
 
-    .section-heading {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.15rem;
-      color: var(--deep);
-      margin-bottom: 16px;
-      font-weight: 700;
-      padding-bottom: 10px;
-      border-bottom: 2px solid var(--border);
+    .user-info-text {
+      font-size: 14px;
+      color: var(--text-dark);
     }
 
-    /* PASSWORD STRENGTH */
-    .pw-strength {
-      margin-top: 6px;
-      display: flex;
-      gap: 4px;
+    .user-info-status {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
     }
 
-    .pw-bar {
-      flex: 1;
-      height: 3px;
-      border-radius: 3px;
-      background: var(--border);
-      transition: background 0.3s;
+    .status-active {
+      background: #d4edda;
+      color: #155724;
     }
 
-    .pw-bar.weak { background: #e74c3c; }
-    .pw-bar.medium { background: #f39c12; }
-    .pw-bar.strong { background: #27ae60; }
-
-    /* ANIMATIONS */
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
+    .status-pending {
+      background: #fff3cd;
+      color: #856404;
     }
 
-    @keyframes fadeDown {
-      from { opacity: 0; transform: translateY(-15px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    .fade-in {
-      animation: fadeUp 0.4s ease both;
-    }
-
-    /* RESPONSIVE */
-    @media (max-width: 480px) {
-      .panel { padding: 24px 20px; }
-      .brand-header h1 { font-size: 1.9rem; }
-      .form-row { grid-template-columns: 1fr; }
-      .stats-row { grid-template-columns: 1fr; }
-      .app-nav, .top-bar { padding-left: 20px; padding-right: 20px; }
+    @media (max-width: 600px) {
+      .brand-header h1 { font-size: 1.8rem; }
+      .panel { padding: 25px; }
+      .steps-container { padding: 0; }
+      .steps-container::before { left: 20px; right: 20px; }
+      .btn-group { grid-template-columns: 1fr; }
     }
   </style>
 </head>
+
 <body>
 
 <div class="app-wrap">
 
-  <!-- BRAND HEADER -->
+  <!-- HEADER -->
   <div class="brand-header">
-    <div class="brand-badge">Bethel Youth Capital Initiative</div>
+    <div class="brand-badge">🏛️ Bethel Youth Capital</div>
     <h1>BETHEL <span>SME</span> FUNDINGS</h1>
-    <p>Empowering young entrepreneurs across Botswana</p>
+    <p>Empowering Young Entrepreneurs</p>
   </div>
 
-  <div class="card">
+  <!-- STEP INDICATORS -->
+  <div class="steps-container" id="stepsContainer">
+    <div class="step active" id="step1">
+      <div class="step-circle">1</div>
+      <div class="step-label">Create Account</div>
+    </div>
+    <div class="step" id="step2">
+      <div class="step-circle">2</div>
+      <div class="step-label">Upload Documents</div>
+    </div>
+    <div class="step" id="step3">
+      <div class="step-circle">3</div>
+      <div class="step-label">Loan Application</div>
+    </div>
+  </div>
 
-    <!-- TOP BAR (logged in) -->
-    <div class="top-bar" id="topBar">
-      <div class="user-info">Logged in as <strong id="userEmailDisplay"></strong></div>
-      <button class="btn-logout" onclick="handleLogout()">Sign Out</button>
+  <!-- ALERT -->
+  <div id="mainAlert" class="alert"></div>
+
+  <!-- STEP 1: AUTHENTICATION PANEL -->
+  <div id="authPanel" class="panel">
+    <div style="text-align: center; margin-bottom: 25px;">
+      <h2 style="color: var(--text-dark); font-family: 'Playfair Display', serif; font-size: 1.6rem; margin-bottom: 8px;">Sign In / Sign Up</h2>
+      <p style="color: var(--text-muted); font-size: 14px;">Create an account or sign in to proceed</p>
     </div>
 
-    <!-- APP NAV -->
-    <div class="app-nav" id="appNav">
-      <div class="nav-item active" onclick="goTab('application', this)">Application</div>
-      <div class="nav-item" onclick="goTab('dashboard', this)">Dashboard</div>
+    <!-- SIGN UP FORM -->
+    <div id="signupForm">
+      <div class="form-group">
+        <label>First Name *</label>
+        <input type="text" id="signup_firstName" placeholder="Your first name" required>
+      </div>
+
+      <div class="form-group">
+        <label>Last Name *</label>
+        <input type="text" id="signup_lastName" placeholder="Your last name" required>
+      </div>
+
+      <div class="form-group">
+        <label>Email Address *</label>
+        <input type="email" id="signup_email" placeholder="your@email.com" required>
+      </div>
+
+      <div class="form-group">
+        <label>Phone Number *</label>
+        <input type="tel" id="signup_phone" placeholder="+267 XXXXXXXX" required>
+      </div>
+
+      <div class="form-group">
+        <label>Age *</label>
+        <input type="number" id="signup_age" placeholder="18-25 years old" min="18" max="25" required>
+      </div>
+
+      <div class="form-group">
+        <label>Password (min 8 characters) *</label>
+        <input type="password" id="signup_password" placeholder="••••••••" required>
+      </div>
+
+      <div class="checkbox-group">
+        <input type="checkbox" id="signup_terms" required>
+        <label class="checkbox-label" for="signup_terms">I agree to the Terms and Conditions</label>
+      </div>
+
+      <button class="btn btn-primary" onclick="handleSignup()" id="signupBtn">Create Account</button>
+
+      <button class="btn btn-secondary" style="margin-top: 10px;" onclick="toggleAuthForm()">Already have an account? Sign In</button>
     </div>
 
-    <!-- ===================== PANEL: SIGN UP ===================== -->
-    <div class="panel active" id="panelSignup">
-      <div class="panel-title">Create Account</div>
-      <div class="panel-subtitle">You must register before submitting a loan application. Your documents will be linked to your account.</div>
-
-      <div class="form-row">
-        <div class="form-group">
-          <label>First Name <span class="req">*</span></label>
-          <input type="text" id="su_fname" placeholder="e.g. Kefilwe">
-        </div>
-        <div class="form-group">
-          <label>Last Name <span class="req">*</span></label>
-          <input type="text" id="su_lname" placeholder="e.g. Moeti">
-        </div>
+    <!-- SIGN IN FORM -->
+    <div id="signinForm" class="hidden">
+      <div class="form-group">
+        <label>Email Address *</label>
+        <input type="email" id="signin_email" placeholder="your@email.com" required>
       </div>
 
       <div class="form-group">
-        <label>Email Address <span class="req">*</span></label>
-        <input type="email" id="su_email" placeholder="your@email.com">
+        <label>Password *</label>
+        <input type="password" id="signin_password" placeholder="••••••••" required>
       </div>
 
-      <div class="form-group">
-        <label>Phone Number <span class="req">*</span></label>
-        <input type="tel" id="su_phone" placeholder="+267 7x xxx xxx">
-      </div>
+      <button class="btn btn-primary" onclick="handleSignin()" id="signinBtn">Sign In</button>
 
-      <div class="form-group">
-        <label>Password <span class="req">*</span></label>
-        <input type="password" id="su_password" placeholder="Min 6 characters" oninput="checkPwStrength(this.value)">
-        <div class="pw-strength">
-          <div class="pw-bar" id="pwBar1"></div>
-          <div class="pw-bar" id="pwBar2"></div>
-          <div class="pw-bar" id="pwBar3"></div>
-        </div>
-      </div>
+      <button class="btn btn-secondary" style="margin-top: 10px;" onclick="toggleAuthForm()">Don't have an account? Sign Up</button>
+    </div>
+  </div>
 
-      <div class="form-group">
-        <label>Confirm Password <span class="req">*</span></label>
-        <input type="password" id="su_confirm" placeholder="Repeat password">
-      </div>
-
-      <button class="btn-primary" onclick="handleSignup()">
-        <span>Create My Account</span> →
-      </button>
-
-      <div class="alert alert-error" id="signupAlert"></div>
-
-      <div class="divider"><span>Already registered?</span></div>
-      <div class="auth-switch">Have an account? <a onclick="showPanel('panelLogin')">Sign in here</a></div>
+  <!-- STEP 2: DOCUMENTS PANEL -->
+  <div id="documentsPanel" class="panel hidden">
+    <div id="userGreeting" class="user-info">
+      <div class="user-info-text">Logged in as <strong id="userEmail"></strong></div>
+      <span class="user-info-status status-active">Active</span>
     </div>
 
-    <!-- ===================== PANEL: LOGIN ===================== -->
-    <div class="panel" id="panelLogin">
-      <div class="panel-title">Welcome Back</div>
-      <div class="panel-subtitle">Sign in to access your loan application and track your status.</div>
-
-      <div class="form-group">
-        <label>Email Address <span class="req">*</span></label>
-        <input type="email" id="li_email" placeholder="your@email.com">
-      </div>
-
-      <div class="form-group">
-        <label>Password <span class="req">*</span></label>
-        <input type="password" id="li_password" placeholder="Your password">
-      </div>
-
-      <button class="btn-primary" onclick="handleLogin()">
-        <span>Sign In</span> →
-      </button>
-
-      <div class="alert alert-error" id="loginAlert"></div>
-
-      <div class="divider"><span>New here?</span></div>
-      <div class="auth-switch">No account yet? <a onclick="showPanel('panelSignup')">Register now</a></div>
+    <div style="margin-bottom: 25px;">
+      <h2 style="color: var(--text-dark); font-family: 'Playfair Display', serif; font-size: 1.6rem; margin-bottom: 8px;">Upload Required Documents</h2>
+      <p style="color: var(--text-muted); font-size: 14px;">All documents must be verified before you can proceed to the loan application</p>
     </div>
 
-    <!-- ===================== PANEL: APPLICATION ===================== -->
-    <div class="panel" id="application">
-
-      <div class="loan-info-box">
-        <div class="loan-info-icon">💼</div>
-        <div>
-          <h3>MICRO LOANS — P500 to P2,000</h3>
-          <p>Interest: 10% – 20% &nbsp;|&nbsp; Max repayment: 8 months<br>Ages 18–25 only. Document verification required.</p>
-        </div>
+    <!-- DOCUMENT 1: National ID -->
+    <div class="form-group">
+      <label>📋 National ID / Omang Document *</label>
+      <div class="upload-section" id="upload_file_national_id" 
+           ondragover="dragOver(event, this)" 
+           ondragleave="dragLeave(this)"
+           ondrop="dropFile(event, 'file_national_id', 'upload_file_national_id')"
+           onclick="document.getElementById('file_national_id').click()">
+        <div class="upload-icon">📄</div>
+        <div class="upload-text">Click to upload or drag and drop</div>
+        <small style="color: #999; display: block; margin-top: 5px;">PNG, JPG, PDF (Max 5MB)</small>
+        <div class="file-name" id="name_file_national_id"></div>
+        <div class="upload-badge" id="badge_file_national_id"></div>
       </div>
-
-      <!-- SECTION: Applicant -->
-      <div class="section-heading">Applicant Information</div>
-
-      <div class="form-row">
-        <div class="form-group">
-          <label>Full Legal Name <span class="req">*</span></label>
-          <input type="text" id="a_name" placeholder="As on your Omang">
-        </div>
-        <div class="form-group">
-          <label>Age <span class="req">*</span></label>
-          <input type="number" id="a_age" placeholder="18–25" min="18" max="25">
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label>Are you currently a student? <span class="req">*</span></label>
-        <select id="a_student" onchange="toggleStudentSection()">
-          <option value="">Select...</option>
-          <option value="yes">Yes — I am enrolled at an institution</option>
-          <option value="no">No — I am not a student</option>
-        </select>
-      </div>
-
-      <div class="form-group" id="institutionGroup" style="display:none;">
-        <label>Institution Name <span class="req">*</span></label>
-        <input type="text" id="a_institution" placeholder="e.g. University of Botswana">
-      </div>
-
-      <!-- SECTION: Funding -->
-      <div class="section-heading" style="margin-top: 28px;">Business Funding Purpose</div>
-
-      <div class="form-group">
-        <label>What is the loan for? <span class="req">*</span></label>
-        <select id="a_purpose" onchange="updatePlaceholder()">
-          <option value="">Select purpose...</option>
-          <option value="Establishing">Establishing a New Business</option>
-          <option value="Scaling">Scaling / Expanding an Existing Business</option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label>Explain how the funds will be used <span class="req">*</span></label>
-        <textarea id="a_purposeText" placeholder="Describe your business plan and how the loan will help..."></textarea>
-      </div>
-
-      <div class="form-row">
-        <div class="form-group">
-          <label>Loan Amount Required (P) <span class="req">*</span></label>
-          <input type="number" id="a_amount" placeholder="P500 – P2,000" min="500" max="2000">
-        </div>
-        <div class="form-group">
-          <label>Est. Monthly Revenue (P) <span class="req">*</span></label>
-          <input type="number" id="a_revenue" placeholder="Expected monthly">
-        </div>
-      </div>
-
-      <!-- SECTION: Documents -->
-      <div class="section-heading" style="margin-top: 28px;">Required Document Uploads</div>
-      <p style="font-size:13px; color: var(--text-muted); margin-bottom: 20px;">All three documents must be uploaded. Your application will only be processed after verification.</p>
-
-      <!-- National ID -->
-      <div class="form-group">
-        <label>National ID / Omang <span class="req">*</span></label>
-        <div class="file-upload-area" id="zone_natid" ondragover="dragOver(event,this)" ondragleave="dragLeave(this)" ondrop="dropFile(event,'natid','zone_natid')">
-          <input type="file" id="natid" accept=".pdf,.jpg,.jpeg,.png" onchange="fileSelected('natid','zone_natid','nameNatid')">
-          <div class="upload-icon">🪪</div>
-          <div class="upload-text">
-            <strong>Upload National ID / Omang</strong>
-            PDF, JPG, or PNG — Max 10MB
-          </div>
-          <div class="file-name" id="nameNatid"></div>
-          <span class="doc-verify-badge pending" id="badge_natid" style="display:none;">⏳ Awaiting Verification</span>
-        </div>
-      </div>
-
-      <!-- Student ID / Proof -->
-      <div class="form-group" id="studentDocGroup">
-        <label>
-          Student ID / Proof of Registration <span class="req">*</span>
-          <span style="font-weight:400; color:var(--text-muted);">(Required if student)</span>
-        </label>
-        <div class="file-upload-area" id="zone_studentid" ondragover="dragOver(event,this)" ondragleave="dragLeave(this)" ondrop="dropFile(event,'studentid','zone_studentid')">
-          <input type="file" id="studentid" accept=".pdf,.jpg,.jpeg,.png" onchange="fileSelected('studentid','zone_studentid','nameStudentid')">
-          <div class="upload-icon">🎓</div>
-          <div class="upload-text">
-            <strong>Upload Student ID or Enrollment Proof</strong>
-            PDF, JPG, or PNG — Max 10MB
-          </div>
-          <div class="file-name" id="nameStudentid"></div>
-          <span class="doc-verify-badge pending" id="badge_studentid" style="display:none;">⏳ Awaiting Verification</span>
-        </div>
-        <small style="color:var(--text-muted); font-size:12px; margin-top:6px; display:block;">If you selected "No" above, this document is optional but recommended.</small>
-      </div>
-
-      <!-- Business Plan -->
-      <div class="form-group">
-        <label>Business Plan / Proposal (PDF) <span class="req">*</span></label>
-        <div class="file-upload-area" id="zone_bizplan" ondragover="dragOver(event,this)" ondragleave="dragLeave(this)" ondrop="dropFile(event,'bizplan','zone_bizplan')">
-          <input type="file" id="bizplan" accept=".pdf" onchange="fileSelected('bizplan','zone_bizplan','nameBizplan')">
-          <div class="upload-icon">📋</div>
-          <div class="upload-text">
-            <strong>Upload Business Plan / Proposal</strong>
-            PDF only — Max 10MB. Must include: loan amount, purpose, growth strategy, monthly revenue, 2-year vision
-          </div>
-          <div class="file-name" id="nameBizplan"></div>
-          <span class="doc-verify-badge pending" id="badge_bizplan" style="display:none;">⏳ Awaiting Verification</span>
-        </div>
-      </div>
-
-      <!-- SECTION: Checklist -->
-      <div class="section-heading" style="margin-top: 28px;">Confirmation Checklist</div>
-
-      <div class="checklist">
-        <div class="check-item">
-          <input type="checkbox" id="ck_omang">
-          <label for="ck_omang"><strong>Valid National ID / Omang</strong>I confirm my Omang is valid and I have uploaded a clear copy.</label>
-        </div>
-
-        <div class="check-item" id="ck_studentRow" style="display:none;">
-          <input type="checkbox" id="ck_student">
-          <label for="ck_student"><strong>Student ID / Proof of Registration</strong>I confirm I have uploaded a valid student ID or proof of registration.</label>
-        </div>
-
-        <div class="check-item">
-          <input type="checkbox" id="ck_form">
-          <label for="ck_form"><strong>Application Form Complete</strong>All fields in this form have been truthfully filled in.</label>
-        </div>
-
-        <div class="check-item">
-          <input type="checkbox" id="ck_agreement">
-          <label for="ck_agreement"><strong>Loan Agreement</strong>I understand and agree to the loan terms including repayment obligations.</label>
-        </div>
-
-        <div class="check-item">
-          <input type="checkbox" id="ck_proposal">
-          <label for="ck_proposal"><strong>Business Proposal Complete</strong>My proposal includes: loan amount, purpose, growth strategy, monthly revenue, and a minimum 2-year vision.</label>
-        </div>
-
-        <div class="check-item">
-          <input type="checkbox" id="ck_collateral">
-          <label for="ck_collateral"><strong>Optional: Physical Collateral / Reference</strong>I have or will provide collateral or a reference person (optional).</label>
-        </div>
-      </div>
-
-      <button class="btn-primary" onclick="checkEligibility()" id="submitBtn">
-        ✓ &nbsp;Submit Application
-      </button>
-
-      <div class="alert" id="appAlert"></div>
+      <input type="file" id="file_national_id" accept="image/*,.pdf" onchange="fileSelected('file_national_id', 'upload_file_national_id', 'name_file_national_id')">
     </div>
 
-    <!-- ===================== PANEL: DASHBOARD ===================== -->
-    <div class="panel" id="dashboard">
-      <div class="panel-title">Application Dashboard</div>
-      <div class="panel-subtitle">Real-time overview of all submitted loan applications.</div>
-
-      <div class="stats-row">
-        <div class="stat-tile">
-          <div class="stat-val" id="d_total">—</div>
-          <div class="stat-lbl">Total Applications</div>
-        </div>
-        <div class="stat-tile">
-          <div class="stat-val" id="d_pending">—</div>
-          <div class="stat-lbl">Pending Review</div>
-        </div>
-        <div class="stat-tile">
-          <div class="stat-val" id="d_approved">—</div>
-          <div class="stat-lbl">Approved</div>
-        </div>
-        <div class="stat-tile">
-          <div class="stat-val" id="d_funded">P0</div>
-          <div class="stat-lbl">Total Funded</div>
-        </div>
+    <!-- DOCUMENT 2: Student ID or Proof -->
+    <div class="form-group">
+      <label>🎓 Student ID / Proof of Registration *</label>
+      <div class="upload-section" id="upload_file_student_id" 
+           ondragover="dragOver(event, this)" 
+           ondragleave="dragLeave(this)"
+           ondrop="dropFile(event, 'file_student_id', 'upload_file_student_id')"
+           onclick="document.getElementById('file_student_id').click()">
+        <div class="upload-icon">📄</div>
+        <div class="upload-text">Click to upload or drag and drop</div>
+        <small style="color: #999; display: block; margin-top: 5px;">PNG, JPG, PDF (Max 5MB)</small>
+        <div class="file-name" id="name_file_student_id"></div>
+        <div class="upload-badge" id="badge_file_student_id"></div>
       </div>
-
-      <div class="section-heading">Recent Applications</div>
-      <div id="dashContent"><div class="spinner"></div></div>
+      <input type="file" id="file_student_id" accept="image/*,.pdf" onchange="fileSelected('file_student_id', 'upload_file_student_id', 'name_file_student_id')">
     </div>
 
-  </div><!-- /card -->
-</div><!-- /app-wrap -->
+    <!-- DOCUMENT 3: Business Plan -->
+    <div class="form-group">
+      <label>📊 Business Plan / Business Proposal *</label>
+      <div class="upload-section" id="upload_file_business_plan" 
+           ondragover="dragOver(event, this)" 
+           ondragleave="dragLeave(this)"
+           ondrop="dropFile(event, 'file_business_plan', 'upload_file_business_plan')"
+           onclick="document.getElementById('file_business_plan').click()">
+        <div class="upload-icon">📄</div>
+        <div class="upload-text">Click to upload or drag and drop</div>
+        <small style="color: #999; display: block; margin-top: 5px;">PDF, DOCX (Max 5MB)</small>
+        <div class="file-name" id="name_file_business_plan"></div>
+        <div class="upload-badge" id="badge_file_business_plan"></div>
+      </div>
+      <input type="file" id="file_business_plan" accept=".pdf,.doc,.docx" onchange="fileSelected('file_business_plan', 'upload_file_business_plan', 'name_file_business_plan')">
+    </div>
+
+    <button class="btn btn-primary" onclick="uploadDocuments()" id="uploadBtn">Upload Documents</button>
+    <button class="btn btn-secondary" style="margin-top: 10px;" onclick="handleLogout()">Sign Out</button>
+  </div>
+
+  <!-- STEP 3: LOAN APPLICATION PANEL -->
+  <div id="applicationPanel" class="panel hidden">
+    <div style="margin-bottom: 25px;">
+      <h2 style="color: var(--text-dark); font-family: 'Playfair Display', serif; font-size: 1.6rem; margin-bottom: 8px;">Loan Application Form</h2>
+      <p style="color: var(--text-muted); font-size: 14px;">Your documents have been received. Complete your loan application below.</p>
+    </div>
+
+    <div class="user-info">
+      <div class="user-info-text">Applicant: <strong id="appName"></strong></div>
+      <span id="appDocStatus" class="user-info-status status-pending">Docs Received</span>
+    </div>
+
+    <div class="form-group">
+      <label>Are you a student? *</label>
+      <select id="app_student" onchange="toggleStudentField()">
+        <option value="">Select</option>
+        <option value="yes">Yes, I am a student</option>
+        <option value="no">No, I am not a student</option>
+      </select>
+    </div>
+
+    <div class="form-group hidden" id="institutionField">
+      <label>Name of Institution *</label>
+      <input type="text" id="app_institution" placeholder="Your school/university name">
+    </div>
+
+    <div class="form-group">
+      <label>Funding Purpose *</label>
+      <select id="app_purpose" onchange="updatePurposePlaceholder()">
+        <option value="">Select Purpose</option>
+        <option value="Establishing">Establishing a New Business</option>
+        <option value="Scaling">Scaling / Expanding Existing Business</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Explain Your Business Plan *</label>
+      <textarea id="app_purposeText" placeholder="Describe how you will use the loan..."></textarea>
+    </div>
+
+    <div class="form-group">
+      <label>Loan Amount Required (P500 - P2,000) *</label>
+      <input type="number" id="app_amount" placeholder="Enter amount" min="500" max="2000" step="100">
+    </div>
+
+    <div class="form-group">
+      <label>Estimated Monthly Revenue (Pula) *</label>
+      <input type="number" id="app_revenue" placeholder="Expected monthly business income" min="0" step="100">
+    </div>
+
+    <div class="form-group">
+      <label>Acknowledgements *</label>
+      <div class="checkbox-group">
+        <input type="checkbox" id="ck_agreement" required>
+        <label class="checkbox-label" for="ck_agreement">I agree to the loan terms and conditions (10-20% interest rate, 8-month repayment period)</label>
+      </div>
+      <div class="checkbox-group">
+        <input type="checkbox" id="ck_accurate" required>
+        <label class="checkbox-label" for="ck_accurate">I confirm all information provided is accurate and complete</label>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" onclick="submitLoanApplication()" id="submitBtn">Submit Loan Application</button>
+    <button class="btn btn-secondary" style="margin-top: 10px;" onclick="handleLogout()">Sign Out</button>
+  </div>
+
+</div>
 
 <script>
-  // ─── CONFIG ─────────────────────────────────────────────────────
-  const SUPABASE_URL  = 'https://rcgyzkevzqwxpfhwmfrq.supabase.co';
-  const SUPABASE_ANON = 'sb_secret_TQu6LV5e3td4OlkFsUHWhA_fBRgmcAi';
+  const SUPABASE_URL = 'https://rcgyzkevzqwxpfhwmfrq.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_JQwGnQJb9nJ5qAvLxoeZWg_ODpFPYhC';
 
   let sb = null;
   let currentUser = null;
+  let currentUserProfile = null;
 
-  if (SUPABASE_URL && SUPABASE_ANON) {
-    sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
-    window.addEventListener('load', () => {
-      sb.auth.onAuthStateChange((event, session) => {
-        currentUser = session ? session.user : null;
-        if (currentUser) {
-          document.getElementById('userEmailDisplay').textContent = currentUser.email;
-          document.getElementById('topBar').classList.add('show');
-          document.getElementById('appNav').classList.add('show');
-          showPanel('application');
-        } else {
-          document.getElementById('topBar').classList.remove('show');
-          document.getElementById('appNav').classList.remove('show');
-          showPanel('panelSignup');
-        }
-      });
-    });
-  }
-
-  // ─── PANEL ROUTING ──────────────────────────────────────────────
-  function showPanel(id) {
-    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-    const el = document.getElementById(id);
-    if (el) { el.classList.add('active'); el.classList.add('fade-in'); }
-  }
-
-  function goTab(tab, navEl) {
-    showPanel(tab);
-    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-    navEl.classList.add('active');
-    if (tab === 'dashboard') loadDashboard();
-  }
-
-  // ─── AUTH ────────────────────────────────────────────────────────
-  async function handleSignup() {
-    const fname    = document.getElementById('su_fname').value.trim();
-    const lname    = document.getElementById('su_lname').value.trim();
-    const email    = document.getElementById('su_email').value.trim();
-    const phone    = document.getElementById('su_phone').value.trim();
-    const password = document.getElementById('su_password').value;
-    const confirm  = document.getElementById('su_confirm').value;
-    const alert    = document.getElementById('signupAlert');
-
-    clearAlert('signupAlert');
-
-    if (!fname || !lname || !email || !phone || !password || !confirm)
-      return showAlert('signupAlert', 'error', 'Please fill in all required fields.');
-    if (password !== confirm)
-      return showAlert('signupAlert', 'error', 'Passwords do not match.');
-    if (password.length < 6)
-      return showAlert('signupAlert', 'error', 'Password must be at least 6 characters.');
-
+  function initSupabase() {
     try {
-      const { error } = await sb.auth.signUp({
-        email, password,
-        options: { data: { first_name: fname, last_name: lname, phone } }
-      });
-      if (error) throw error;
-      showAlert('signupAlert', 'success', '✅ Account created! Check your email to confirm, then sign in.');
-    } catch (e) {
-      showAlert('signupAlert', 'error', e.message);
+      sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+      console.log('✅ Supabase initialized');
+      checkAuthState();
+    } catch (err) {
+      showAlert('❌ Database error: ' + err.message, 'error');
+      console.error('Supabase init error:', err);
     }
   }
 
-  async function handleLogin() {
-    const email    = document.getElementById('li_email').value.trim();
-    const password = document.getElementById('li_password').value;
-    clearAlert('loginAlert');
+  async function checkAuthState() {
+    try {
+      const { data: { session } } = await sb.auth.getSession();
+      if (session) {
+        currentUser = session.user;
+        await loadUserProfile();
+        await recordLoginEvent();
+        showApplicationFlow();
+      } else {
+        showAuthPanel();
+      }
+    } catch (err) {
+      console.error('Auth check error:', err);
+      showAuthPanel();
+    }
+  }
 
-    if (!email || !password)
-      return showAlert('loginAlert', 'error', 'Please enter your email and password.');
+  async function loadUserProfile() {
+    if (!currentUser) return;
+    try {
+      const { data, error } = await sb
+        .from('users_profile')
+        .select('*')
+        .eq('id', currentUser.id)
+        .single();
+
+      if (!error && data) {
+        currentUserProfile = data;
+      }
+    } catch (err) {
+      console.error('Profile load error:', err);
+    }
+  }
+
+  async function recordLoginEvent() {
+    if (!currentUser) return;
+    try {
+      await sb.from('login_history').insert([{
+        user_id: currentUser.id,
+        ip_address: 'web-client',
+        status: 'active',
+        device_info: navigator.userAgent
+      }]);
+      console.log('✅ Login recorded');
+    } catch (err) {
+      console.error('Login recording error:', err);
+    }
+  }
+
+  function toggleAuthForm() {
+    document.getElementById('signupForm').classList.toggle('hidden');
+    document.getElementById('signinForm').classList.toggle('hidden');
+  }
+
+  async function handleSignup() {
+    const firstName = document.getElementById('signup_firstName').value.trim();
+    const lastName = document.getElementById('signup_lastName').value.trim();
+    const email = document.getElementById('signup_email').value.trim();
+    const phone = document.getElementById('signup_phone').value.trim();
+    const age = parseInt(document.getElementById('signup_age').value);
+    const password = document.getElementById('signup_password').value;
+    const termsAccepted = document.getElementById('signup_terms').checked;
+
+if (!firstName || !lastName || !email || !phone || !age || !password) {
+  showAlert('❌ Please fill in all fields', 'error');
+  return;
+}
+
+// Name validation - letters only
+const nameRegex = /^[a-zA-Z\s'-]+$/;
+if (!nameRegex.test(firstName) || !nameRegex.test(lastName)) {
+  showAlert('❌ Names should only contain letters', 'error');
+  return;
+}
+
+// Email format check
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+if (!emailRegex.test(email)) {
+  showAlert('❌ Please enter a valid email address', 'error');
+  return;
+}
+
+// Phone validation - Botswana numbers (7xxxxxxx or +267 7xxxxxxx)
+const phoneRegex = /^(\+267|267)?[7][1-9]\d{6}$/;
+if (!phoneRegex.test(phone.replace(/\s/g, ''))) {
+  showAlert('❌ Enter a valid Botswana number (e.g. 71234567 or +267 71234567)', 'error');
+  return;
+}
+
+// Age range check
+if (isNaN(age) || age < 18 || age > 25) {
+  showAlert('❌ Age must be between 18 and 25 years old', 'error');
+  return;
+}
+
+if (password.length < 8) {
+  showAlert('❌ Password must be at least 8 characters', 'error');
+  return;
+}
+
+if (!termsAccepted) {
+  showAlert('❌ Please accept the terms and conditions', 'error');
+  return;
+}
+
+    const signupBtn = document.getElementById('signupBtn');
+    signupBtn.disabled = true;
+    signupBtn.innerHTML = '<span class="spinner"></span>Creating account...';
 
     try {
-      const { error } = await sb.auth.signInWithPassword({ email, password });
+      const { data: authData, error: authError } = await sb.auth.signUp({
+        email: email,
+        password: password
+      });
+
+      if (authError) throw authError;
+
+      const userId = authData.user?.id;
+      if (!userId) throw new Error('No user ID returned');
+
+      const { error: profileError } = await sb
+        .from('users_profile')
+        .insert([{
+          id: userId,
+          first_name: firstName,
+          last_name: lastName,
+          email: email,
+          phone: phone,
+          age: age,
+          account_status: 'active',
+          documents_verified: false
+        }]);
+
+      if (profileError) throw profileError;
+
+      showAlert('✅ Account created!\n\nPlease check your email to verify your account before signing in.', 'success');
+      
+      setTimeout(() => {
+        document.getElementById('signup_firstName').value = '';
+        document.getElementById('signup_lastName').value = '';
+        document.getElementById('signup_email').value = '';
+        document.getElementById('signup_phone').value = '';
+        document.getElementById('signup_age').value = '';
+        document.getElementById('signup_password').value = '';
+        document.getElementById('signup_terms').checked = false;
+        toggleAuthForm();
+      }, 3000);
+
+    } catch (err) {
+      showAlert('❌ Sign up error:\n' + err.message, 'error');
+    } finally {
+      signupBtn.disabled = false;
+      signupBtn.innerHTML = 'Create Account';
+    }
+  }
+
+  async function handleSignin() {
+    const email = document.getElementById('signin_email').value.trim();
+    const password = document.getElementById('signin_password').value;
+
+    if (!email || !password) {
+      showAlert('❌ Please enter email and password', 'error');
+      return;
+    }
+
+    const signinBtn = document.getElementById('signinBtn');
+    signinBtn.disabled = true;
+    signinBtn.innerHTML = '<span class="spinner"></span>Signing in...';
+
+    try {
+      const { data, error } = await sb.auth.signInWithPassword({
+        email: email,
+        password: password
+      });
+
       if (error) throw error;
-    } catch (e) {
-      showAlert('loginAlert', 'error', e.message);
+
+      currentUser = data.user;
+      await loadUserProfile();
+      await recordLoginEvent();
+      
+      showAlert('✅ Welcome! Redirecting...', 'success');
+      setTimeout(() => {
+        showApplicationFlow();
+      }, 1000);
+
+    } catch (err) {
+      showAlert('❌ Sign in error:\n' + err.message, 'error');
+    } finally {
+      signinBtn.disabled = false;
+      signinBtn.innerHTML = 'Sign In';
     }
   }
 
   async function handleLogout() {
-    await sb.auth.signOut();
-    document.getElementById('loanForm') && document.getElementById('loanForm').reset();
+    if (confirm('Sign out?')) {
+      try {
+        await sb.auth.signOut();
+        currentUser = null;
+        currentUserProfile = null;
+        showAuthPanel();
+        showAlert('✅ Signed out', 'success');
+      } catch (err) {
+        showAlert('❌ Logout error: ' + err.message, 'error');
+      }
+    }
   }
 
-  // ─── PASSWORD STRENGTH ──────────────────────────────────────────
-  function checkPwStrength(pw) {
-    const bars = ['pwBar1','pwBar2','pwBar3'];
-    bars.forEach(b => { document.getElementById(b).className = 'pw-bar'; });
-    if (!pw) return;
-    const score = (pw.length >= 6 ? 1 : 0) + (/[A-Z]/.test(pw) || /[0-9]/.test(pw) ? 1 : 0) + (pw.length >= 10 ? 1 : 0);
-    const cls = score === 1 ? 'weak' : score === 2 ? 'medium' : 'strong';
-    for (let i = 0; i < score; i++) document.getElementById(bars[i]).classList.add(cls);
+  function showAuthPanel() {
+    document.getElementById('authPanel').classList.remove('hidden');
+    document.getElementById('documentsPanel').classList.add('hidden');
+    document.getElementById('applicationPanel').classList.add('hidden');
+    updateStepIndicators(1);
   }
 
-  // ─── FORM INTERACTIONS ──────────────────────────────────────────
-  function toggleStudentSection() {
-    const val = document.getElementById('a_student').value;
-    const ig  = document.getElementById('institutionGroup');
-    const ckr = document.getElementById('ck_studentRow');
-    ig.style.display  = val === 'yes' ? 'block' : 'none';
-    ckr.style.display = val === 'yes' ? 'flex'  : 'none';
-    if (val !== 'yes') document.getElementById('ck_student').checked = false;
+  function showApplicationFlow() {
+    const documentsVerified = currentUserProfile?.documents_verified || false;
+    
+    document.getElementById('authPanel').classList.add('hidden');
+    document.getElementById('documentsPanel').classList.remove('hidden');
+    document.getElementById('userEmail').textContent = currentUser.email;
+
+    if (documentsVerified) {
+      document.getElementById('documentsPanel').classList.add('hidden');
+      document.getElementById('applicationPanel').classList.remove('hidden');
+      document.getElementById('appName').textContent = `${currentUserProfile.first_name} ${currentUserProfile.last_name}`;
+      updateStepIndicators(3);
+    } else {
+      updateStepIndicators(2);
+    }
   }
 
-  function updatePlaceholder() {
-    const purpose = document.getElementById('a_purpose').value;
-    const ta = document.getElementById('a_purposeText');
-    if (purpose === 'Establishing')
-      ta.placeholder = 'Describe the business you want to establish and how the loan will help you launch it…';
-    else if (purpose === 'Scaling')
-      ta.placeholder = 'Describe your existing business and how the loan will help you expand operations…';
-  }
-
-  // ─── FILE UPLOADS ────────────────────────────────────────────────
   function fileSelected(inputId, zoneId, nameId) {
     const file = document.getElementById(inputId).files[0];
     if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      showAlert('❌ File too large. Max 5MB.', 'error');
+      return;
+    }
+
     const zone = document.getElementById(zoneId);
     zone.classList.add('uploaded');
     const nameEl = document.getElementById(nameId);
-    nameEl.textContent = '📎 ' + file.name;
+    nameEl.textContent = '✓ ' + file.name;
     nameEl.classList.add('show');
+
     const badge = document.getElementById('badge_' + inputId);
-    if (badge) badge.style.display = 'inline-flex';
+    if (badge) {
+      badge.textContent = '⏳ Ready';
+      badge.classList.add('show', 'pending');
+    }
   }
 
-  function dragOver(e, zone) { e.preventDefault(); zone.classList.add('dragover'); }
-  function dragLeave(zone) { zone.classList.remove('dragover'); }
+  function dragOver(e, zone) {
+    e.preventDefault();
+    zone.classList.add('dragover');
+  }
+
+  function dragLeave(zone) {
+    zone.classList.remove('dragover');
+  }
 
   function dropFile(e, inputId, zoneId) {
     e.preventDefault();
-    dragLeave(document.getElementById(zoneId));
-    const dt = e.dataTransfer;
-    if (dt.files.length) {
+    const zone = document.getElementById(zoneId);
+    dragLeave(zone);
+
+    const files = e.dataTransfer.files;
+    if (files.length) {
       const input = document.getElementById(inputId);
-      const container = new DataTransfer();
-      container.items.add(dt.files[0]);
-      input.files = container.files;
+      const dt = new DataTransfer();
+      dt.items.add(files[0]);
+      input.files = dt.files;
       fileSelected(inputId, zoneId, 'name' + inputId.charAt(0).toUpperCase() + inputId.slice(1));
     }
   }
 
-  // ─── ELIGIBILITY CHECK ──────────────────────────────────────────
-  async function checkEligibility() {
-    const name      = document.getElementById('a_name').value.trim();
-    const age       = parseInt(document.getElementById('a_age').value);
-    const student   = document.getElementById('a_student').value;
-    const instit    = document.getElementById('a_institution').value.trim();
-    const purpose   = document.getElementById('a_purpose').value;
-    const pText     = document.getElementById('a_purposeText').value.trim();
-    const amount    = parseFloat(document.getElementById('a_amount').value);
-    const revenue   = parseFloat(document.getElementById('a_revenue').value);
+  async function uploadDocuments() {
+    const natFile = document.getElementById('file_national_id').files[0];
+    const stuFile = document.getElementById('file_student_id').files[0];
+    const bizFile = document.getElementById('file_business_plan').files[0];
 
-    const natidFile   = document.getElementById('natid').files[0];
-    const studentFile = document.getElementById('studentid').files[0];
-    const bizFile     = document.getElementById('bizplan').files[0];
-
-    const ckOmang    = document.getElementById('ck_omang').checked;
-    const ckStudent  = document.getElementById('ck_student').checked;
-    const ckForm     = document.getElementById('ck_form').checked;
-    const ckAgreement= document.getElementById('ck_agreement').checked;
-    const ckProposal = document.getElementById('ck_proposal').checked;
-
-    let missing = [];
-
-    if (!name)            missing.push('Enter your full legal name.');
-    if (!age || age < 18 || age > 25) missing.push('Applicant must be between 18–25 years old.');
-    if (!student)         missing.push('Select your student status.');
-    if (student === 'yes' && !instit) missing.push('Enter your institution name.');
-    if (!purpose)         missing.push('Select the business funding purpose.');
-    if (!pText)           missing.push('Explain how the funds will be used.');
-    if (!amount || amount < 500 || amount > 2000) missing.push('Loan amount must be between P500 and P2,000.');
-    if (!revenue || revenue <= 0) missing.push('Provide estimated monthly revenue.');
-
-    // Document checks
-    if (!natidFile)       missing.push('Upload your National ID / Omang document.');
-    if (student === 'yes' && !studentFile) missing.push('Upload your Student ID or proof of registration.');
-    if (!bizFile)         missing.push('Upload your Business Plan / Proposal (PDF).');
-
-    // Checkbox checks
-    if (!ckOmang)         missing.push('Confirm you have a valid Omang (checklist).');
-    if (student === 'yes' && !ckStudent) missing.push('Confirm your student ID (checklist).');
-    if (!ckForm)          missing.push('Confirm the application form is complete (checklist).');
-    if (!ckAgreement)     missing.push('Agree to the loan terms (checklist).');
-    if (!ckProposal)      missing.push('Confirm your business proposal is complete (checklist).');
-
-    if (missing.length > 0) {
-      const list = missing.map(m => `<li>${m}</li>`).join('');
-      showAlert('appAlert', 'error', `<strong>❌ Application Incomplete</strong><ul>${list}</ul>`);
-      document.getElementById('appAlert').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    if (!natFile || !stuFile || !bizFile) {
+      showAlert('❌ Please upload all three documents', 'error');
       return;
     }
 
-    // Save
-    if (sb && currentUser) {
-      document.getElementById('submitBtn').disabled = true;
-      document.getElementById('submitBtn').textContent = '⏳ Submitting…';
-
-      try {
-        const ts = Date.now();
-        const uid = currentUser.id;
-        const docs = {};
-
-        // Upload national ID
-        const natPath = `${uid}/${ts}_national_id_${natidFile.name}`;
-        const { error: e1 } = await sb.storage.from('documents').upload(natPath, natidFile);
-        if (e1) throw e1;
-        docs.national_id = natPath;
-
-        // Upload student ID if exists
-        if (studentFile) {
-          const stPath = `${uid}/${ts}_student_id_${studentFile.name}`;
-          const { error: e2 } = await sb.storage.from('documents').upload(stPath, studentFile);
-          if (e2) throw e2;
-          docs.student_id = stPath;
-        }
-
-        // Upload biz plan
-        const bizPath = `${uid}/${ts}_business_plan_${bizFile.name}`;
-        const { error: e3 } = await sb.storage.from('documents').upload(bizPath, bizFile);
-        if (e3) throw e3;
-        docs.business_plan = bizPath;
-
-        // DB insert
-        const { error: dbErr } = await sb.from('loans').insert([{
-          user_id:             uid,
-          full_name:           name,
-          age:                 age,
-          is_student:          student === 'yes',
-          institution:         student === 'yes' ? instit : null,
-          business_purpose:    purpose,
-          purpose_description: pText,
-          loan_amount:         amount,
-          monthly_revenue:     revenue,
-          document_paths:      docs,
-          documents_verified:  false,
-          status:              'Pending Review'
-        }]);
-
-        if (dbErr) throw dbErr;
-
-        // Mark verified badge
-        ['natid','bizplan'].forEach(id => {
-          const badge = document.getElementById('badge_' + id);
-          if (badge) { badge.textContent = '✅ Uploaded'; badge.className = 'doc-verify-badge verified'; }
-        });
-        if (studentFile) {
-          const b = document.getElementById('badge_studentid');
-          if (b) { b.textContent = '✅ Uploaded'; b.className = 'doc-verify-badge verified'; }
-        }
-
-        showAlert('appAlert', 'success', `
-          <strong>✅ Application Submitted Successfully!</strong><br><br>
-          Congratulations, <strong>${name}</strong>! Your application has been received and is pending document verification.<br><br>
-          <strong>Requested Amount:</strong> P${amount.toLocaleString()}<br>
-          <strong>Purpose:</strong> ${purpose}<br>
-          <strong>Est. Monthly Revenue:</strong> P${revenue.toLocaleString()}<br><br>
-          You will be notified once your documents have been reviewed.
-        `);
-
-      } catch (err) {
-        showAlert('appAlert', 'error', '❌ Error submitting application: ' + err.message);
-      } finally {
-        document.getElementById('submitBtn').disabled = false;
-        document.getElementById('submitBtn').innerHTML = '✓ &nbsp;Submit Application';
-        document.getElementById('appAlert').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-      }
-    } else {
-      // offline / no db
-      showAlert('appAlert', 'success', `
-        <strong>✅ Application Qualifies!</strong><br><br>
-        All requirements satisfied. Requested: P${amount} | Revenue: P${revenue}/month.
-      `);
-    }
-  }
-
-  // ─── DASHBOARD ───────────────────────────────────────────────────
-  async function loadDashboard() {
-    if (!sb) {
-      document.getElementById('dashContent').innerHTML = '<p style="color:var(--danger)">Database not configured.</p>';
-      return;
-    }
-
-    document.getElementById('dashContent').innerHTML = '<div class="spinner"></div>';
+    const uploadBtn = document.getElementById('uploadBtn');
+    uploadBtn.disabled = true;
+    uploadBtn.innerHTML = '<span class="spinner"></span>Uploading...';
 
     try {
-      const { data: loans, error } = await sb.from('loans').select('*').order('created_at', { ascending: false });
-      if (error) throw error;
+      const ts = Date.now();
+      const uid = currentUser.id;
 
-      const total    = loans.length;
-      const pending  = loans.filter(l => l.status === 'Pending Review').length;
-      const approved = loans.filter(l => l.status === 'Approved').length;
-      const funded   = loans.filter(l => l.status === 'Approved').reduce((s, l) => s + (l.loan_amount || 0), 0);
+      const natPath = `${uid}/${ts}_national_id_${natFile.name}`;
+      const { error: e1 } = await sb.storage.from('documents').upload(natPath, natFile);
+      if (e1) throw e1;
 
-      document.getElementById('d_total').textContent   = total;
-      document.getElementById('d_pending').textContent = pending;
-      document.getElementById('d_approved').textContent= approved;
-      document.getElementById('d_funded').textContent  = 'P' + funded.toLocaleString();
+      const stuPath = `${uid}/${ts}_student_id_${stuFile.name}`;
+      const { error: e2 } = await sb.storage.from('documents').upload(stuPath, stuFile);
+      if (e2) throw e2;
 
-      if (!loans.length) {
-        document.getElementById('dashContent').innerHTML = '<p style="text-align:center;padding:30px;color:var(--text-muted)">No applications yet.</p>';
-        return;
-      }
+      const bizPath = `${uid}/${ts}_business_plan_${bizFile.name}`;
+      const { error: e3 } = await sb.storage.from('documents').upload(bizPath, bizFile);
+      if (e3) throw e3;
 
-      let html = `<div class="table-wrap"><table>
-        <thead><tr>
-          <th>Name</th><th>Age</th><th>Purpose</th><th>Amount</th><th>Student</th><th>Status</th><th>Date</th>
-        </tr></thead><tbody>`;
+      const { error: docError } = await sb.from('documents').insert([
+        {
+          user_id: uid,
+          document_type: 'national_id',
+          original_filename: natFile.name,
+          storage_path: natPath,
+          file_size_kb: Math.round(natFile.size / 1024),
+          file_mime_type: natFile.type,
+          verification_status: 'pending'
+        },
+        {
+          user_id: uid,
+          document_type: 'student_id',
+          original_filename: stuFile.name,
+          storage_path: stuPath,
+          file_size_kb: Math.round(stuFile.size / 1024),
+          file_mime_type: stuFile.type,
+          verification_status: 'pending'
+        },
+        {
+          user_id: uid,
+          document_type: 'business_plan',
+          original_filename: bizFile.name,
+          storage_path: bizPath,
+          file_size_kb: Math.round(bizFile.size / 1024),
+          file_mime_type: bizFile.type,
+          verification_status: 'pending'
+        }
+      ]);
 
-      loans.forEach(l => {
-        const date = new Date(l.created_at).toLocaleDateString('en-BW', { day:'2-digit', month:'short', year:'numeric' });
-        const st   = (l.status || 'Pending Review').toLowerCase().replace(' ','');
-        const badgeCls = st === 'approved' ? 'badge-approved' : st === 'rejected' ? 'badge-rejected' : 'badge-pending';
-        html += `<tr>
-          <td>${l.full_name}</td>
-          <td>${l.age}</td>
-          <td>${l.business_purpose}</td>
-          <td>P${(l.loan_amount || 0).toLocaleString()}</td>
-          <td>${l.is_student ? '✅ Yes' : '—'}</td>
-          <td><span class="badge ${badgeCls}">${l.status || 'Pending Review'}</span></td>
-          <td>${date}</td>
-        </tr>`;
-      });
+      if (docError) throw docError;
 
-      html += '</tbody></table></div>';
-      document.getElementById('dashContent').innerHTML = html;
+      showAlert('✅ Documents uploaded!\n\nWaiting for admin verification...', 'success');
+
+      setTimeout(() => {
+        showApplicationFlow();
+      }, 2000);
 
     } catch (err) {
-      document.getElementById('dashContent').innerHTML = `<p style="color:var(--danger)">Error: ${err.message}</p>`;
+      showAlert('❌ Upload error:\n' + err.message, 'error');
+      console.error('Upload error:', err);
+    } finally {
+      uploadBtn.disabled = false;
+      uploadBtn.innerHTML = 'Upload Documents';
     }
   }
 
-  // ─── ALERT HELPERS ───────────────────────────────────────────────
-  function showAlert(id, type, html) {
-    const el = document.getElementById(id);
-    el.innerHTML = html;
-    el.className = `alert alert-${type} show`;
+  function toggleStudentField() {
+    const val = document.getElementById('app_student').value;
+    const field = document.getElementById('institutionField');
+    if (val === 'yes') {
+      field.classList.remove('hidden');
+    } else {
+      field.classList.add('hidden');
+    }
   }
 
-  function clearAlert(id) {
-    const el = document.getElementById(id);
-    el.className = 'alert';
-    el.innerHTML = '';
+  function updatePurposePlaceholder() {
+    const purpose = document.getElementById('app_purpose').value;
+    const textarea = document.getElementById('app_purposeText');
+    if (purpose === 'Establishing') {
+      textarea.placeholder = 'Describe the business you want to establish...';
+    } else if (purpose === 'Scaling') {
+      textarea.placeholder = 'Describe your existing business and expansion plans...';
+    }
   }
+
+  async function submitLoanApplication() {
+    const student = document.getElementById('app_student').value;
+    const institution = document.getElementById('app_institution').value.trim();
+    const purpose = document.getElementById('app_purpose').value;
+    const purposeText = document.getElementById('app_purposeText').value.trim();
+    const amount = parseFloat(document.getElementById('app_amount').value);
+    const revenue = parseFloat(document.getElementById('app_revenue').value);
+    const agreementOk = document.getElementById('ck_agreement').checked;
+    const accurateOk = document.getElementById('ck_accurate').checked;
+
+    let errors = [];
+
+    if (!student) errors.push('Select student status');
+    if (student === 'yes' && !institution) errors.push('Enter institution name');
+    if (!purpose) errors.push('Select funding purpose');
+    if (!purposeText) errors.push('Explain business plan');
+    if (!amount || amount < 500 || amount > 2000) errors.push('Amount must be P500-P2,000');
+    if (!revenue || revenue <= 0) errors.push('Enter monthly revenue');
+    if (!agreementOk || !accurateOk) errors.push('Check all boxes');
+
+    if (errors.length > 0) {
+      showAlert('❌ Please fix:\n' + errors.join('\n'), 'error');
+      return;
+    }
+
+    const submitBtn = document.getElementById('submitBtn');
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<span class="spinner"></span>Submitting...';
+
+    try {
+      const uid = currentUser.id;
+      const name = `${currentUserProfile.first_name} ${currentUserProfile.last_name}`;
+
+      const { data: loanData, error: loanError } = await sb.from('loans').insert([{
+        user_id: uid,
+        full_name: name,
+        age: currentUserProfile.age,
+        is_student: student === 'yes',
+        institution: student === 'yes' ? institution : null,
+        business_purpose: purpose,
+        purpose_description: purposeText,
+        loan_amount: amount,
+        monthly_revenue: revenue,
+        documents_verified: false,
+        status: 'Pending Review'
+      }]).select();
+
+      if (loanError) throw loanError;
+
+      const loanId = loanData[0].id;
+
+      await sb.from('documents')
+        .update({ loan_id: loanId })
+        .eq('user_id', uid)
+        .is('loan_id', null);
+
+      showAlert(`✅ Application submitted!\n\nAmount: P${amount}\nStatus: Pending Review`, 'success');
+
+    } catch (err) {
+      showAlert('❌ Error:\n' + err.message, 'error');
+      console.error('Submit error:', err);
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = 'Submit Loan Application';
+    }
+  }
+
+  function updateStepIndicators(activeStep) {
+    for (let i = 1; i <= 3; i++) {
+      const step = document.getElementById('step' + i);
+      step.classList.remove('active', 'completed');
+      if (i < activeStep) {
+        step.classList.add('completed');
+      } else if (i === activeStep) {
+        step.classList.add('active');
+      }
+    }
+  }
+
+  function showAlert(message, type = 'info') {
+    const alert = document.getElementById('mainAlert');
+    alert.textContent = message;
+    alert.className = `alert show alert-${type}`;
+    setTimeout(() => {
+      alert.classList.remove('show');
+    }, 6000);
+  }
+
+  window.addEventListener('DOMContentLoaded', initSupabase);
 </script>
+
 </body>
 </html>
