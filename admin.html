@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BETHEL SME - Admin Portal</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+:root{--navy:#041C32;--mid:#06283D;--gold:#D4AF37;--gold-light:#FFD700;--white:#fff;--danger:#c0392b;--success:#1a7a4a;--text-dark:#1a1a2e;--text-muted:#6b7280;--border:#e2ddd5;--bg:#f4f6f9}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);min-height:100vh;color:var(--text-dark)}
+
+/* Top Navigation */
+.admin-nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:12px 28px;background:var(--navy);border-bottom:3px solid var(--gold)}
+.admin-nav-brand{display:flex;align-items:center;gap:12px;color:var(--white);font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:900}
+.admin-nav-brand span{color:var(--gold-light)}
+.admin-nav-user{color:rgba(255,255,255,0.7);font-size:13px;display:flex;align-items:center;gap:12px}
+.admin-logout-btn{padding:6px 14px;border:1px solid rgba(255,255,255,0.2);border-radius:8px;background:transparent;color:rgba(255,255,255,0.8);font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:.3s}
+.admin-logout-btn:hover{background:var(--danger);border-color:var(--danger);color:#fff}
+
+/* Layout */
+.main-container{max-width:1200px;margin:80px auto 30px;padding:0 20px}
+.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px}
+.stat-card{background:var(--white);border-radius:16px;padding:20px;box-shadow:0 4px 15px rgba(0,0,0,0.05);display:flex;align-items:center;gap:16px;border-left:5px solid var(--border)}
+.stat-card.pending{border-color:#f0ad4e}
+.stat-card.approved{border-color:var(--success)}
+.stat-card.rejected{border-color:var(--danger)}
+.stat-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px}
+.stat-card.pending .stat-icon{background:rgba(240,173,78,0.1);color:#f0ad4e}
+.stat-card.approved .stat-icon{background:rgba(26,122,74,0.1);color:var(--success)}
+.stat-card.rejected .stat-icon{background:rgba(192,57,43,0.1);color:var(--danger)}
+.stat-info h3{font-size:24px;font-weight:700;color:var(--text-dark)}
+.stat-info p{font-size:12px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px}
+
+/* Tabs & Filters */
+.filter-bar{display:flex;gap:8px;margin-bottom:24px;background:var(--white);padding:8px;border-radius:12px;box-shadow:0 2px 10px rgba(0,0,0,0.03)}
+.filter-btn{padding:10px 20px;border:none;border-radius:8px;background:transparent;color:var(--text-muted);font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:.2s}
+.filter-btn:hover{background:var(--bg)}
+.filter-btn.active{background:var(--navy);color:var(--white)}
+
+/* Application Cards */
+.app-card{background:var(--white);border-radius:16px;box-shadow:0 4px 15px rgba(0,0,0,0.05);margin-bottom:20px;overflow:hidden;border:1px solid rgba(0,0,0,0.03)}
+.app-card-header{padding:20px 24px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #f0f0f0}
+.applicant-info h3{font-size:16px;font-weight:700;color:var(--text-dark)}
+.applicant-info p{font-size:13px;color:var(--text-muted)}
+.badge{padding:5px 12px;border-radius:20px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.badge.pending{background:#fff3cd;color:#856404}
+.badge.approved{background:#d4edda;color:#155724}
+.badge.rejected{background:#f8d7da;color:#721c24}
+
+.app-card-body{padding:24px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:24px}
+.detail-group{margin-bottom:12px}
+.detail-label{font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;font-weight:600}
+.detail-value{font-size:14px;font-weight:500;color:var(--text-dark)}
+.detail-value.text-block{white-space:pre-wrap;line-height:1.5;background:var(--bg);padding:10px;border-radius:8px;font-size:13px;font-weight:400;max-height:100px;overflow-y:auto}
+
+.app-card-footer{padding:16px 24px;background:#fafafa;display:flex;justify-content:space-between;align-items:center;border-top:1px solid #f0f0f0}
+.doc-btns button{padding:7px 14px;border:1px solid var(--border);border-radius:8px;background:var(--white);color:var(--text-dark);font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;margin-right:8px;transition:.2s}
+.doc-btns button:hover{border-color:var(--gold);color:var(--navy)}
+.action-btns button{padding:9px 18px;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;margin-left:8px;transition:.2s}
+.btn-approve{background:var(--success);color:#fff}
+.btn-approve:hover{background:#156d43}
+.btn-reject{background:var(--danger);color:#fff}
+.btn-reject:hover{background:#a93226}
+
+/* Login Screen */
+#adminLogin{min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--navy)}
+.login-box{background:rgba(255,255,255,0.05);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.1);border-radius:24px;padding:40px;max-width:400px;width:100%}
+.login-box h2{color:var(--white);font-family:'Playfair Display',serif;margin-bottom:8px}
+.login-box p{color:rgba(255,255,255,0.5);font-size:13px;margin-bottom:24px}
+.login-input{width:100%;padding:12px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#fff;font-family:'DM Sans',sans-serif;margin-bottom:12px;font-size:14px}
+.login-input:focus{outline:none;border-color:var(--gold)}
+.login-btn{width:100%;padding:14px;border:none;border-radius:10px;background:linear-gradient(135deg,var(--gold),var(--gold-light));color:var(--navy);font-weight:700;font-size:14px;cursor:pointer;font-family:'DM Sans',sans-serif;text-transform:uppercase;letter-spacing:1px}
+.login-error{color:#ff6b6b;font-size:12px;margin-bottom:12px;display:none}
+
+@media(max-width:768px){
+.stats-grid{grid-template-columns:1fr}
+.app-card-body{grid-template-columns:1fr}
+.app-card-footer{flex-direction:column;gap:12px;align-items:flex-start}
+.action-btns{width:100%;display:flex;gap:8px}
+.action-btns button{flex:1;margin:0}
+}
+</style>
+</head>
+<body>
+
+<!-- Admin Login -->
+<div id="adminLogin">
+  <div class="login-box">
+    <h2>Admin Portal</h2>
+    <p>Sign in to manage BETHEL SME applications</p>
+    <div class="login-error" id="loginError">Invalid credentials or not an admin.</div>
+    <input type="email" class="login-input" id="adminEmail" placeholder="Admin Email">
+    <input type="password" class="login-input" id="adminPass" placeholder="Password">
+    <button class="login-btn" onclick="adminLogin()">Sign In</button>
+  </div>
+</div>
+
+<!-- Admin Dashboard -->
+<div id="adminDashboard" style="display:none;">
+  <nav class="admin-nav">
+    <div class="admin-nav-brand">BETHEL <span>ADMIN</span></div>
+    <div class="admin-nav-user">
+      <span id="adminName">Admin</span>
+      <button class="admin-logout-btn" onclick="adminLogout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+    </div>
+  </nav>
+
+  <div class="main-container">
+    <div class="stats-grid">
+      <div class="stat-card pending">
+        <div class="stat-icon"><i class="fa-solid fa-clock"></i></div>
+        <div class="stat-info"><h3 id="statPending">0</h3><p>Pending</p></div>
+      </div>
+      <div class="stat-card approved">
+        <div class="stat-icon"><i class="fa-solid fa-check-circle"></i></div>
+        <div class="stat-info"><h3 id="statApproved">0</h3><p>Approved</p></div>
+      </div>
+      <div class="stat-card rejected">
+        <div class="stat-icon"><i class="fa-solid fa-times-circle"></i></div>
+        <div class="stat-info"><h3 id="statRejected">0</h3><p>Rejected</p></div>
+      </div>
+    </div>
+
+    <div class="filter-bar">
+      <button class="filter-btn active" onclick="filterApps('all', this)">All</button>
+      <button class="filter-btn" onclick="filterApps('pending', this)">Pending</button>
+      <button class="filter-btn" onclick="filterApps('approved', this)">Approved</button>
+      <button class="filter-btn" onclick="filterApps('rejected', this)">Rejected</button>
+    </div>
+
+    <div id="applicationsList"></div>
+  </div>
+</div>
+
+<script>
+var SUPABASE_URL='https://rcgyzkevzqwxpfhwmfrq.supabase.co';
+var SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJjZ3l6a2V2enF3eHBmaHdtZnJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3MjAwOTksImV4cCI6MjA5NTI5NjA5OX0.9Kj2P9LAKPogir1F_A44RdvHpo4ohaVhqM-o_Uwm8wE';
+var sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+var allApps=[];
+var currentAdmin=null;
+
+// --- AUTH ---
+async function adminLogin(){
+  var email=document.getElementById('adminEmail').value;
+  var pass=document.getElementById('adminPass').value;
+  document.getElementById('loginError').style.display='none';
+  
+  var {data,error}=await sb.auth.signInWithPassword({email:email,password:pass});
+  if(error){document.getElementById('loginError').style.display='block';return;}
+  
+  // Check if user is admin (you will set this in Supabase)
+  var {data:profile}=await sb.from('users_profile').select('role').eq('id',data.user.id).single();
+  if(!profile || profile.role!=='admin'){
+    document.getElementById('loginError').textContent='Access Denied: Not an admin.';
+    document.getElementById('loginError').style.display='block';
+    sb.auth.signOut();
+    return;
+  }
+  
+  currentAdmin=data.user;
+  showDashboard();
+}
+
+function adminLogout(){
+  sb.auth.signOut();
+  document.getElementById('adminLogin').style.display='flex';
+  document.getElementById('adminDashboard').style.display='none';
+}
+
+async function checkAdminSession(){
+  var {data}=await sb.auth.getSession();
+  if(data.session){
+    var {data:profile}=await sb.from('users_profile').select('role').eq('id',data.session.user.id).single();
+    if(profile && profile.role==='admin'){
+      currentAdmin=data.session.user;
+      showDashboard();
+    }
+  }
+}
+
+function showDashboard(){
+  document.getElementById('adminLogin').style.display='none';
+  document.getElementById('adminDashboard').style.display='block';
+  document.getElementById('adminName').textContent=currentAdmin.email;
+  fetchApplications();
+}
+
+// --- DATA ---
+async function fetchApplications(){
+  var {data,error}=await sb.from('loan_applications').select('*, users_profile(*)').order('created_at',{ascending:false});
+  if(error){console.error(error);return;}
+  allApps=data||[];
+  updateStats();
+  filterApps('all', document.querySelector('.filter-btn.active'));
+}
+
+function updateStats(){
+  document.getElementById('statPending').textContent=allApps.filter(a=>a.status==='pending').length;
+  document.getElementById('statApproved').textContent=allApps.filter(a=>a.status==='approved').length;
+  document.getElementById('statRejected').textContent=allApps.filter(a=>a.status==='rejected').length;
+}
+
+function filterApps(status, btn){
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  
+  var filtered=status==='all'?allApps:allApps.filter(a=>a.status===status);
+  renderApplications(filtered);
+}
+
+// --- RENDER ---
+function renderApplications(apps){
+  var list=document.getElementById('applicationsList');
+  if(!apps.length){list.innerHTML='<div style="text-align:center;padding:40px;color:#999">No applications found.</div>';return;}
+  
+  list.innerHTML=apps.map(app=>{
+    var p=app.users_profile||{};
+    var locMatch=app.purpose_description?app.purpose_description.match(/\[Location:\s*(.*?)\]/):null;
+    var location=locMatch?locMatch[1]:'N/A';
+    var cleanDesc=app.purpose_description?app.purpose_description.replace(/\[Location:.*?\]/,'').trim():'No description';
+    var ds=app.created_at?new Date(app.created_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}):'—';
+    
+    return `
+    <div class="app-card">
+      <div class="app-card-header">
+        <div class="applicant-info">
+          <h3>${p.first_name||'Unknown'} ${p.last_name||''}</h3>
+          <p>Applied on ${ds} &middot; ${p.phone||'No phone'}</p>
+        </div>
+        <span class="badge ${app.status}">${app.status}</span>
+      </div>
+      <div class="app-card-body">
+        <div>
+          <div class="detail-group"><div class="detail-label">Location</div><div class="detail-value">${location}</div></div>
+          <div class="detail-group"><div class="detail-label">Loan Amount</div><div class="detail-value" style="color:var(--navy);font-weight:700">P${app.loan_amount||0}</div></div>
+          <div class="detail-group"><div class="detail-label">Monthly Revenue</div><div class="detail-value">P${app.monthly_revenue||0}</div></div>
+          <div class="detail-group"><div class="detail-label">Student</div><div class="detail-value">${app.is_student?'Yes ('+app.institution+')':'No'}</div></div>
+        </div>
+        <div style="grid-column:span 2">
+          <div class="detail-group">
+            <div class="detail-label">Business Plan / Description</div>
+            <div class="detail-value text-block">${cleanDesc}</div>
+          </div>
+        </div>
+      </div>
+      <div class="app-card-footer">
+        <div class="doc-btns">
+          <button onclick="viewDoc('${p.national_id_path||''}')"><i class="fa-regular fa-id-card"></i> National ID</button>
+          <button onclick="viewDoc('${p.student_id_path||''}')"><i class="fa-solid fa-graduation-cap"></i> Student ID</button>
+          <button onclick="viewDoc('${p.business_plan_path||''}')"><i class="fa-solid fa-chart-line"></i> Business Plan</button>
+        </div>
+        ${app.status==='pending'?`
+        <div class="action-btns">
+          <button class="btn-reject" onclick="updateStatus('${app.id}','rejected')"><i class="fa-solid fa-times"></i> Reject</button>
+          <button class="btn-approve" onclick="updateStatus('${app.id}','approved')"><i class="fa-solid fa-check"></i> Approve</button>
+        </div>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// --- ACTIONS ---
+async function viewDoc(path){
+  if(!path){alert('Document not uploaded.');return;}
+  var {data,error}=await sb.storage.from('documents').createSignedUrl(path,60);
+  if(error){alert('Error fetching document.');return;}
+  window.open(data.signedUrl,'_blank');
+}
+
+async function updateStatus(appId,newStatus){
+  if(!confirm('Are you sure you want to '+newStatus+' this application?'))return;
+  var {error}=await sb.from('loan_applications').update({status:newStatus}).eq('id',appId);
+  if(error){alert('Error: '+error.message);return;}
+  fetchApplications(); // Refresh data
+}
+
+// Init
+window.addEventListener('load',checkAdminSession);
+</script>
+</body>
+</html>
